@@ -1,0 +1,60 @@
+{
+    "kit": "mono",
+    "format": {
+        "databases": {
+            "kit": "list",
+            "format": {
+                "type": {
+                    "type": "enum",
+                    "value": [
+                        "mongo",
+                        "mysql"
+                    ],
+                    "default": "mongo"
+                },
+                "host": "string",
+                "port": "number",
+                "username": "string",
+                "password": "string",
+                "database": {
+                    "type": "string",
+                    "default": "test"
+                }
+            }
+        },
+        "servers": {
+            "kit": "list",
+            "format": {
+                "type": {
+                    "type": "enum",
+                    "value": [
+                        "expressjs",
+                        "nodejs"
+                    ],
+                    "default": "expressjs"
+                },
+                "listen": "string",
+                "port": "number",
+                "protocol": "string"
+            }
+        },
+        "clients": {
+            "kit": "list",
+            "format": {
+                "type": {
+                    "type": "enum",
+                    "value": [
+                        "angularjs",
+                        "android",
+                        "ios"
+                    ],
+                    "default": "angularjs"
+                },
+                "server": {
+                    "type": "enum",
+                    "from": "servers"
+                }
+            }
+        }
+    }
+}

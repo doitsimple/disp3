@@ -1,0 +1,27 @@
+{
+    "kit": "mono",
+    "format": {
+        "schemas": {
+            "kit": "list",
+            "format": {
+                "database": {
+                    "type": "enum",
+                    "from": "databases"
+                },
+                "fields": {
+                    "kit": "list",
+                    "format": {
+                        "type": "enum",
+												"sets": ["string", "int"]
+                    }
+                }
+            }
+        },
+        "apis": {
+						"kit": "list"
+				},
+        "uis": {
+						"kit": "list"
+				}
+    }
+}
