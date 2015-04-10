@@ -10,31 +10,17 @@ var node = process.argv[0], //nodejs binary
 		dispCmd = process.argv[1], //this file
 		task = process.argv[2];
 
-var configFile = "project.json";
-var incFile = "";
 if(!task)	task = "main";
 
-if(!fs.existsSync(configFile)){
-	console.error(configFile + " is not existed");
+var projectDir = path.resolve(".");
+var rootDir;
+if(process.env.rootDir) rootDir = path.resolve(process.env.rootDir);
+else rootDir = path.resolve(__dirname + "/..");
+
+if(!core.run(projectDir, rootDir, task)){
+	console.error("generate failed");
 	process.exit(1);
 }
-var	config = libFile.readJSON(configFile);
-
-if(fs.existsSync("./product.json")){
-	config.task.product = libFile.readJSON("./product.json");
-	if(config.task.product){
-		if(!config.task.product.target) config.task.product.target = "product";
-	}
-}
-var dispRoot;
-if(process.env.dispRoot) dispRoot = path.resolve(process.env.dispRoot);
-else dispRoot = path.resolve(path.dirname(dispCmd) + "/..");
-config.root = dispRoot;
-
-core.set(config);
-
-var res = core.run(task);
-console.log(config.task[task].target);
-fs.writeFileSync(config.task[task].target + "/.result.json", JSON.stringify(res, undefined, 2));
+console.log("generate success");
 
 

@@ -7,60 +7,63 @@ var libFile = require("../lib/nodejs/file");
 var format = require("./format");
 var walk = require("./walk");
 var tmpl = require("./tmpl");
-var root = path.resolve(__dirname + "/..");
-var archRoot = path.resolve(root + "/arch");
+var log = require("./log");
 
 module.exports.run = run;
-function run(dir, task){
-	var cache = format.readAndCheckConfig(dir);
+/*
 
+*/
+function run(projectDir, rootDir, task){
+
+	var cache = format.readAndCheckConfig(projectDir, rootDir);
 	if(!cache){
-		console.error("config error");
+		log.e("read project.json file failed");
 		return 0;
 	}
-	var config = cache.configCache;
-	var project = cache.projectCache;
-	if(task){
-		replaceParams(config, libFile.readJSON(task + ".json"));
+	var configCache = cache.config;
+	configCache.env = {};
+	configCache.env.rootDir = rootDir;
+	var formatCache = cache.format;
+	if(task && task != "main"){
+		libObject.extend(configCache, libFile.readJSON(task + ".json"));
 	}
-	var navPaths = getNavPaths();
-	if(!navPaths){
-		console.error("get nav paths error");
+	var navPaths = getNavPaths(configCache);
+	log.i(navPaths);
+	if(!navPaths || !navPaths.length){
+		log.e("get nav paths error");
 		return null;
 	}
 	var genFileList = {};
 	for(var i=0; i<navPaths.length; i++){
 		var navPath = navPaths[i];
-		walk.walk(navPath, project.target, genFileList);
+		if(!fs.existsSync(navPath)) continue;
+		if(!walk.walk(navPath, cache.config.project.target, configCache, genFileList)){
+			log.e("walk " + navPath + " failed");
+			return null;
+		}
 	}
-	if(!tmpl.generate(genFileList)){
-		console.error("generate error");
+	log.v(Object.keys(genFileList));
+	if(!tmpl.generate(genFileList, configCache)){
+		log.e("generate error");
 		return null;
 	}
 	cache.filelist = genFileList;
 	return cache;
 }
-function replaceParams(config, config2){
-	if(!config) {config = config2; return; }
-	libObject.iterate2(config2, config, function(key, itConfig, itConfig2){
-		itConfig2[key] = itConfig[key];
-	}, function(key, itConfig, itConfig2){
-		if(!libObject.isArray(itConfig2[key])){
-			itConfig2[key]= [];
-		}
-		itConfig[key].forEach(function(v){
-			itConfig2[key].push(v);
-		});
-	});
-}
+
 function getNavPaths(config){
 	var arch = config.project.arch;
-	var scriptFile = archRoot + "/" + arch + "/load.js";
+	var archRoot = path.resolve(config.env.rootDir + "/arch/" + arch);
+	var scriptFile = path.resolve(archRoot + "/load.js");
+	var paths;
 	if(!fs.existsSync(scriptFile)){
-		console.error("no script file for "+ arch);
-		return 0;
+		log.i("no script file " + scriptFile);
+		log.i("use " + archRoot);
+		paths = [archRoot];
+	}else{
+		config.env.archSrcDir = path.resolve(archRoot + "/src");
+		paths = require(scriptFile)(config);
 	}
-	var paths = require(archRoot + "/" + arch + "/load")(config);
 	paths.push(path.resolve("."));
 	return paths;
 }

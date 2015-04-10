@@ -1,2 +1,19 @@
 {
+		"apis": {
+				"signin": {
+						
+				}
+		},
+		"schemas": {
+				"user": {
+				}
+		},
+		"uis": {
+				"home": {
+				}
+		},
+		"auths": {
+				"auth": {
+				}
+		}
 }

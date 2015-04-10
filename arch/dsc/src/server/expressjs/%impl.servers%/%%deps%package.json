@@ -1,0 +1,4 @@
+"express": "^4.*",
+"body-parser": "*",
+"passport": "*",
+"passport-http-bearer": "*",

@@ -1,3 +1,4 @@
 {
-		"arch": "dsc"
+		"arch": "dsc",
+		"target": "gen"
 }

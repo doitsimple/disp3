@@ -4,6 +4,7 @@ var libString = require("../lib/js/string");
 var libArray = require("../lib/js/array");
 var libObject = require("../lib/js/object");
 var libFile = require("../lib/nodejs/file");
+var log = require("./log");
 var methods = {};
 libObject.extend1(methods, libString);
 libObject.extend1(methods, libArray);
@@ -13,6 +14,10 @@ libObject.extend1(methods, libFile);
 var tmplCache = {};
 module.exports.render = render;
 function render(config, data){
+	if(!data){
+		log.e("render with undefined data");
+		return "";
+	};
 	var str;
 	if(typeof config == "string"){
 		str = config;
@@ -30,7 +35,7 @@ function render(config, data){
 			else if(config.str){
 				str = config.str;
 			}else{
-				console.error("wrong param to render");
+				log.e("wrong param to render");
 				return "";
 			}
 		}
@@ -65,18 +70,23 @@ function render(config, data){
 				.replace(/\\([\"\?\*])/g, "\\\\\\$1");
 
 			if(win && win[0] == '='){
+				var ms;
+//automatic init
+				if((ms=win.match(/^=([A-Za-z0-9-]+)$/)))
+					if(!data[ms[1]]){
+						data[ms[1]] = "";
+					}
 				evalstr += (win.replace(/^=(.+)/, "',$1,'") + wout);
 			}
 			else{
 				evalstr+=("');"+win+";p.push('"+wout);
-			}			
+			}
 		});
 		evalstr+="');";
 		try{
 			eval(evalstr);
 		}catch(e){
-			console.error(config);
-			console.error(e.stack);
+			log.e(e.stack);
 			return "";
 //			eval(evalstr);
 		}
@@ -87,24 +97,41 @@ function render(config, data){
 module.exports.generate = generate;
 function generate(fileList, globalEnv){
 	for (var filename in fileList){
+		libFile.mkdirpSync(path.dirname(filename)); // should have a more efficient way
 		var partConfig = fileList[filename];
+		if(partConfig.self){
+			continue;
+		}
+		if(partConfig.src){
+			if(partConfig.src != filename)
+				libFile.copySync(partConfig.src, filename);
+			continue;
+		}
 		if(!partConfig.main){
-			console.error("no main in "+JSON.stringify(partConfig));
-			return 0;
+			log.e("no main in "+JSON.stringify(partConfig));
+			return false;
 		}
 			
 		var env = globalEnv;
 		if(partConfig.env){
 			env = libObject.getByKey(globalEnv, partConfig.env);
 		}
+		var ms;
 		for(var key in partConfig){
-			if(key != "env" && key != "main")
-				env[key] = libFile.readString(partConfig[key]);
+			if(!env[key]) env[key] = "";
+			if(key != "env" && key != "main" && key != "src" && key != "self"){
+				partConfig[key].forEach(function(file){
+					env[key] += render({file: file}, env);
+				});
+			}
 		}
 		env.global = globalEnv;
-		var str = render({file: partConfig.main}, env);
-		if(str)
-			fs.writeFileSync(filename, str); 
+		var str = "";
+		partConfig.main.forEach(function(file){
+      str += render({file: file}, env);			
+    });
+
+		fs.writeFileSync(filename, str);
 	}
-	return 1;
+	return true;
 }

@@ -1,0 +1,20 @@
+{
+    "kit": "mono",
+    "format": {
+        "target": "string",
+        "fsconfigs": {
+            "kit": "list",
+            "default": {
+                ".git": {
+                    "ignore": true
+                },
+                "node_modules": {
+                    "ignore": true
+                }
+            }
+        }
+    },
+    "default": {
+        "target": "."
+    }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "^^=name$$",
+  "main": "server.js",
+	"scripts": {
+			"start": "node server.js",
+			"test": "mocha"
+	},
+  "dependencies": {
+		^^=deps$$
+		"ursa": "*",
+    "bcrypt": "*",
+		"async": "*"
+  },
+	"devDependencies": {
+		^^=devDeps$$
+		"mocha": "*",
+		"should": "*"
+	}
+}

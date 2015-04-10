@@ -10,20 +10,24 @@ describe('tmpl.js', function() {
 		}));
 	});
 	it('function generate', function() {
-		fs.writeFileSync("disp.filea", "^^=var1$$^^=var2$$");
-		fs.writeFileSync("psid.var2", " var2file");
-		assert.equal(1, tmpl.generate({
+
+		fs.writeFileSync("filea--main", "^^=var1$$^^=var2$$");
+		fs.writeFileSync("filea--var2", "+this is from another file");
+		assert.equal(true, tmpl.generate({
 			"filea": {
-				"main": "disp.filea"
+				"main": ["filea--main"]
 			},
 			"fileb": {
-				"main": "disp.filea",
+				"main": ["filea--main"],
 				"env": "parta"
 			},
 			"filec": {
-				"main": "disp.filea",
-				"var2": "psid.var2",
+				"main": ["filea--main"],
+				"var2": ["filea--var2"],
 				"env": "parta"
+			},
+			"filed": {
+				"src": "filea--main"
 			}
 		}, {
 			"var1": "global",
@@ -33,15 +37,18 @@ describe('tmpl.js', function() {
 				"var2": "var2"
 			}
 		}));
+
 		assert.equal("global", fs.readFileSync("filea").toString());
 		assert.equal("partavar2", fs.readFileSync("fileb").toString());
-		assert.equal("parta var2file", fs.readFileSync("filec").toString());
+		assert.equal("partavar2+this is from another file", fs.readFileSync("filec").toString());
+		assert.equal("^^=var1$$^^=var2$$", fs.readFileSync("filed").toString());
 
-		fs.unlinkSync("disp.filea");
-		fs.unlinkSync("psid.var2");
+		fs.unlinkSync("filea--main");
+		fs.unlinkSync("filea--var2");
 		fs.unlinkSync("filea");
 		fs.unlinkSync("fileb");
 		fs.unlinkSync("filec");
+		fs.unlinkSync("filed");
 	});
 
 });

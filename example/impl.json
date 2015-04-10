@@ -1,11 +1,26 @@
 {
 		"databases": {
-				"localmongo": {
+				"mongo": {
 						"host": "192.168.1.111",
 						"database": "test"
 				}
 		},
-		"server": {
-				
+		"servers": {
+				"frontend": {
+						"type": "expressjs",
+						"port": 4001
+				},
+				"backend": {
+						"type": "expressjs",
+						"port": 4002
+				}
+		},
+		"clients": {
+				"static": {
+						"type": "html"
+				},
+				"dynamic": {
+						"type": "angularjs"
+				}
 		}
 }

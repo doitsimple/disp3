@@ -4,23 +4,26 @@
         "schemas": {
             "kit": "list",
             "format": {
-                "database": {
-                    "type": "enum",
-                    "from": "databases"
-                },
                 "fields": {
                     "kit": "list",
                     "format": {
                         "type": "enum",
-												"sets": ["string", "int"]
+												"sets": ["string", "int"],
+												"default": "string"
                     }
                 }
             }
         },
         "apis": {
-						"kit": "list"
+						"kit": "list",
+						"format": {
+								
+						}
 				},
         "uis": {
+						"kit": "list"
+				},
+				"auths": {
 						"kit": "list"
 				}
     }
