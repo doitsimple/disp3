@@ -86,6 +86,8 @@ function render(config, data){
 		try{
 			eval(evalstr);
 		}catch(e){
+			log.e(config);
+			log.e(data);
 			log.e(e.stack);
 			return "";
 //			eval(evalstr);

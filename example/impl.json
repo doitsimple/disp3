@@ -8,6 +8,7 @@
 		"servers": {
 				"frontend": {
 						"type": "expressjs",
+						"static": "../static",
 						"port": 4001
 				},
 				"backend": {
@@ -17,7 +18,8 @@
 		},
 		"clients": {
 				"static": {
-						"type": "html"
+						"type": "html",
+						"mod": "fullpage"
 				},
 				"dynamic": {
 						"type": "angularjs"

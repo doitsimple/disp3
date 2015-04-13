@@ -48,8 +48,10 @@ function readAndCheckConfig(dir, rootDir){
 
 	libObject.setIfEmpty(configCache.project.fsconfigs, 
 											 path.resolve("project.json"), {ignore: true});
-	var target = path.resolve(configCache.project.target);
-	libObject.setIfEmpty(configCache.project.fsconfigs, target, {ignore: true});
+	if(configCache.project.target != "."){
+		var target = path.resolve(configCache.project.target);
+		libObject.setIfEmpty(configCache.project.fsconfigs, target, {ignore: true});
+	}
 	return {
 		config: configCache,
 		formats: formats

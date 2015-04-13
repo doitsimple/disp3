@@ -17,7 +17,7 @@ function run(projectDir, rootDir, task){
 
 	var cache = format.readAndCheckConfig(projectDir, rootDir);
 	if(!cache){
-		log.e("read project.json file failed");
+    log.e("read project.json file failed");
 		return 0;
 	}
 	var configCache = cache.config;
@@ -42,7 +42,8 @@ function run(projectDir, rootDir, task){
 			return null;
 		}
 	}
-	log.v(Object.keys(genFileList));
+	log.v(genFileList);
+
 	if(!tmpl.generate(genFileList, configCache)){
 		log.e("generate error");
 		return null;
@@ -62,7 +63,13 @@ function getNavPaths(config){
 		paths = [archRoot];
 	}else{
 		config.env.archSrcDir = path.resolve(archRoot + "/src");
-		paths = require(scriptFile)(config);
+		var res = require(scriptFile)(config);
+		if(res)
+			paths = res;
+		else{
+			log.e("get path error: " + scriptFile);
+			return 0;
+		}
 	}
 	paths.push(path.resolve("."));
 	return paths;

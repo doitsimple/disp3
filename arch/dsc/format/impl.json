@@ -6,7 +6,7 @@
             "format": {
                 "type": {
                     "type": "enum",
-                    "value": [
+                    "sets": [
                         "mongo",
                         "mysql"
                     ],
@@ -31,7 +31,7 @@
             "format": {
                 "type": {
                     "type": "enum",
-                    "value": [
+                    "sets": [
                         "expressjs",
                         "nodejs"
                     ],
@@ -39,7 +39,15 @@
                 },
                 "ip": "string",
                 "port": "number",
-                "protocol": "string",
+                "protocol": {
+										"type": "enums",
+										"sets": ["http", "https"],
+										"default": "http"
+								},
+								"static": {
+										"type": "string"
+								},
+								"log": "number",
 								"withApis": {
 										"type": "enums",
 										"from": "proto.apis",
@@ -70,11 +78,10 @@
                     "type": "enum",
                     "value": [
 												"html",
-                        "angularjs",
                         "android",
                         "ios"
                     ],
-										"default": "angularjs"
+										"default": "html"
                 },
 								"withUis": {
 										"type": "enums",

@@ -40,12 +40,16 @@ function _walk(dir, tdir, env, genFileList, penvkey){
 	if(!penvkey) penvkey = "";
 	if(env.project){
 		var fsconfigs = env.project.fsconfigs;
-		if(fsconfigs && fsconfigs[dir]){
-			var fsconfig = fsconfigs[dir];
-			if(fsconfig.ignore)
-				return true;
-			if(fsconfig.mv)
-				tdir = path.dirname(tdir) + "/" + tmpl.render(fsconfig.mv, env);
+		if(fsconfigs){
+			var fsconfig;
+			if(fsconfigs[dir]) fsconfig = fsconfigs[dir];
+			if(fsconfigs[path.basename(dir)]) fsconfig = fsconfigs[path.basename(dir)];
+			if(fsconfig){
+				if(fsconfig.ignore)
+					return true;
+				if(fsconfig.mv)
+					tdir = path.dirname(tdir) + "/" + tmpl.render(fsconfig.mv, env);
+			}
 		}
 	}
 /*
@@ -115,8 +119,26 @@ function _walk(dir, tdir, env, genFileList, penvkey){
 
 		// match filename
 		var ms;
-		if((ms = f.match(/[^%]%([^%]+)%(?:%([a-zA-Z0-9]+)%)?/)) || 
+		if((ms = f.match(/%%%([^%]+)%/))){
+// library copy
+			var mss = ms[1].split("-");
+			for(var k=0; k<mss.length; k++){
+				var srcDir = path.resolve(__dirname + "/../lib/" + mss[k]);
+				if(fs.existsSync(srcDir)){
+
+					libFile.forEachFile(srcDir, function(f2){
+						if(!f2.match(/~/) && f2[0] != '#' ){
+							rt = tdir + "/" + f2;
+							genFileList[rt] = {
+								"main": [path.resolve(srcDir + "/" + f2)]
+							};
+						}
+					});
+				}
+			}
+		}else if((ms = f.match(/[^%]%([^%]+)%(?:%([a-zA-Z0-9]+)%)?/)) || 
 			 (ms = f.match(/^%([^%]+)%(?:%([a-zA-Z0-9]+)%)?/))){
+// env change and part of
 			var envkey = ms[1];
 			var key = ms[2];
 			var envlist = libObject.getByKey(env, envkey);
@@ -126,7 +148,8 @@ function _walk(dir, tdir, env, genFileList, penvkey){
 				t = tdir + '/' + f.replace(/%([^%]+)%/, name);
         rt = path.relative(".", t);
         if(!genFileList[rt]) genFileList[rt] = {};
-				genFileList[rt].env = penvkey;
+				if(penvkey)
+					genFileList[rt].env = penvkey;
         if(!genFileList[rt][key])
           genFileList[rt][key] = [];
         genFileList[rt][key].push(p);
@@ -141,17 +164,19 @@ function _walk(dir, tdir, env, genFileList, penvkey){
 					genFileList[rt][key].push(p);
 				}
 			}
-		}else if((ms = f.match(/%%(\+?[a-z0-9]+)%/))){
+		}else if((ms = f.match(/%%([a-zA-Z0-9]+)%/))){
+// part of
 			var key = ms[1];
-			t = tdir + '/' + f.replace(/%%[a-z0-9]+%/, "");
+			t = tdir + '/' + f.replace(/%%[a-zA-Z0-9]+%/, "");
 			rt = path.relative(".", t);
 			if(!genFileList[rt]) genFileList[rt] = {};
-			genFileList[rt].env = penvkey;
+			if(penvkey)
+				genFileList[rt].env = penvkey;
 			if(!genFileList[rt][key])
 				genFileList[rt][key] = [];
 			genFileList[rt][key].push(p);			
-		}
-		else if(dir != tdir){
+
+		}else if(dir != tdir){
 			t = tdir + '/' + f;
 			rt = path.relative(".", t);
 			if(!genFileList[rt])
