@@ -76,7 +76,7 @@
             "format": {
                 "type": {
                     "type": "enum",
-                    "value": [
+                    "sets": [
 												"html",
                         "android",
                         "ios"

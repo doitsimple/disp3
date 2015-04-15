@@ -17,7 +17,7 @@ function run(projectDir, rootDir, task){
 
 	var cache = format.readAndCheckConfig(projectDir, rootDir);
 	if(!cache){
-    log.e("read project.json file failed");
+    log.e("read json file failed");
 		return 0;
 	}
 	var configCache = cache.config;
@@ -42,8 +42,7 @@ function run(projectDir, rootDir, task){
 			return null;
 		}
 	}
-	log.v(genFileList);
-
+	fs.writeFileSync(".filelist.json", JSON.stringify(genFileList, undefined, 2));
 	if(!tmpl.generate(genFileList, configCache)){
 		log.e("generate error");
 		return null;
@@ -71,7 +70,11 @@ function getNavPaths(config){
 			return 0;
 		}
 	}
-	paths.push(path.resolve("."));
+	if(config.project.navpaths && config.project.navpaths.length)
+		config.project.navpaths.forEach(function(navpath){
+			paths.push(path.resolve(navpath));
+		});
+	paths.push(".");
 	return paths;
 }
 

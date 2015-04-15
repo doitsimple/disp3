@@ -34,9 +34,11 @@ function walk(dir, tdir, env, genFileList){
 	
 
 	// then iterate file
-	return _walk(dir, tdir, env, genFileList);
+	return _walk(dir, tdir, env, genFileList, "", env);
 };
-function _walk(dir, tdir, env, genFileList, penvkey){
+function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
+
+
 	if(!penvkey) penvkey = "";
 	if(env.project){
 		var fsconfigs = env.project.fsconfigs;
@@ -52,23 +54,21 @@ function _walk(dir, tdir, env, genFileList, penvkey){
 			}
 		}
 	}
-/*
-	var localenv;
-	if(fs.existsSync(dir + "/env.json")){
-		localenv = libFile.readJSON(dir + "/env.json");
-	}
-*/
+
+
+ if(fs.existsSync(dir + "/disp.json"))
+	 libObject.extend(env, libFile.readJSON(dir + "/disp.json"));
 	
 	var files = fs.readdirSync(dir);
 	for(var i=0; i<files.length; i++){
 		var f = files[i];
 		//ignore hidden file or editor backup files
-		if(f == "." || f.match(/~/) || f[0] == '#' 
+		if(f == "." || f.match(/~$/) || f[0] == '#' 
 			){
 				continue;
 			}
 
-		var p = path.resolve(dir + '/' + f);
+		var p = path.relative(".", dir + '/' + f);
 		var t, rt;
 
 		//check if is directory, _walk
@@ -77,17 +77,24 @@ function _walk(dir, tdir, env, genFileList, penvkey){
 			if((ms = f.match(/[^%]%([^%]+)%/)) || 
 				 (ms = f.match(/^%([^%]+)%/))){
 				var envkey = ms[1];
-				var envlist = libObject.getByKey(env, envkey);
+				var envlist;
+				if(envkey[0] == "~"){
+					penvkey = "";
+					envkey = envkey.substr(1);
+					envlist = libObject.getByKey(globalenv, envkey);
+				}
+				else
+					envlist = libObject.getByKey(env, envkey);
 				if(typeof(envlist) != "object"){
 					t = tdir + '/' + f.replace(/%([^%]+)%/, envlist);
-					if(!_walk(p, t, env, genFileList, penvkey)){
+					if(!_walk(p, t, env, genFileList, penvkey, globalenv)){
 						log.e("walk " + p + " failed");
 						return false;
 					}
 				}else{
 					for(var name in envlist){
 						t = tdir + '/' + f.replace(/%([^%]+)%/, name);
-						if(!_walk(p, t, envlist[name], genFileList, penvkey + "." + envkey + "." + name)){
+						if(!_walk(p, t, envlist[name], genFileList, penvkey + "." + envkey + "." + name, globalenv)){
 							log.e("walk " + p + " failed");
 							return false;
 						}
@@ -95,7 +102,7 @@ function _walk(dir, tdir, env, genFileList, penvkey){
 				}
 			}else{
 				t = tdir + "/" + f;
-				if(!_walk(p, t, env, genFileList, penvkey)){
+				if(!_walk(p, t, env, genFileList, penvkey, globalenv)){
           log.e("walk " + p + " failed");
           return false;
         }
@@ -116,7 +123,7 @@ function _walk(dir, tdir, env, genFileList, penvkey){
 					continue;
 			}
 		}
-
+		console.log(f);
 		// match filename
 		var ms;
 		if((ms = f.match(/%%%([^%]+)%/))){
@@ -127,7 +134,7 @@ function _walk(dir, tdir, env, genFileList, penvkey){
 				if(fs.existsSync(srcDir)){
 
 					libFile.forEachFile(srcDir, function(f2){
-						if(!f2.match(/~/) && f2[0] != '#' ){
+						if(!f2.match(/~$/) && f2[0] != '#' ){
 							rt = tdir + "/" + f2;
 							genFileList[rt] = {
 								"main": [path.resolve(srcDir + "/" + f2)]
@@ -141,7 +148,16 @@ function _walk(dir, tdir, env, genFileList, penvkey){
 // env change and part of
 			var envkey = ms[1];
 			var key = ms[2];
-			var envlist = libObject.getByKey(env, envkey);
+			var envlist;
+			if(envkey[0] == "~"){
+				penvkey = "";
+				envkey = envkey.substr(1);
+				envlist = libObject.getByKey(globalenv, envkey);
+			}
+			else
+				envlist = libObject.getByKey(env, envkey);
+			console.log(envkey);
+			console.log(envlist);
 			if(!key) key = "main";
 			if(typeof envlist != "object"){
 				var name = envlist;

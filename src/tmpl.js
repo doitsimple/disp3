@@ -117,6 +117,10 @@ function generate(fileList, globalEnv){
 		var env = globalEnv;
 		if(partConfig.env){
 			env = libObject.getByKey(globalEnv, partConfig.env);
+			if(!env){
+				log.e("envkey not existed: " + partConfig.env);
+				return 0;
+			}
 		}
 		var ms;
 		for(var key in partConfig){

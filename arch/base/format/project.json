@@ -1,7 +1,11 @@
 {
     "kit": "mono",
     "format": {
+				"arch": {
+						"type": "string"
+				},
         "target": "string",
+				"navpaths": "array",
         "fsconfigs": {
             "kit": "list",
             "default": {
@@ -10,11 +14,15 @@
                 },
                 "node_modules": {
                     "ignore": true
+                },
+                "dispmod": {
+                    "ignore": true
                 }
             }
         }
     },
     "default": {
+				"arch": "base",
         "target": "."
     }
 }
