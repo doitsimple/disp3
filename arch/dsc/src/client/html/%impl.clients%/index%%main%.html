@@ -5,22 +5,36 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+<script type="text/javascript" src="vendor/js/html5shiv.min.js"></script>
+<script type="text/javascript" src="vendor/js/respond.min.js"></script>
+<![endif]-->
 ^^=cssLib$$
 ^^=css$$
 <link type="text/css" rel="stylesheet" href="css/main.css">
-<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+^^if(local.scriptBefore){$$
+<script type="text/javascript" src="vendor/js/jquery.min.js"></script>
 <!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/assets/libs/html5shiv/3.7.0/html5shiv.js"></script>
-<script src="https://oss.maxcdn.com/assets/libs/respond.js/1.3.0/respond.min.js"></script>
+    <script type="text/javascript" src="vendor/js/jquery-1.9.1.min.js"></script>
 <![endif]-->
+^^=jsLib$$
+^^=js$$
+<script type="text/javascript" src="js/main.js"></script>
+^^}$$
 </head>
 <body>
 ^^=navbar$$
 ^^=content$$
 ^^=footer$$
-<script src="vendor/js/jquery.min.js"></script>
+^^if(!local.scriptBefore){$$
+<script type="text/javascript" src="vendor/js/jquery.min.js"></script>
+<!--[if lt IE 9]>
+    <script type="text/javascript" src="vendor/js/jquery-1.9.1.min.js"></script>
+<![endif]-->
 ^^=jsLib$$
 ^^=js$$
-<script src="js/main.js"></script>
+<script type="text/javascript" src="js/main.js"></script>
+^^}$$
 </body>
 </html>

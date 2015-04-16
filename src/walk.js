@@ -63,7 +63,7 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 	for(var i=0; i<files.length; i++){
 		var f = files[i];
 		//ignore hidden file or editor backup files
-		if(f == "." || f.match(/~$/) || f[0] == '#' 
+		if(f == "." || f.match(/~$/) || f[0] == '#' || f == "disp.json"
 			){
 				continue;
 			}

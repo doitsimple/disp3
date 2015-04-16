@@ -8,7 +8,7 @@ var deps = {
 	"expressjs": ["nodejs"],
 	"purenodejs": ["nodejs"]
 }
-module.exports = function(config){
+module.exports = function(config, format){
 	var archSrcDir = config.env.archSrcDir;
 	var paths = [];
 	var name;
