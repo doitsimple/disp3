@@ -35,14 +35,15 @@ app.use(function(req, res, next){
 });
 ^^}$$
 ^^=setting$$
+var router = express.Router();
 
 ^^for(var i=0; i<withApis.length; i++){ 
 	var api = global.proto.apis[withApis[i]];
 $$
  ^^var paramsStr = "";$$
 
-router.route('/^^=api.route$$^^=paramsStr$$')
-      .^^=api.method$$(^^=api.midwares$$);
+//router.route('/^^=api.route$$^^=paramsStr$$')
+//      .^^=api.method$$(^^=api.midwares$$);
 
 ^^}$$
 
