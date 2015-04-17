@@ -3,11 +3,7 @@ var fs = require("fs");
 var log = "../../src/log";
 var libArray = require("../../lib/js/array");
 var libObject = require("../../lib/js/object");
-var deps = {
-	"angularjs": ["html"],
-	"expressjs": ["nodejs"],
-	"purenodejs": ["nodejs"]
-}
+var deps = {};
 module.exports = function(config, format){
 	var archSrcDir = config.env.archSrcDir;
 	var paths = [];

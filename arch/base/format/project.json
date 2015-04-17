@@ -2,10 +2,13 @@
     "kit": "mono",
     "format": {
 				"arch": {
-						"type": "string"
+						"type": "string",
+						"default": "base"
 				},
         "target": "string",
-				"navpaths": "array",
+				"navpaths": {
+						"type": "array"
+				},
         "fsconfigs": {
             "kit": "list",
             "default": {

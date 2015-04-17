@@ -35,6 +35,20 @@ app.use(function(req, res, next){
 });
 ^^}$$
 ^^=setting$$
-^^=api$$
+
+^^for(var i=0; i<withApis.length; i++){ 
+	var api = global.proto.apis[withApis[i]];
+$$
+ ^^var paramsStr = "";$$
+
+router.route('/^^=api.route$$^^=paramsStr$$')
+      .^^=api.method$$(^^=api.midwares$$);
+
+^^}$$
+
+^^=apiblock$$
+
+app.use('/api', router);
+
 
 module.exports = app;

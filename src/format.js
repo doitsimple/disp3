@@ -6,62 +6,81 @@ var libObject = require("../lib/js/object");
 var libFile = require("../lib/nodejs/file");
 var log = require("./log");
 
+function getDeps(arch, archRoot, cache){
+	if(cache.formats[arch]) return true;
+	cache.formats[arch] = {};
+	if(!readConfig(archRoot + "/" + arch + "/format", undefined, cache.formats[arch])){
+		log.e("read format json error " + arch);
+		return false;
+	};
+	if(cache.formats[arch].project){
+		if(!checkKit(cache.config.project, cache.formats[arch].project)){
+			log.e(arch + " project.json in wrong format");
+			return false;
+		}
+	}
+	libObject.extend(cache.format, cache.formats[arch]);
+	if(!cache.config.project.deps)
+		return true;
+	var deps = cache.config.project.deps;
+	for(var dep in deps){
+		if(!getDeps(dep, archRoot, cache)){
+			log.e("getDeps " + arch + " error");
+			return false;
+		}
+	}
+	return true;
+}
 module.exports.readAndCheckConfig = readAndCheckConfig;
 function readAndCheckConfig(dir, rootDir){
 	var archRoot = path.resolve(rootDir + "/arch");
-
-	var configCache = readConfig(dir, "project");
+	var cache = {};
+	cache.config = {};
+	cache.format = {};
+	cache.formats = {};
 	log.i("read project.json");
-	if(!configCache){
-		log.e("no config files in " + dir);
+	if(!readConfig(dir, "project", cache.config)){
+		log.e("read config error");
 		return null;
 	}
-	var archs = ["base"];
-	if(configCache.project && configCache.project.arch) {
-		archs.push(configCache.project.arch);
+	if(!cache.config.project) cache.config.project = {};
+	var arch = cache.config.project.arch || "base";
+	if(!getDeps(arch, archRoot, cache)){
+		log.e("getDeps error");
+		return null;
 	}
-	log.i("!architecture " + archs);
-
-	
-	var formats = {};
-	for(var i=0; i<archs.length; i++){
-		var arch = archs[i];
-		var formatCache = readConfig(archRoot + "/" + arch + "/format");
-		for(var label in formatCache){
-			if(label != "project" && !configCache[label]){
-				log.i("read " + label + ".json");
-				var cache = readConfig(dir, label);
-				configCache[label] = cache[label];
-			}
+	var projectJson = cache.config.project;
+	if(!projectJson.fsconfigs) projectJson.fsconfigs = [];
+	for(var label in cache.format){
+		if(label == "project") continue;
+		if(!readConfig(dir, label, cache.config)){
+			log.e("read "+label + ".json error");
+      return null;
 		}
-
-		for(var label in formatCache){			
-			if(!checkKit(configCache[label], formatCache[label], configCache)){
-				log.e(label + ".json in wrong format");
-				return null;
-			}
-			libObject.setIfEmpty(configCache.project.fsconfigs, 
-													 path.resolve(label + ".json"), {ignore: true}); 
-		}
-		formats.arch = formatCache;
 	}
-
-	libObject.setIfEmpty(configCache.project.fsconfigs, 
+	for(var label in cache.format){
+		if(label == "project") continue;
+		if(!checkKit(cache.config[label], cache.format[label], cache.config)){
+			log.e(label + ".json in wrong format");
+			return null;
+		}
+		libObject.setIfEmpty(projectJson.fsconfigs, 
+												 path.resolve(label + ".json"), {ignore: true}); 		
+	}
+	console.log(cache);
+	libObject.setIfEmpty(projectJson.fsconfigs, 
 											 path.resolve("project.json"), {ignore: true});
-	if(configCache.project.target != "."){
-		var target = path.resolve(configCache.project.target);
-		libObject.setIfEmpty(configCache.project.fsconfigs, target, {ignore: true});
+	if(projectJson.target != "."){
+		var target = path.resolve(projectJson.target);
+		libObject.setIfEmpty(projectJson.fsconfigs, target, {ignore: true});
 	}
-	return {
-		config: configCache,
-		formats: formats
-	};
+	
+	return cache;
 }
-function readConfig(dir, labels){
+function readConfig(dir, labels, cache){
 	if(typeof labels == "string"){
 		var tmp = {}; tmp[labels] = true; labels = tmp;
 	}
-	var cache = {};
 	var files = fs.readdirSync(dir);
 	var ms;
 	for(var i=0; i<files.length; i++){
@@ -69,20 +88,21 @@ function readConfig(dir, labels){
 		if((ms = file.match(/(\S+)\.json$/))){
 			var label = ms[1];
 			if(labels && !labels[label]) continue;
+			if(cache[label]) continue;
 			var json = libFile.readJSON(dir + "/" +file);
 			if(!json){
+				log.e("read json " + dir + "/" + file + " error"); 
 				return null;
 			}
 			cache[label] = json;
 		}
 	}
-	return cache;
+	return true;
 }
 module.exports.checkKit = checkKit;
 function checkKit(json, fjson, env){
 	if(!json){
-		log.e("checkKit params error");
-		return false;
+		json = {};
 	}
 	if(!fjson.kit){
 		log.e("no key 'kit' in "+JSON.stringify(fjson, undefined, 2));
@@ -103,6 +123,16 @@ function checkKit(json, fjson, env){
 					return false;
 				}
 				json[name].name = name;
+			}
+			break;
+		case "array":
+			if(!libObject.isArray(json)) json = [];
+			for(var i=0; i<json.length; i++){
+				if(!checkFormat(json[i], fjson.format, env)){
+					log.e(i +  " wrong format");
+					return false;
+				}
+				json[i].i = i;
 			}
 			break;
 		case "mono":
@@ -133,6 +163,9 @@ function checkFormat(json, fjson, env){
 				// default all enums
 				//	processed in the switch 
 				// done
+			}else if (entryFormat.type == "array"){
+				// default []
+				json[key] = [];
 			}else{
 				continue;
 			}
@@ -154,6 +187,11 @@ function checkFormat(json, fjson, env){
 		}
 		switch(entryFormat.type){
 		case "enums":
+			if(!env){
+				log.e("project.json not support enums type");
+				return false;
+			}
+				
 			if(typeof json[key] == "string")
 				json[key] = [json[key]];
 			if(entryFormat.sets){
@@ -187,6 +225,10 @@ function checkFormat(json, fjson, env){
 			}
 			break;
 		case "enum":
+			if(!env){
+				log.e("project.json not support enums type");
+				return false;
+			}
 			if(entryFormat.sets){
 				if(libArray.indexOf(entryFormat.sets, json[key]) == -1){
 					log.e(key + ":" + json[key] + " is not in " + entryFormat.sets.join(", "));
@@ -203,6 +245,12 @@ function checkFormat(json, fjson, env){
 					log.e(key + ":" + json[key] + " is not in " + Object.keys(list).join(", "));
 					return false;
 				}
+			}
+			break;
+		case "array": 
+			if(!libObject.isArray(json[key])){
+				log.e(JSON.stringify(json, undefined, 2) + key + " is not array");
+				return false;
 			}
 			break;
 		case "number":

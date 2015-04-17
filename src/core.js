@@ -56,12 +56,15 @@ function getNavPaths(config){
 	var archRoot = path.resolve(config.env.rootDir + "/arch/" + arch);
 	var scriptFile = path.resolve(archRoot + "/load.js");
 	var paths;
+	var archSrc = path.resolve(archRoot + "/src");
 	if(!fs.existsSync(scriptFile)){
 		log.i("no script file " + scriptFile);
 		log.i("use " + archRoot);
-		paths = [archRoot];
+		paths = [];
+		if(fs.existsSync(archSrc))
+			paths.push(archSrc);
 	}else{
-		config.env.archSrcDir = path.resolve(archRoot + "/src");
+		config.env.archSrcDir = archSrc;
 		var res = require(scriptFile)(config);
 		if(res)
 			paths = res;

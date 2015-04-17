@@ -87,7 +87,6 @@ function render(config, data){
 			eval(evalstr);
 		}catch(e){
 			log.e(config);
-			log.e(data);
 			log.e(e.stack);
 			return "";
 //			eval(evalstr);
@@ -122,6 +121,7 @@ function generate(fileList, globalEnv){
 				return 0;
 			}
 		}
+		env.global = globalEnv;
 		var ms;
 		for(var key in partConfig){
 			if(!env[key]) env[key] = "";
@@ -131,7 +131,6 @@ function generate(fileList, globalEnv){
 				});
 			}
 		}
-		env.global = globalEnv;
 		var str = "";
 		partConfig.main.forEach(function(file){
       str += render({file: file}, env);			

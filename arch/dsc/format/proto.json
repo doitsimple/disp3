@@ -17,7 +17,20 @@
         "apis": {
 						"kit": "list",
 						"format": {
-								
+								"midwares": {
+										"kit": "array",
+										"format": {
+												"type": {
+														"type": "enum",
+														"sets": [
+																"auth",
+																"multipart",
+																"controller"
+														]
+												}
+										}
+								},
+								"params": "array"
 						}
 				},
         "uis": {

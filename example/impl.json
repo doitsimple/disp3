@@ -22,7 +22,7 @@
 						"mod": "fullpage"
 				},
 				"dynamic": {
-						"type": "angularjs"
+						"type": "html"
 				}
 		}
 }
