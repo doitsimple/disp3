@@ -121,6 +121,7 @@ function generate(fileList, globalEnv){
 				return 0;
 			}
 		}
+		env = libObject.copy1(env);
 		env.global = globalEnv;
 		var ms;
 		for(var key in partConfig){

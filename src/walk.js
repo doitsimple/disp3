@@ -58,6 +58,10 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 	}
 
 
+ if(fs.existsSync(dir + "/disp-global.json"))
+	 libObject.extend(globalenv, libFile.readJSON(dir + "/disp-global.json"));
+ if(fs.existsSync(dir + "/disp-local.json"))
+	 libObject.extend(env, libFile.readJSON(dir + "/disp-local.json"));
  if(fs.existsSync(dir + "/disp.json"))
 	 libObject.extend(env, libFile.readJSON(dir + "/disp.json"));
 	
@@ -65,7 +69,7 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 	for(var i=0; i<files.length; i++){
 		var f = files[i];
 		//ignore hidden file or editor backup files
-		if(f == "." || f.match(/~$/) || f[0] == '#' || f == "disp.json"
+		if(f == "." || f.match(/~$/) || f[0] == '#' || f.match(/^disp/)
 			){
 				continue;
 			}
@@ -159,6 +163,7 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 				penvkey = "";
 				envkey = envkey.substr(1);
 				envlist = libObject.getByKey(globalenv, envkey);
+
 			}
 			else
 				envlist = libObject.getByKey(env, envkey);
@@ -227,15 +232,15 @@ function matchEnv(localenv, str, i){
 		return true;
 
 	switch(tokens[i]){
-		case "eq": 
-			if(tokens[i+1] === undefined || tokens[i+2] === undefined 
+		case "eq":
+			if(tokens[i+1] === undefined || tokens[i+2] === undefined
 				 || libObject.getByKey(localenv, tokens[i+1]) != tokens[i+2]){
 				return false;
 			}
 			i+=3;
 			break;
-		case "ne": 
-			if(tokens[i+1] === undefined || tokens[i+2] === undefined 
+		case "ne":
+			if(tokens[i+1] === undefined || tokens[i+2] === undefined
 				 || libObject.getByKey(localenv, tokens[i+1]) === tokens[i+2]){
 				return false;
 			}
@@ -262,9 +267,14 @@ function matchEnv(localenv, str, i){
       }
       i+=2;
 			break;
-		default: 
-			log.e("env regex error " + str );
-			return false;
+		default: {
+			if(localenv.type && localenv.type == tokens[i])
+				i+=1;
+			else if(localenv.mods && libArray.indexOf(localenv.mods, tokens[i]) != -1)
+				i+=1;
+			else
+				return false;
+		}
 	}
 	return matchEnv(localenv, str, i);
 }

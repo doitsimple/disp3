@@ -1,0 +1,7 @@
+{
+		"jsLibs": {
+				"vendor/js/angular.min.js": 1,
+				"vendor/js/angular-route.min.js": 1,
+				"vendor/js/angular-cookies.min.js": 1
+		}
+}

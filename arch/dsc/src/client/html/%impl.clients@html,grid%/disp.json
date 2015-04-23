@@ -1,0 +1,40 @@
+{
+    "cssLibs": {
+        "5": {
+						"href": "css/5.css",
+						"type": "grid",
+            "width": 1440,
+						"media": "screen"
+        },
+        "4": {
+						"href": "css/4.css",
+						"type": "grid",
+            "width": 1200,
+						"media": "screen and (max-width: 1200px)"
+        },
+        "3": {
+						"href": "css/3.css",
+						"type": "grid",
+            "width": 1080,
+						"media": "screen and (max-width: 1080px)"
+        },
+        "2": {
+						"href": "css/2.css",
+						"type": "grid",
+            "width": 850,
+						"media": "screen and (max-width: 850px)"
+        },
+        "1": {
+						"href": "css/1.css",
+						"type": "grid",
+            "width": 640,
+						"media": "screen and (max-width: 640px)"
+        },
+        "0": {
+						"href": "css/0.css",
+						"type": "grid",
+            "width": 480,
+						"media": "screen and (max-width: 480px)"
+        }
+    }
+}
