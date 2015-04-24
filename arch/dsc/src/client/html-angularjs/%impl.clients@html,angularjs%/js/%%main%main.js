@@ -9,12 +9,20 @@ rootApp.config(['$routeProvider',
 ^^
 for(var name in global.proto.uis){
  var ui = global.proto.uis[name];
- var route = ui.route?ui.route:name;
+ var route = ui.hasOwnProperty("route")?ui.route:name;
+ var template = ui.hasOwnProperty("template")?ui.template:name;
+ var controller = ui.hasOwnProperty("controller")?ui.controller:name;
 $$
+  ^^if(ui.redirect){$$
 			when('/^^=route$$', {
-				templateUrl: 'partial/^^=name$$.html',
-				controller: '^^=methods.dash2uc(name)$$'
+				redirectTo: '/^^=ui.redirect$$'
 			}).
+  ^^}else{$$
+			when('/^^=route$$', {
+				templateUrl: 'partial/^^=template$$.html',
+				controller: '^^=methods.dash2uc(controller)$$'
+			}).
+  ^^}$$
 ^^}$$
 			otherwise({
         redirectTo: '/error'
@@ -26,23 +34,55 @@ for(var name in global.proto.uis){
  var ui = global.proto.uis[name];
  var route = ui.route?ui.route:name;
 $$
-rootApp.controller("^^=methods.dash2uc(name)$$", function($scope, auth, req){
+rootApp.controller("^^=methods.dash2uc(name)$$", function($scope, $rootScope, auth, req){
 ^^=local[name]$$
 })
 ^^}$$
+rootApp.controller("navbar", function($scope, $rootScope, auth, req){
+	$rootScope.$watchCollection("user", function(){
+		if($rootScope.user){
+			$scope.welcome = "欢迎，" + $rootScope.user.username;
+		}else{
+			$scope.welcome = "";
+		}
+	});
+	$scope.signout = auth.signout;
+});
 
 
-rootApp.factory('auth', function($http, $cookieStore){
+rootApp.factory('auth', function($http, $cookieStore, $rootScope){
 	var methods = {};
+	var idstr = "^^=name$$";
 	methods.getToken = function(){
 		var token;
 		try{
-			token = $cookieStore.get('token^^=port$$');
+			token = $cookieStore.get('token'+idstr);
 		}catch(e){
 			return null;
 		}
 		return token;
 	};
+	methods.setToken = function(token){
+		$cookieStore.put('token'+idstr, token);
+	};
+	methods.getUserId = function(){
+		var token;
+		try{
+			token = $cookieStore.get('userid'+idstr);
+		}catch(e){
+			return null;
+		}
+		return token;
+	};
+	methods.setUserId = function(userid){
+		$cookieStore.put('userid'+idstr, userid);
+	};
+	methods.signout = function(){
+		methods.setToken("");
+		methods.setUserId("");
+		$rootScope.user = undefined;
+		location = "#/";
+	}
   return methods;
 });
 rootApp.factory('req', function($http, auth){
