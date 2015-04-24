@@ -169,9 +169,10 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 				envlist = libObject.getByKey(env, envkey);
 
 			if(!key) key = "main";
+
 			if(typeof envlist != "object"){
 				var name = envlist;
-				t = tdir + '/' + f.replace(/%([^%]+)%/, name);
+				t = tdir + '/' + f.replace(/%([^%@]+)(?:@([^%@]+))?%(?:%([a-zA-Z0-9]+)%)?/, name);
         rt = path.relative(".", t);
         if(!genFileList[rt]) genFileList[rt] = {};
 				if(penvkey)
@@ -184,7 +185,7 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 					if(matchStr && !matchEnv(envlist[name], matchStr))
 						continue;
 
-					t = tdir + '/' + f.replace(/%([^%]+)%/, name);
+					t = tdir + '/' + f.replace(/%([^%@]+)(?:@([^%@]+))?%(?:%([a-zA-Z0-9]+)%)?/, name);
 					rt = path.relative(".", t);
 					if(!genFileList[rt]) genFileList[rt] = {};
 					genFileList[rt].env = penvkey + "." + envkey+ "." + name;
@@ -193,17 +194,18 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 					genFileList[rt][key].push(p);
 				}
 			}
-		}else if((ms = f.match(/%%([a-zA-Z0-9]+)%/))){
+		}else if((ms = f.match(/%%([a-zA-Z0-9\-_]+)%/))){
 // part of
 			var key = ms[1];
-			t = tdir + '/' + f.replace(/%%[a-zA-Z0-9]+%/, "");
+
+			t = tdir + '/' + f.replace(/%%[a-zA-Z0-9\-_]+%/, "");
 			rt = path.relative(".", t);
 			if(!genFileList[rt]) genFileList[rt] = {};
 			if(penvkey)
 				genFileList[rt].env = penvkey;
 			if(!genFileList[rt][key])
 				genFileList[rt][key] = [];
-			genFileList[rt][key].push(p);			
+			genFileList[rt][key].push(p);
 
 		}else if(dir != tdir){
 			t = tdir + '/' + f;

@@ -42,7 +42,7 @@ function render(config, data){
 	}
 	data.local = data;
 	data.$ = methods;
-	var p=[];
+	data.p=[];
 	var win, wout;
 	var evalstr = "p.push('";
 	with(data){
@@ -88,8 +88,9 @@ function render(config, data){
 		}catch(e){
 			log.e(config);
 			log.e(e.stack);
+			eval(evalstr);
 			return "";
-//			eval(evalstr);
+
 		}
 
 		return p.join('');
@@ -121,7 +122,9 @@ function generate(fileList, globalEnv){
 				return 0;
 			}
 		}
-		env = libObject.copy1(env);
+		var tenv = libObject.copy1(env);
+		tenv.origin = env;
+		env = tenv;
 		env.global = globalEnv;
 		var ms;
 		for(var key in partConfig){
@@ -136,7 +139,6 @@ function generate(fileList, globalEnv){
 		partConfig.main.forEach(function(file){
       str += render({file: file}, env);			
     });
-
 		fs.writeFileSync(filename, str);
 	}
 	return true;
