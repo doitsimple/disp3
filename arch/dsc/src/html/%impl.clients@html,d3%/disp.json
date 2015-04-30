@@ -1,0 +1,5 @@
+{
+	"jsLibs": {
+			"vendor/js/d3.min.js":1
+	}
+}
