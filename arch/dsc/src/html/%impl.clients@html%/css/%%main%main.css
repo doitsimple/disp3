@@ -3,3 +3,6 @@ body {
     padding: 0;
     font-family: Helvetica, Arial, "Microsoft Yahei";
 }
+a {
+		cursor: pointer;
+}

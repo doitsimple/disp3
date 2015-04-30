@@ -42,7 +42,7 @@
 function getCss(libs){
  if(!libs) return;
  for(var src in libs){
-  var href = libs[src].name?libs[src].name:src;
+  var href = libs[src].href?libs[src].href:src;
   if(libs[src].media){
 $$
 <link type="text/css" rel="stylesheet" href="^^=href$$" media="^^=libs[src].media$$">

@@ -1,11 +1,11 @@
 {
 		"kit": "mono",
-		"format": {
+		"default": {
 				"deps": {
-						"kit": "list",
-						"default": {
-								"base": 1
-						}
-				}
+						"base": 1
+				},
+				"navspaces": ["impl.clients.*","impl.databases.*","impl.servers.*"]
+		},
+		"format": {
 		}
 }

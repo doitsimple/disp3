@@ -1,12 +1,21 @@
 {
     "kit": "mono",
     "format": {
+				"deps": {
+						"type": "list"
+				},
 				"arch": {
 						"type": "string",
 						"default": "base"
 				},
-        "target": "string",
+        "target": {
+						"type": "string",
+						"default": "."
+				},
 				"navpaths": {
+						"type": "array"
+				},
+				"navspaces": {
 						"type": "array"
 				},
         "fsconfigs": {
@@ -26,9 +35,5 @@
 								}
             }
         }
-    },
-    "default": {
-				"arch": "base",
-        "target": "."
     }
 }

@@ -20,9 +20,12 @@ function getDeps(arch, archRoot, cache){
 		}
 	}
 	libObject.extend(cache.format, cache.formats[arch]);
+	console.log("!!");
+	console.log(cache.config.project);
 	if(!cache.config.project.deps)
 		return true;
 	var deps = cache.config.project.deps;
+
 	for(var dep in deps){
 		if(!getDeps(dep, archRoot, cache)){
 			log.e("getDeps " + arch + " error");
@@ -222,6 +225,7 @@ function checkFormat(json, fjson, env){
 				}else{
 					json[key] = Object.keys(list);
 				}
+				json[key].from = entryFormat.from;
 			}
 			break;
 		case "enum":
@@ -252,6 +256,8 @@ function checkFormat(json, fjson, env){
 				log.e(JSON.stringify(json, undefined, 2) + key + " is not array");
 				return false;
 			}
+			break;
+		case "list":
 			break;
 		case "number":
 			if(typeof json[key] != "number"){

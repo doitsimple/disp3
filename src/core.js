@@ -54,9 +54,39 @@ function run(projectDir, rootDir, task){
 function getNavPaths(config){
 	var arch = config.project.arch;
 	var archRoot = path.resolve(config.env.rootDir + "/arch/" + arch);
-	var scriptFile = path.resolve(archRoot + "/load.js");
-	var paths;
+
+	var paths = [];
 	var archSrc = path.resolve(archRoot + "/src");
+	var types = [];
+	var mods = {};
+	if(config.project.navspaces.length)
+		for(var i in config.project.navspaces){
+			var navspace = config.project.navspaces[i];
+			var arr = libObject.getsByKey(config, navspace);
+			for(var j in arr){
+				var type = arr[j].type;
+				if(!type) continue;
+				types.push(type);
+				if(arr[j].mods) 
+					for(var k in arr[j].mods){
+						if(!mods[type]) mods[type] = [];
+						mods[type].push(arr[j].mods[k]);
+					}
+			}
+		}
+	
+	for(var i in types){
+		var type = types[i];
+		if(fs.existsSync(archSrc + "/" + type))
+			addPath(paths, archSrc + "/" + type);
+		for(var j in mods[type]){
+			var mod = mods[type][j];
+			if(fs.existsSync(archSrc + "/" + type + "-" + mod))
+				addPath(paths, archSrc + "/" + type + "-" + mod);
+		}
+	}
+/*
+	var scriptFile = path.resolve(archRoot + "/load.js");
 	if(!fs.existsSync(scriptFile)){
 		log.i("no script file " + scriptFile);
 		log.i("use " + archRoot);
@@ -73,11 +103,17 @@ function getNavPaths(config){
 			return 0;
 		}
 	}
+*/
 	if(config.project.navpaths && config.project.navpaths.length)
 		config.project.navpaths.forEach(function(navpath){
-			paths.push(path.resolve(navpath));
+			addPath(paths, navpath);
 		});
 	paths.push(".");
 	return paths;
+}
+function addPath(paths, p){
+  if(fs.existsSync(p)){
+    libArray.pushIfNotExists(paths, path.resolve(p));
+  }
 }
 

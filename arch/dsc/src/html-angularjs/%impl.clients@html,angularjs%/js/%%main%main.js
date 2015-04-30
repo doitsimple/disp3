@@ -9,7 +9,16 @@ rootApp.config(['$routeProvider',
 ^^
 for(var name in global.proto.uis){
  var ui = global.proto.uis[name];
- var route = ui.hasOwnProperty("route")?ui.route:name;
+ var route;
+ if(ui.isHome) route = "";
+ else if(ui.params) {
+	 route = name;
+	 ui.params.forEach(function(p){
+		 route+="/:" + p;
+	 });
+ }else{
+	 route = name;
+ }
  var template = ui.hasOwnProperty("template")?ui.template:name;
  var controller = ui.hasOwnProperty("controller")?ui.controller:name;
 $$
@@ -30,14 +39,49 @@ $$
 }]);
 
 ^^
-for(var name in global.proto.uis){
- var ui = global.proto.uis[name];
- var route = ui.route?ui.route:name;
+methods.forEnums(withUis, global, function(ui){
 $$
-rootApp.controller("^^=methods.dash2uc(name)$$", function($scope, $rootScope, auth, req){
-^^=local[name]$$
+rootApp.controller("^^=methods.dash2uc(ui.name)$$", function($scope, $rootScope, $routeParams, $sce, auth, req){
+^^
+methods.forEnums(ui.withApis, global, function(api){
+ origin.api(api);
+});
+for(var key in ui.elements){
+ var el = ui.elements[key];
+ if(origin[el.type])
+  origin[el.type](el);
+}
+$$
+
+^^=local[ui.name]$$
 })
-^^}$$
+^^})$$
+rootApp.directive('video', function() {
+  return {
+    restrict: 'E',
+    link: function(scope, element) {
+      scope.$on('$destroy', function() {
+        element.prop('src', '');
+      });
+    }
+  };
+})
+rootApp.directive('fileModel', ['$parse', function ($parse) {
+  return {
+    restrict: 'A',
+    link: function(scope, element, attrs) {
+      var model = $parse(attrs.fileModel);
+      var modelSetter = model.assign;
+
+      element.bind('change', function(){
+        scope.$apply(function(){
+          modelSetter(scope, element[0].files[0]);
+        });
+      });
+    }
+  };
+}]);
+
 rootApp.controller("navbar", function($scope, $rootScope, auth, req){
 	$rootScope.$watchCollection("user", function(){
 		if($rootScope.user){

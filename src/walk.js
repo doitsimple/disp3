@@ -99,12 +99,22 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 						return false;
 					}
 				}else{
+					var enums;
+					if(envlist.from){						
+						enums = envlist;
+						envlist = libObject.getByKey(globalenv, enums.from);
+					}
 					for(var name in envlist){
+						if(enums && libArray.indexOf(enums, name)==-1)
+							continue;
 						if(matchStr && !matchEnv(envlist[name], matchStr))
 							continue;
 						
 						t = tdir + '/' + f.replace(/%([^%]+)%/, name);
-						if(!_walk(p, t, envlist[name], genFileList, penvkey + "." + envkey + "." + name, globalenv)){
+						var nenvkey;
+						if(enums) nenvkey = enums.from + "." + name;
+						else nenvkey = penvkey + "." + envkey + "." + name;
+						if(!_walk(p, t, envlist[name], genFileList, nenvkey, globalenv)){
 							log.e("walk " + p + " failed");
 							return false;
 						}
@@ -181,18 +191,29 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
           genFileList[rt][key] = [];
         genFileList[rt][key].push(p);
 			}else{
+				var enums;
+				if(envlist.from){
+					enums = envlist;
+					envlist = libObject.getByKey(globalenv, enums.from);
+				}
 				for(var name in envlist){
+					if(enums && libArray.indexOf(enums, name)==-1)
+						continue;
 					if(matchStr && !matchEnv(envlist[name], matchStr))
 						continue;
 
-					t = tdir + '/' + f.replace(/%([^%@]+)(?:@([^%@]+))?%(?:%([a-zA-Z0-9]+)%)?/, name);
-					rt = path.relative(".", t);
-					if(!genFileList[rt]) genFileList[rt] = {};
-					genFileList[rt].env = penvkey + "." + envkey+ "." + name;
-					if(!genFileList[rt][key])
-						genFileList[rt][key] = [];
-					genFileList[rt][key].push(p);
-				}
+						t = tdir + '/' + f.replace(/%([^%@]+)(?:@([^%@]+))?%(?:%([a-zA-Z0-9]+)%)?/, name);
+						rt = path.relative(".", t);
+						if(!genFileList[rt]) genFileList[rt] = {};
+						if(enums)
+							genFileList[rt].env = enums.from + "." + name;
+						else
+							genFileList[rt].env = penvkey + "." + envkey+ "." + name;
+						if(!genFileList[rt][key])
+							genFileList[rt][key] = [];
+						genFileList[rt][key].push(p);
+					}
+				
 			}
 		}else if((ms = f.match(/%%([a-zA-Z0-9\-_]+)%/))){
 // part of
