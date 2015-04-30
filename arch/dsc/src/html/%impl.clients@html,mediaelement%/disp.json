@@ -1,8 +1,0 @@
-{
-		"cssLibs": {
-				"vendor/mediaelement/mediaelementplayer.min.css": 1
-		},
-		"jsLibs": {
-				"vendor/mediaelement/mediaelement-and-player.min.js": 1
-		}
-}
