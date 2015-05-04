@@ -7,8 +7,8 @@ rootApp.config(['$routeProvider',
   function($routeProvider) {
     $routeProvider.
 ^^
-for(var name in global.proto.uis){
- var ui = global.proto.uis[name];
+methods.forEnums(withUis, global, function(ui){
+	var name = ui.name;
  var route;
  if(ui.isHome) route = "";
  else if(ui.params) {
@@ -32,7 +32,7 @@ $$
 				controller: '^^=methods.dash2uc(controller)$$'
 			}).
   ^^}$$
-^^}$$
+^^})$$
 			otherwise({
         redirectTo: '/error'
       });
@@ -43,19 +43,19 @@ methods.forEnums(withUis, global, function(ui){
 $$
 rootApp.controller("^^=methods.dash2uc(ui.name)$$", function($scope, $rootScope, $routeParams, $sce, auth, req){
 ^^
-methods.forEnums(ui.withApis, global, function(api){
- origin.api(api);
-});
-for(var key in ui.elements){
- var el = ui.elements[key];
- if(origin[el.type])
+ methods.forEnums(ui.withApis, global, function(api){
+  origin.api(api);
+ });
+ for(var key in ui.elements){
+  var el = ui.elements[key];
+  if(origin[el.type])
   origin[el.type](el);
-}
+ }
 $$
 
 ^^=local[ui.name]$$
 })
-^^})$$
+^^});$$
 rootApp.directive('video', function() {
   return {
     restrict: 'E',

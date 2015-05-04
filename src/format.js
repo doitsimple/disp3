@@ -200,6 +200,7 @@ function checkFormat(json, fjson, env){
 			if(entryFormat.sets){
 				if(json[key]){
 					for(var i=0; i<json[key].length; i++){
+
 						if(libArray.indexOf(entryFormat.sets, json[key][i]) == -1){
 							log.e(key + ":" + json[key][i] + " is not in " + entryFormat.sets.join(", "));
 							return false;			
@@ -217,7 +218,7 @@ function checkFormat(json, fjson, env){
 				}
 				if(json[key]){
 					for(var i=0; i<json[key].length; i++){
-						if(!list[json[key]]){
+						if(!list[json[key][i]]){
 							log.e(key + ":" + json[key][i] + " is not in " + Object.keys(list).join(", "));
 							return false;
 						}

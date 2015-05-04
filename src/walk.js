@@ -290,6 +290,13 @@ function matchEnv(localenv, str, i){
       }
       i+=2;
 			break;
+		case "nex":
+			if(tokens[i+1] === undefined
+				 || libObject.getByKey(localenv, tokens[i+1])){
+        return false;
+      }
+      i+=2;
+			break;
 		default: {
 			if(localenv.type && localenv.type == tokens[i])
 				i+=1;
