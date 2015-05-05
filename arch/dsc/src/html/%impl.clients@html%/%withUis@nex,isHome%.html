@@ -13,6 +13,7 @@
 <![endif]-->
 ^^getCss(local.cssLibs);$$
 ^^getCss(local.css);$$
+<link type="text/css" rel="stylesheet" href="css/^^=name$$.css">
 ^^if(local.scriptBefore){$$
 <script type="text/javascript" src="vendor/js/jquery.min.js"></script>
 <!--[if lt IE 9]>
@@ -20,12 +21,25 @@
 <![endif]-->
 ^^getJs(local.jsLibs);$$
 ^^getJs(local.js);$$
+<script type="text/javascript" src="js/^^=name$$.js"></script>
 ^^}$$
 ^^=head$$
 </head>
 <body>
 ^^=nav$$
+
+^^if(local.content){$$
 ^^=content$$
+^^}else{$$
+^^
+for(var key in local.elements){
+ var el = elements[key];
+ if(origin[el.type])
+  origin[el.type](el);
+}
+^^}$$
+^^=supp$$
+
 ^^=footer$$
 ^^if(!local.scriptBefore){$$
 <script type="text/javascript" src="vendor/js/jquery.min.js"></script>
@@ -34,7 +48,7 @@
 <![endif]-->
 ^^getJs(local.jsLibs);$$
 ^^getJs(local.js);$$
-<script type="text/javascript" src="js/main.js"></script>
+<script type="text/javascript" src="js/^^=name$$.js"></script>
 ^^}$$
 </body>
 </html>

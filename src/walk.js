@@ -37,7 +37,8 @@ function walk(dir, tdir, env, genFileList){
 	return _walk(dir, tdir, env, genFileList, "", env);
 };
 function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
-
+	dir=path.resolve(dir);
+	tdir = path.resolve(tdir);
 
 	if(!penvkey) penvkey = "";
 	if(env.project){
@@ -58,18 +59,18 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 	}
 
 
- if(fs.existsSync(dir + "/disp-global.json"))
-	 libObject.extend(globalenv, libFile.readJSON(dir + "/disp-global.json"));
- if(fs.existsSync(dir + "/disp-local.json"))
-	 libObject.extend(env, libFile.readJSON(dir + "/disp-local.json"));
- if(fs.existsSync(dir + "/disp.json"))
-	 libObject.extend(env, libFile.readJSON(dir + "/disp.json"));
+	if(fs.existsSync(dir + "/disp-global.json"))
+		libObject.extend(globalenv, libFile.readJSON(dir + "/disp-global.json"));
+	if(fs.existsSync(dir + "/disp-local.json"))
+		libObject.extend(env, libFile.readJSON(dir + "/disp-local.json"));
+	if(fs.existsSync(dir + "/disp.json"))
+		libObject.extend(env, libFile.readJSON(dir + "/disp.json"));
 	
 	var files = fs.readdirSync(dir);
 	for(var i=0; i<files.length; i++){
 		var f = files[i];
 		//ignore hidden file or editor backup files
-		if(f == "." || f.match(/~$/) || f[0] == '#' || f.match(/^disp/)
+		if(f == "." || f==".filelist.json" || f.match(/~$/) || f[0] == '#' || f.match(/^disp/)
 			){
 				continue;
 			}
@@ -93,10 +94,12 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 				else
 					envlist = libObject.getByKey(env, envkey);
 				if(typeof(envlist) != "object"){
-					t = tdir + '/' + f.replace(/%([^%]+)%/, envlist);
-					if(!_walk(p, t, env, genFileList, penvkey, globalenv)){
-						log.e("walk " + p + " failed");
-						return false;
+					if(envlist){
+						t = tdir + '/' + f.replace(/%([^%]+)%/, envlist);
+						if(!_walk(p, t, env, genFileList, penvkey, globalenv)){
+							log.e("walk " + p + " failed");
+							return false;
+						}
 					}
 				}else{
 					var enums;
@@ -146,7 +149,7 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 		// match filename
 		var ms;
 		if((ms = f.match(/%%%([^%]+)%/))){
-// library copy
+			// library copy
 			var mss = ms[1].split("-");
 			for(var k=0; k<mss.length; k++){
 				var srcDir = path.resolve(__dirname + "/../lib/" + mss[k]);
@@ -154,7 +157,8 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 
 					libFile.forEachFile(srcDir, function(f2){
 						if(!f2.match(/~$/) && f2[0] != '#' ){
-							rt = tdir + "/" + f2;
+							t = tdir + "/" + f2;
+							rt=path.relative(".",t);
 							genFileList[rt] = {
 								"main": [path.resolve(srcDir + "/" + f2)]
 							};
@@ -163,8 +167,8 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 				}
 			}
 		}else if((ms = f.match(/[^%]%([^%@]+)(?:@([^%@]+))?%(?:%([a-zA-Z0-9]+)%)?/)) || 
-			 (ms = f.match(/^%([^%@]+)(?:@([^%@]+))?%(?:%([a-zA-Z0-9]+)%)?/))){
-// env change and part of
+						 (ms = f.match(/^%([^%@]+)(?:@([^%@]+))?%(?:%([a-zA-Z0-9]+)%)?/))){
+			// env change and part of
 			var envkey = ms[1];
 			var matchStr = ms[2];
 			var key = ms[3];
@@ -179,17 +183,19 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 				envlist = libObject.getByKey(env, envkey);
 
 			if(!key) key = "main";
-
+			
 			if(typeof envlist != "object"){
-				var name = envlist;
-				t = tdir + '/' + f.replace(/%([^%@]+)(?:@([^%@]+))?%(?:%([a-zA-Z0-9]+)%)?/, name);
-        rt = path.relative(".", t);
-        if(!genFileList[rt]) genFileList[rt] = {};
-				if(penvkey)
-					genFileList[rt].env = penvkey;
-        if(!genFileList[rt][key])
-          genFileList[rt][key] = [];
-        genFileList[rt][key].push(p);
+				if(envlist){
+					var name = envlist;
+					t = tdir + '/' + f.replace(/%([^%@]+)(?:@([^%@]+))?%(?:%([a-zA-Z0-9]+)%)?/, name);
+					rt = path.relative(".", t);
+					if(!genFileList[rt]) genFileList[rt] = {};
+					if(penvkey)
+						genFileList[rt].env = penvkey;
+					if(!genFileList[rt][key])
+						genFileList[rt][key] = [];
+					genFileList[rt][key].push(p);
+				}
 			}else{
 				var enums;
 				if(envlist.from){
@@ -202,21 +208,21 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 					if(matchStr && !matchEnv(envlist[name], matchStr))
 						continue;
 
-						t = tdir + '/' + f.replace(/%([^%@]+)(?:@([^%@]+))?%(?:%([a-zA-Z0-9]+)%)?/, name);
-						rt = path.relative(".", t);
-						if(!genFileList[rt]) genFileList[rt] = {};
-						if(enums)
-							genFileList[rt].env = enums.from + "." + name;
-						else
-							genFileList[rt].env = penvkey + "." + envkey+ "." + name;
-						if(!genFileList[rt][key])
-							genFileList[rt][key] = [];
-						genFileList[rt][key].push(p);
-					}
+					t = tdir + '/' + f.replace(/%([^%@]+)(?:@([^%@]+))?%(?:%([a-zA-Z0-9]+)%)?/, name);
+					rt = path.relative(".", t);
+					if(!genFileList[rt]) genFileList[rt] = {};
+					if(enums)
+						genFileList[rt].env = enums.from + "." + name;
+					else
+						genFileList[rt].env = penvkey + "." + envkey+ "." + name;
+					if(!genFileList[rt][key])
+						genFileList[rt][key] = [];
+					genFileList[rt][key].push(p);
+				}
 				
 			}
 		}else if((ms = f.match(/%%([a-zA-Z0-9\-_]+)%/))){
-// part of
+			// part of
 			var key = ms[1];
 
 			t = tdir + '/' + f.replace(/%%[a-zA-Z0-9\-_]+%/, "");
@@ -245,7 +251,10 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 function isGenFile(list, file){
 	if(!list) return null;
 	var rpath = path.relative(".", file);
-	return list[file];
+	if(list[file] && list[file].main)
+		return true;
+	else
+		return false;
 }
 function matchEnv(localenv, str, i){
 

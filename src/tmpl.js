@@ -18,22 +18,27 @@ function render(config, data){
 		log.e("render with undefined data");
 		return "";
 	};
-	var str;
+	if(data.p || data.originstr || data.evalstr){
+		log.e(config);
+		log.e("variable p, originstr, evalstr is not allowed!!!!");
+		return "";
+	}
+	var originstr;
 	if(typeof config == "string"){
-		str = config;
+		originstr = config;
 	}else{
 		if(tmplCache[config.file]){
-			str = tmplCache[config.file];
+			originstr = tmplCache[config.file];
 		}else{
 			if(config.str && config.file) {
-				str = config.str;
-				tmplCache[config.file] = str;
+				originstr = config.str;
+				tmplCache[config.file] = originstr;
 			}
 			else if(config.file){
-				str = libFile.readString(config.file);
+				originstr = libFile.readString(config.file);
 			}
 			else if(config.str){
-				str = config.str;
+				originstr = config.str;
 			}else{
 				log.e("wrong param to render");
 				return "";
@@ -46,12 +51,12 @@ function render(config, data){
 	var win, wout;
 	var evalstr = "p.push('";
 	with(data){
-		str = str.replace(/\r/g,"");
+		originstr = originstr.replace(/\r/g,"");
 		//		str = str.
 		//			replace(/\s*(\^\^[^=]((?!\$\$).)*\$\$)\s*/g, "$1");
 		//replace multiple line [\s but not \n]* [^^] [not =] [not $$]* [$$] [\s*\n] 
 
-		str.split("\^\^").forEach(function(sub, i){
+		originstr.split("\^\^").forEach(function(sub, i){
 			if(i==0){
 				win = "";
 				wout = sub || "";
@@ -92,9 +97,10 @@ function render(config, data){
 			return "";
 
 		}
-
-		return p.join('');
 	}
+	var rtstr = data.p.join('');
+	delete(data.p);
+	return rtstr;
 }
 module.exports.generate = generate;
 function generate(fileList, globalEnv){
@@ -137,7 +143,7 @@ function generate(fileList, globalEnv){
 		}
 		var str = "";
 		partConfig.main.forEach(function(file){
-      str += render({file: file}, env);			
+      str += render({file: file}, env);
     });
 		fs.writeFileSync(filename, str);
 	}

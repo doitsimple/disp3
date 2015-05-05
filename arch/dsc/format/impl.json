@@ -21,7 +21,7 @@
 										"default": "test"
 								},
 								"withSchemas": {
-										"type": "enum",
+										"type": "enums",
 										"from": "proto.schemas"
 								}
             }

@@ -37,12 +37,12 @@ function run(projectDir, rootDir, task){
 	for(var i=0; i<navPaths.length; i++){
 		var navPath = navPaths[i];
 		if(!fs.existsSync(navPath)) continue;
-		if(!walk.walk(navPath, cache.config.project.target, configCache, genFileList)){
+		if(!walk.walk(navPath, configCache.project.target, configCache, genFileList)){
 			log.e("walk " + navPath + " failed");
 			return null;
 		}
 	}
-	fs.writeFileSync(".filelist.json", JSON.stringify(genFileList, undefined, 2));
+	fs.writeFileSync(configCache.project.target+"/.filelist.json", JSON.stringify(genFileList, undefined, 2));
 	if(!tmpl.generate(genFileList, configCache)){
 		log.e("generate error");
 		return null;

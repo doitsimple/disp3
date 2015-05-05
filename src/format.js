@@ -20,8 +20,6 @@ function getDeps(arch, archRoot, cache){
 		}
 	}
 	libObject.extend(cache.format, cache.formats[arch]);
-	console.log("!!");
-	console.log(cache.config.project);
 	if(!cache.config.project.deps)
 		return true;
 	var deps = cache.config.project.deps;
@@ -70,7 +68,7 @@ function readAndCheckConfig(dir, rootDir){
 		libObject.setIfEmpty(projectJson.fsconfigs, 
 												 path.resolve(label + ".json"), {ignore: true}); 		
 	}
-	console.log(cache);
+
 	libObject.setIfEmpty(projectJson.fsconfigs, 
 											 path.resolve("project.json"), {ignore: true});
 	if(projectJson.target != "."){

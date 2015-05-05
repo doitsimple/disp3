@@ -1,0 +1,13 @@
+^^origin.txt = function(config){
+ if(!config.src) return;
+ var str = fs.readFileSync(config.src).toString();
+ str = str.replace(/\r\n/g,"\n");
+ str = str.replace(/\r/g,"\n");
+ str = str.replace(/\n\n/g,"</p><p>&nbsp;</p><p>");
+ str = str.replace(/\n/g,"</p><p>");
+ str += "</p>"
+$$
+<div style="padding:8%;">
+^^=str$$
+</div>
+^^}$$

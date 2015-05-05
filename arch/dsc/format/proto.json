@@ -8,7 +8,7 @@
                     "kit": "list",
                     "format": {
                         "type": "enum",
-												"sets": ["string", "int"],
+												"sets": ["string", "int", "date"],
 												"default": "string"
                     }
                 }
