@@ -15,7 +15,7 @@ function ^^=config.submit$$(){
 	console.log($scope.^^=config.query$$);
 	^^=config.api$$($scope.^^=config.query$$, $scope.^^=config.name$$.sort, $scope.^^=config.name$$.currPage, $scope.^^=config.name$$.perPage, function(data){
       $scope.^^=config.name$$.data = data.data;
-			$scope.^^=config.name$$.totalPage = parseInt(data.count / $scope.^^=config.name$$.perPage) || 1;
+			$scope.^^=config.name$$.totalPage = Math.ceil(data.count / $scope.^^=config.name$$.perPage);
 	});
 }
 
