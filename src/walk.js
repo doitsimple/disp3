@@ -132,6 +132,8 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 			}
 			continue;
 		}
+
+
 		// check if the file is the generated file
 		if(isGenFile(env.filelist, p)){
 			log.v("skip "+ p);
@@ -237,8 +239,12 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 		}else if(dir != tdir){
 			t = tdir + '/' + f;
 			rt = path.relative(".", t);
-			if(!genFileList[rt])
-				genFileList[rt] = {src: p};
+			if(!genFileList[rt]){
+				if(stat.isSymbolicLink())
+					genFileList[rt] = {srclink: p};
+				else
+					genFileList[rt] = {src: p};
+			}
 		}else{
 			rt = path.relative(".", p);
 			if(!genFileList[rt])

@@ -27,6 +27,8 @@ function run(projectDir, rootDir, task){
 	if(task && task != "main"){
 		libObject.extend(configCache, libFile.readJSON(task + ".json"));
 	}
+	configCache.project.bin = path.resolve(__dirname + "/../bin/disp3");
+	configCache.project.target = path.resolve(configCache.project.target);
 	var navPaths = getNavPaths(configCache);
 	log.i(navPaths);
 	if(!navPaths || !navPaths.length){

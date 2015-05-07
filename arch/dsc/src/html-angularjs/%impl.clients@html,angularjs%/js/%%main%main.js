@@ -7,7 +7,7 @@ rootApp.config(['$routeProvider',
   function($routeProvider) {
     $routeProvider.
 ^^
-methods.forEnums(withUis, global, function(ui){
+$.forEnums(withUis, global, function(ui){
 	var name = ui.name;
  var route;
  if(ui.isHome) route = "";

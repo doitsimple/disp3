@@ -48,6 +48,7 @@ function render(config, data){
 	data.local = data;
 	data.$ = methods;
 	data.p=[];
+
 	var win, wout;
 	var evalstr = "p.push('";
 	with(data){
@@ -113,6 +114,11 @@ function generate(fileList, globalEnv){
 		if(partConfig.src){
 			if(partConfig.src != filename)
 				libFile.copySync(partConfig.src, filename);
+			continue;
+		}
+		if(partConfig.srclink){
+			if(partConfig.srclink != filename)
+				libFile.copylinkSync(partConfig.srclink, filename);
 			continue;
 		}
 		if(!partConfig.main){
