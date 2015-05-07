@@ -1,0 +1,8 @@
+{
+		"jsLibs": {
+				"vendor/js/jquery.mobile-1.4.5.min.js": 1
+		},
+		"cssLibs":{
+				"vendor/css/jquery.mobile-1.4.5.min.css": 1
+		}
+}

@@ -79,8 +79,8 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 		var t, rt;
 
 		//check if is directory, _walk
-		var	stat = fs.statSync(p);
-		if(stat.isDirectory()){
+		var	stat = fs.lstatSync(p);
+		if(stat.isDirectory() && !stat.isSymbolicLink()){
 			if((ms = f.match(/[^%]%([^%@]+)(?:@([^%@]+))?%/)) || 
 				 (ms = f.match(/^%([^%@]+)(?:@([^%@]+))?%/))){
 				var envkey = ms[1];
