@@ -111,6 +111,13 @@ function generate(fileList, globalEnv){
 		if(partConfig.self){
 			continue;
 		}
+
+
+/*todo sync*/
+		if(fs.existsSync(filename))
+			fs.unlinkSync(filename);
+/**/
+
 		if(partConfig.src){
 			if(partConfig.src != filename)
 				libFile.copySync(partConfig.src, filename);
@@ -151,7 +158,7 @@ function generate(fileList, globalEnv){
 		partConfig.main.forEach(function(file){
       str += render({file: file}, env);
     });
-		fs.writeFileSync(filename, str);
+		fs.writeFileSync(filename, str, {mode: 0444});
 	}
 	return true;
 }

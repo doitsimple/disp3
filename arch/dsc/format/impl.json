@@ -76,7 +76,8 @@
                     "sets": [
 												"html",
                         "android",
-                        "ios"
+                        "ios",
+												"none"
                     ],
 										"default": "html"
                 },
