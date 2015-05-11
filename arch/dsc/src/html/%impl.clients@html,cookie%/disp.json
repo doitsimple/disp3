@@ -1,0 +1,5 @@
+{
+		"jsLibs": {
+				"vendor/js/jquery.cookie.js": 1
+		}
+}
