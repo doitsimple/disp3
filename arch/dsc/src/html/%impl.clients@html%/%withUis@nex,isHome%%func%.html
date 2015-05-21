@@ -1,6 +1,7 @@
 ^^origin.txt = function(config){
  if(!config.src) return;
  var str = fs.readFileSync(config.src).toString();
+ str = str.replace(/{{([^}]+)}}/g,'<font class="$1"></font>');
  str = str.replace(/\r\n/g,"\n");
  str = str.replace(/\r/g,"\n");
  str = str.replace(/\n\n/g,"</p><p>&nbsp;</p><p>");

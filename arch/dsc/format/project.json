@@ -4,7 +4,7 @@
 				"deps": {
 						"base": 1
 				},
-				"navspaces": ["impl.clients.*","impl.databases.*","impl.servers.*", "impl.scripts.*"]
+				"navspaces": ["impl.clients.*","impl.databases.*","impl.servers.*", "impl.scripts.*","impl.modules.*"]
 		},
 		"format": {
 		}

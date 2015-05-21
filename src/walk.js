@@ -81,10 +81,11 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 		//check if is directory, _walk
 		var	stat = fs.lstatSync(p);
 		if(stat.isDirectory() && !stat.isSymbolicLink()){
-			if((ms = f.match(/[^%]%([^%@]+)(?:@([^%@]+))?%/)) || 
-				 (ms = f.match(/^%([^%@]+)(?:@([^%@]+))?%/))){
+			if((ms = f.match(/[^%]%([^%@]+)(?:@([^%@~]+))?(~?)%/)) || 
+				 (ms = f.match(/^%([^%@]+)(?:@([^%@~]+))?(~?)?%/))){
 				var envkey = ms[1];
 				var matchStr = ms[2];
+				var special = ms[3];
 				var envlist;
 				if(envkey[0] == "~"){
 					penvkey = "";
@@ -103,7 +104,7 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 					}
 				}else{
 					var enums;
-					if(envlist.from){						
+					if(envlist.from){
 						enums = envlist;
 						envlist = libObject.getByKey(globalenv, enums.from);
 					}
@@ -114,6 +115,8 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 							continue;
 						
 						t = tdir + '/' + f.replace(/%([^%]+)%/, name);
+						if(special)
+							t = tdir;
 						var nenvkey;
 						if(enums) nenvkey = enums.from + "." + name;
 						else nenvkey = penvkey + "." + envkey + "." + name;
@@ -125,6 +128,8 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 				}
 			}else{
 				t = tdir + "/" + f;
+				if(special)
+					t = tdir;
 				if(!_walk(p, t, env, genFileList, penvkey, globalenv)){
           log.e("walk " + p + " failed");
           return false;
@@ -156,7 +161,6 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 			for(var k=0; k<mss.length; k++){
 				var srcDir = path.resolve(__dirname + "/../lib/" + mss[k]);
 				if(fs.existsSync(srcDir)){
-
 					libFile.forEachFile(srcDir, function(f2){
 						if(!f2.match(/~$/) && f2[0] != '#' ){
 							t = tdir + "/" + f2;

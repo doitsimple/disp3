@@ -9,7 +9,17 @@
   <div class="form-group">
     <label for="^^=name$$" class="control-label col-sm-3">^^=input.text$$</label>
     <div class="col-sm-5">
+			^^if(input.eq){$$
+      <input id="^^=name$$" ng-model="^^=config.name$$.$eq.^^=name$$" placeholder="^^=input.hint || input.text$$" class="form-control" type="text"/>
+			^^}else if(input.match){$$
+      <input id="^^=name$$" ng-model="^^=config.name$$.$match.^^=name$$" placeholder="^^=input.hint || input.text$$" class="form-control" type="text"/>
+			^^}else if(input.lt){$$
+      <input id="^^=name$$" ng-model="^^=config.name$$.$lt.^^=name$$" placeholder="^^=input.hint || input.text$$" class="form-control" type="text"/>
+			^^}else if(input.gt){$$
+      <input id="^^=name$$" ng-model="^^=config.name$$.$gt.^^=name$$" placeholder="^^=input.hint || input.text$$" class="form-control" type="text"/>
+			^^}else{$$
       <input id="^^=name$$" ng-model="^^=config.name$$.^^=name$$" placeholder="^^=input.hint || input.text$$" class="form-control" type="text"/>
+			^^}$$
     </div>
   </div>
  ^^}$$
@@ -57,11 +67,21 @@
 
 		<tr ng-show="!^^=config.api$$.loading" ng-repeat="row in ^^=config.name$$.data">
   ^^for(var name in config.cols){var col = config.cols[name];$$
-   ^^if(col.static && col.link){$$
-	    <td><a href="^^=col.link$$">^^=col.static$$</a></td>
-   ^^}else if(col.type == "date"){$$
+	 ^^switch(col.type){case "op":$$
+	    <td>
+		^^for(var bt in col.buttons){var subcol = col.buttons[bt];$$
+			^^if(subcol.href){$$
+				<a class="btn btn-default btn-xs" href="^^=subcol.href$$" target="_blank">^^=subcol.text$$</a>
+			^^}else if(subcol.click){$$
+				<a class="btn btn-default btn-xs" ng-click="^^=subcol.click$$">^^=subcol.text$$</a>
+			^^}$$
+		^^}$$
+			</td>
+   ^^break; case "date":$$
 			<td>{{row.^^=name$$ | date:'yyyy-MM-dd'}}</td>
-   ^^}else{$$
+   ^^break; case "image":$$
+			<td><a ng-href="^^=col.src$${{row.^^=name$$}}" target="_blank"><img style="max-width:400px;" ng-src="^^=col.src$${{row.^^=name$$}}"></img></a></td>
+   ^^break; default:$$
 			<td>{{row.^^=name$$}}</td>
    ^^}$$
   ^^}$$
@@ -79,6 +99,21 @@
 			<option>50</option>
 			<option>100</option>
 		</select>
+^^}$$
+
+^^origin.dynamicTable = function(config){$$
+
+<table ng-repeat="tbl in ^^=config.name$$" class="table table-bordered">
+  <thead>
+	 <th ng-repeat="titleText in tbl.title">{{titleText}}</th>
+  </thead>
+	<tbody>
+		<tr ng-repeat="row in tbl.data">
+			<td ng-repeat="e in row">{{e}}</td>
+		</tr>
+	</tbody>
+</table>
+
 ^^}$$
 
 ^^origin.tab = function(config){$$

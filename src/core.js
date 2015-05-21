@@ -44,6 +44,10 @@ function run(projectDir, rootDir, task){
 			return null;
 		}
 	}
+//extend twice
+	if(task && task != "main"){
+		libObject.extend(configCache, libFile.readJSON(task + ".json"));
+	}
 	fs.writeFileSync(configCache.project.target+"/.filelist.json", JSON.stringify(genFileList, undefined, 2));
 	if(!tmpl.generate(genFileList, configCache)){
 		log.e("generate error");

@@ -42,6 +42,7 @@ $$
 methods.forEnums(withUis, global, function(ui){
 $$
 rootApp.controller("^^=methods.dash2uc(ui.name)$$", function($scope, $rootScope, $routeParams, $sce, auth, req){
+^^=local[ui.name]$$
 ^^
  methods.forEnums(ui.withApis, global, function(api){
   origin.api(api);
@@ -53,7 +54,6 @@ rootApp.controller("^^=methods.dash2uc(ui.name)$$", function($scope, $rootScope,
  }
 $$
 
-^^=local[ui.name]$$
 })
 ^^});$$
 rootApp.directive('video', function() {

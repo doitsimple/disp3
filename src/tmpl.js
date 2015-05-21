@@ -70,7 +70,7 @@ function render(config, data){
 			wout = wout
 				.replace(/\n[\t ]+$/, "\n") //remove \s after last \n
 				.replace(/^[\t ]*\n/, "") // remove \s before/and first \n
-				.replace(/\\([\[\]\{\}a-zA-Z0-9'])/g, "\\\\$1")
+				.replace(/\\([\[\]\{\}a-zA-Z0-9\+'])/g, "\\\\$1")
 				.replace(/\n/g, "\\n")
 				.replace(/'/g, "\\'")
 				.replace(/\\([\"\?\*])/g, "\\\\\\$1");
