@@ -56,7 +56,7 @@ function selectpro(criteria, fn){
 				obj = obj.where(key, new RegExp(criteria.$match[key]));
 			}
 		}
-^^["cmp", "lt", "gt", "gte", "lt", "lte", "ne", "exists"].forEach(function(op){$$
+^^["cmp", "lt", "gt", "gte", "lt", "lte", "ne"].forEach(function(op){$$
 	if(criteria.$^^=op$$)
 		for(var key in criteria.$^^=op$$){
 			cobj = cobj.where(key).^^=op$$(criteria.$^^=op$$[key]);
@@ -69,6 +69,16 @@ function selectpro(criteria, fn){
 			cobj = cobj.where(key).gte(arr[0]).lt(arr[1]);
       obj = obj.where(key).gte(arr[0]).lt(arr[1]);
 		}
+	if(criteria.$exists)
+    for(var key in criteria.$exists){
+      if(criteria.$exists[key]){
+        cobj = cobj.where(key).exists(true);
+        obj = obj.where(key).exists(true);
+      }else{
+        cobj = cobj.where(key).exists(false);
+        obj = obj.where(key).exists(false);
+      }
+    }
 
 	cobj.count(function(err, count){
 		if (err) {fn(err); return;}

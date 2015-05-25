@@ -1,0 +1,12 @@
+var format = require("../src/format");
+
+var archRoot = path.resolve(rootDir + "/arch");
+var cache = {};
+cache.config = {};
+cache.format = {};
+cache.formats = {};
+log.i("read project.json");
+if(!format.readConfig(dir, "project", )){
+log.e("read config error");
+return null;
+}

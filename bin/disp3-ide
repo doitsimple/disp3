@@ -8,7 +8,7 @@ var cp = require("child_process");
 var port = 6174;
 var idePath = path.resolve(__dirname + "/../ide/");
 var dispPath = path.resolve(__dirname + "/../bin/disp2");
-
+var url = require("url");
 var global = {};
 global.workspace = path.resolve(__dirname + "/../workspace/");
 if(!fs.existsSync(global.workspace))
@@ -88,7 +88,8 @@ http.createServer(function(req, res) {
 	}else{
 		console.log("static");
 		if(req.url == "/") req.url = "/index.html";
-		filePath = path.join(idePath, req.url);
+
+		filePath = path.join(idePath, url.parse(req.url).pathname);
 		sendFile(filePath, res);
 	}
 }).listen(port, function(err){

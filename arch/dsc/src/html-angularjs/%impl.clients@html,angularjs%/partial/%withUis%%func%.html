@@ -13,10 +13,13 @@
       <input id="^^=name$$" ng-model="^^=config.name$$.$eq.^^=name$$" placeholder="^^=input.hint || input.text$$" class="form-control" type="text"/>
 			^^}else if(input.match){$$
       <input id="^^=name$$" ng-model="^^=config.name$$.$match.^^=name$$" placeholder="^^=input.hint || input.text$$" class="form-control" type="text"/>
-			^^}else if(input.lt){$$
-      <input id="^^=name$$" ng-model="^^=config.name$$.$lt.^^=name$$" placeholder="^^=input.hint || input.text$$" class="form-control" type="text"/>
-			^^}else if(input.gt){$$
-      <input id="^^=name$$" ng-model="^^=config.name$$.$gt.^^=name$$" placeholder="^^=input.hint || input.text$$" class="form-control" type="text"/>
+			^^}else if(input.lt && input.gt){$$
+      <input id="^^=name$$" ng-model="^^=config.name$$.$gt.^^=name$$" placeholder="^^=input.hint || '开始'+input.text$$" class="form-control" type="date"/>
+      <input id="^^=name$$" ng-model="^^=config.name$$.$lt.^^=name$$" placeholder="^^=input.hint || '结束'+input.text$$" class="form-control" type="date"/>
+			^^}else if(input.ne){$$
+      <input id="^^=name$$" ng-model="^^=config.name$$.$ne.^^=name$$" placeholder="^^=input.hint || input.text$$" class="form-control" type="text"/>
+			^^}else if(input.exists){$$
+      <input id="^^=name$$" ng-model="^^=config.name$$.$exists.^^=name$$" placeholder="^^=input.hint || input.text$$" class="form-control" type="text"/>
 			^^}else{$$
       <input id="^^=name$$" ng-model="^^=config.name$$.^^=name$$" placeholder="^^=input.hint || input.text$$" class="form-control" type="text"/>
 			^^}$$
@@ -37,6 +40,8 @@
  ^^}$$
 </div>
 ^^}$$
+
+
 ^^function pagenator(config){$$
 <div style="text-align:right;">
 <ul class="pagination">
@@ -57,6 +62,7 @@
 ^^origin.table = function(config){$$
 
 ^^pagenator(config)$$
+<div>人数：{{^^=config.name$$.count}}</div>
 <table class="table table-bordered">
   <thead>
  ^^for(var name in config.cols){var col = config.cols[name];$$
@@ -103,12 +109,12 @@
 
 ^^origin.dynamicTable = function(config){$$
 
-<table ng-repeat="tbl in ^^=config.name$$" class="table table-bordered">
+<table ng-repeat="tbl in ^^=config.name$$ track" class="table table-bordered">
   <thead>
-	 <th ng-repeat="titleText in tbl.title">{{titleText}}</th>
+	 <th ng-repeat="titleText in tbl.title track">{{titleText}}</th>
   </thead>
 	<tbody>
-		<tr ng-repeat="row in tbl.data">
+		<tr ng-repeat="row in tbl.data track by $index">
 			<td ng-repeat="e in row">{{e}}</td>
 		</tr>
 	</tbody>

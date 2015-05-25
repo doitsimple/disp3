@@ -42,6 +42,14 @@ $scope.^^=config.name$$ResetForm = function(){
 	^^=config.submit$$();
 }
 $scope.^^=config.name$$QueryForm = function(){
+	for(var key in $scope.^^=config.name$$.$gt){
+		if($scope.^^=config.name$$.$lt[key]){
+			$scope.query.$range = $scope.query.$range || {}
+			$scope.^^=config.name$$.$range[key] = [$scope.^^=config.name$$.$gt[key], $scope.^^=config.name$$.$lt[key]];
+			 delete $scope.^^=config.name$$.$gt[key];
+			delete $scope.^^=config.name$$.$lt[key];			
+		}
+	}
 	^^=config.submit$$();
 }
 ^^}$$
@@ -51,6 +59,7 @@ function ^^=config.submit$$(){
 	console.log($scope.^^=config.query$$);
 	$scope.^^=config.api$$($scope.^^=config.query$$, $scope.^^=config.name$$.sort, $scope.^^=config.name$$.currPage, $scope.^^=config.name$$.perPage, function(data){
       $scope.^^=config.name$$.data = data.data;
+			$scope.^^=config.name$$.count = data.count;
 			$scope.^^=config.name$$.totalPage = Math.ceil(data.count / $scope.^^=config.name$$.perPage);
 	});
 }
@@ -135,7 +144,7 @@ $scope.^^=config.name$$ = function(query, sort, page, perpage, fn){
   };
 	for(var key in query)
 		json[key] = query[key];
-  req.postAuth("/api/listUser", json, function(err, data, status){
+  req.postAuth("/api/^^=config.name$$", json, function(err, data, status){
 		$scope.^^=config.name$$.loading = false;
     if(status == 200){
 			fn(data);
