@@ -56,7 +56,6 @@ $scope.^^=config.name$$QueryForm = function(){
 
 ^^origin.table = function(config){$$
 function ^^=config.submit$$(){
-	console.log($scope.^^=config.query$$);
 	$scope.^^=config.api$$($scope.^^=config.query$$, $scope.^^=config.name$$.sort, $scope.^^=config.name$$.currPage, $scope.^^=config.name$$.perPage, function(data){
       $scope.^^=config.name$$.data = data.data;
 			$scope.^^=config.name$$.count = data.count;
@@ -155,3 +154,6 @@ $scope.^^=config.name$$ = function(query, sort, page, perpage, fn){
 ^^}$$
 
 
+^^origin.tableraw = function(config){$$
+
+^^}$$
