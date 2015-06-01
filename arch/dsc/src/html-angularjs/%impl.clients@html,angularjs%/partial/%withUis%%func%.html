@@ -109,13 +109,13 @@
 
 ^^origin.dynamicTable = function(config){$$
 
-<table ng-repeat="tbl in ^^=config.name$$ track" class="table table-bordered">
+<table ng-repeat="tbl in ^^=config.name$$" class="table table-bordered">
   <thead>
-	 <th ng-repeat="titleText in tbl.title track">{{titleText}}</th>
+	 <th ng-repeat="titleText in tbl.title">{{titleText}}</th>
   </thead>
 	<tbody>
 		<tr ng-repeat="row in tbl.data track by $index">
-			<td ng-repeat="e in row">{{e}}</td>
+			<td ng-repeat="e in row track by $index">{{e}}</td>
 		</tr>
 	</tbody>
 </table>
