@@ -1,3 +1,6 @@
+var redirect401 = "#/signin";
+var redirect404 = "#/";
+
 var rootApp = angular.module('rootApp', [
 	'ngRoute', 'ngCookies'
 ]);
@@ -37,6 +40,20 @@ $$
         redirectTo: '/error'
       });
 }]);
+
+
+rootApp.run(function ($rootScope, auth) {
+    $rootScope.$on("$routeChangeStart", function (event, next, current) {
+			if(next.\$\$route.originalPath == "/signin" || next.\$\$route.originalPath == "/") return;
+      if(!auth.getToken()){
+        event.preventDefault();
+        window.location = redirect401;
+      }
+
+    });
+});
+
+
 
 ^^
 methods.forEnums(withUis, global, function(ui){
@@ -82,16 +99,6 @@ rootApp.directive('fileModel', ['$parse', function ($parse) {
   };
 }]);
 
-rootApp.controller("navbar", function($scope, $rootScope, auth, req){
-	$rootScope.$watchCollection("user", function(){
-		if($rootScope.user){
-			$scope.welcome = "欢迎，" + $rootScope.user.username;
-		}else{
-			$scope.welcome = "";
-		}
-	});
-	$scope.signout = auth.signout;
-});
 
 
 rootApp.factory('auth', function($http, $cookieStore, $rootScope){
@@ -186,9 +193,12 @@ rootApp.factory('req', function($http, auth){
 		}
 		finalMethods[method + "Auth"] = function(route, fn){
 			methods[method](route, true).then(function(result){
+
 				fn(null, result.data, result.status);
-			}, function(err){
-				fn(err);
+			}, function(result){
+				if(result.status == 401)
+					location = redirect401;
+				fn(result);
 			});
 		}
 	});
@@ -204,10 +214,14 @@ rootApp.factory('req', function($http, auth){
 		finalMethods[method + "Auth"] = function(route, data, fn){
 			methods[method](route, true, data).then(function(result){
 				fn(null, result.data, result.status);
-			}, function(err){
-				fn(err);
+			}, function(result){
+				if(result.status == 401)
+					location = redirect401;
+				fn(result);
 			});
 		}
 	});
 	return finalMethods;
 });
+
+^^=controllers$$

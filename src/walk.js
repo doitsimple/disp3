@@ -151,6 +151,9 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 				var fsconfig = fsconfigs[p];
 				if(fsconfig.ignore)
 					continue;
+				if(fsconfig.mv){
+					tdir = fsconfig.mv;
+				}
 			}
 		}
 		// match filename

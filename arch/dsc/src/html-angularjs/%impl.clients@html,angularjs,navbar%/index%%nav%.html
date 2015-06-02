@@ -54,9 +54,15 @@
           <!-- /input-group -->
         </li>
 
-^^for (var name in navbar){var li = navbar[name];$$
+^^for (var name in navbar){var li = navbar[name];
+var showstr;
+if(li.auth)
+	showstr = ' ng-show="is' + li.auth + '()"';
+else
+showstr = "";
+$$
  ^^if(li.subs){$$
-        <li>
+        <li ^^=showstr$$>
           <a href="#"><i class="fa fa-^^=li.icon$$ fa-fw"></i> ^^=li.text$$<span class="fa arrow"></span></a>
           <ul class="nav nav-second-level">
   ^^for(var subname in li.subs){var subli = li.subs[subname];$$
@@ -80,7 +86,7 @@
 					</ul>
         </li>
  ^^}else{$$
-        <li>
+        <li ^^=showstr$$>
           <a href="^^=li.href$$"><i class="fa fa-^^=li.icon$$ fa-fw"></i> ^^=li.text$$</a>
         </li>
  ^^}$$				

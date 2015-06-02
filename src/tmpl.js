@@ -73,7 +73,7 @@ function render(config, data){
 				.replace(/\\([\[\]\{\}a-zA-Z0-9\+'])/g, "\\\\$1")
 				.replace(/\n/g, "\\n")
 				.replace(/'/g, "\\'")
-				.replace(/\\([\"\?\*])/g, "\\\\\\$1");
+				.replace(/\\([\"\?\*\/])/g, "\\\\\\$1");
 
 			if(win && win[0] == '='){
 				var ms;
@@ -106,8 +106,14 @@ function render(config, data){
 module.exports.generate = generate;
 function generate(fileList, globalEnv){
 	for (var filename in fileList){
+			
 		libFile.mkdirpSync(path.dirname(filename)); // should have a more efficient way
 		var partConfig = fileList[filename];
+
+		var fsconfigs = globalEnv.project.fsconfigs;
+		if(fsconfigs && fsconfigs[filename] && fsconfigs[filename].mv)
+			filename = fsconfigs[filename].mv;
+
 		if(partConfig.self){
 			continue;
 		}
