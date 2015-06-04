@@ -1,0 +1,67 @@
+{
+    "kit": "mono",
+    "format": {
+        "schemas": {
+            "kit": "list",
+            "format": {
+                "fields": {
+                    "kit": "list",
+                    "format": {
+                        "type": "enum",
+												"sets": ["string", "int", "date"],
+												"default": "string"
+                    }
+                }
+            }
+        },
+        "apis": {
+						"kit": "list",
+						"format": {
+								"route": {
+										"type": "string",
+										"eq": "name"
+								},
+								"midwares": {
+										"kit": "array",
+										"format": {
+												"type": {
+														"type": "enum",
+														"sets": [
+																"auth",
+																"multipart",
+																"controller"
+														]
+												}
+										}
+								},
+								"params": {
+										"kit": "list",
+										"format": {
+												"text": "string"
+										}
+								}
+						}
+				},
+        "uis": {
+						"kit": "list",
+						"format": {
+								"title": "string",
+								"params": "array",
+								"elements": {
+										"kit": "list",
+										"format": {
+												"type": "string"
+										}
+								},
+								"withApis": {
+										"type": "enums",
+										"from": "proto.apis",
+										"default": []
+								}
+						}
+				},
+				"auths": {
+						"kit": "list"
+				}
+    }
+}

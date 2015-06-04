@@ -117,18 +117,16 @@ function generate(fileList, globalEnv){
 		if(partConfig.self){
 			continue;
 		}
-
-
 /*todo sync*/
-		if(fs.existsSync(filename))
-			fs.unlinkSync(filename);
 /**/
+
 
 		if(partConfig.src){
 			if(partConfig.src != filename)
 				libFile.copySync(partConfig.src, filename);
 			continue;
 		}
+
 		if(partConfig.srclink){
 			if(partConfig.srclink != filename)
 				libFile.copylinkSync(partConfig.srclink, filename);
@@ -152,7 +150,9 @@ function generate(fileList, globalEnv){
 		env = tenv;
 		env.global = globalEnv;
 		var ms;
-		for(var key in partConfig){
+		var keys = Object.keys(partConfig).sort().reverse();
+		for(var i in keys){
+			var key = keys[i];
 			if(!env[key]) env[key] = "";
 			if(key != "env" && key != "main" && key != "src" && key != "self"){
 				partConfig[key].forEach(function(file){
@@ -164,6 +164,8 @@ function generate(fileList, globalEnv){
 		partConfig.main.forEach(function(file){
       str += render({file: file}, env);
     });
+		if(fs.existsSync(filename))
+			fs.unlinkSync(filename);
 		fs.writeFileSync(filename, str, {mode: 0444});
 	}
 	return true;

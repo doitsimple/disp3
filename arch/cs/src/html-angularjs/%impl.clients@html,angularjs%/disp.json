@@ -1,0 +1,5 @@
+{
+		"jsLibs": {
+				"vendor/js/angular.min.js": 1
+		}
+}

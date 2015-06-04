@@ -37,26 +37,32 @@ function walk(dir, tdir, env, genFileList){
 	return _walk(dir, tdir, env, genFileList, "", env);
 };
 function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
-	dir=path.resolve(dir);
-	tdir = path.resolve(tdir);
+//	dir=path.resolve(dir);
+	dir=path.relative(".", dir);
+	tdir = path.relative(".", tdir);
+	if(!dir) dir=".";
+	if(!tdir) tdir=".";
 
 	if(!penvkey) penvkey = "";
-	if(env.project){
-		var fsconfigs = env.project.fsconfigs;
-		if(fsconfigs){
-			var fsconfig;
-			if(fsconfigs[dir]) fsconfig = fsconfigs[dir];
-			if(fsconfigs[path.basename(dir)]) fsconfig = fsconfigs[path.basename(dir)];
-			if(fsconfig){
-				if(fsconfig.ignore)
-					return true;
-				if(fsconfig.mv){
-					env.global = globalenv;
-					tdir = path.dirname(tdir) + "/" + tmpl.render(fsconfig.mv, env);
-				}
+
+
+	var fsconfigs = globalenv.project.fsconfigs;
+	if(fsconfigs){
+
+		var fsconfig;
+		if(fsconfigs[dir]) fsconfig = fsconfigs[dir];
+		else if(fsconfigs[path.basename(dir)]) fsconfig = fsconfigs[path.basename(dir)];
+		if(fsconfig){
+			if(fsconfig.ignore)
+				return true;
+			if(fsconfig.mv){
+				env.global = globalenv;
+				tdir = path.resolve(tmpl.render(fsconfig.mv, env));
+
 			}
 		}
 	}
+
 
 
 	if(fs.existsSync(dir + "/disp-global.json"))
@@ -65,8 +71,9 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 		libObject.extend(env, libFile.readJSON(dir + "/disp-local.json"));
 	if(fs.existsSync(dir + "/disp.json"))
 		libObject.extend(env, libFile.readJSON(dir + "/disp.json"));
-	
+
 	var files = fs.readdirSync(dir);
+
 	for(var i=0; i<files.length; i++){
 		var f = files[i];
 		//ignore hidden file or editor backup files
@@ -144,18 +151,17 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 			log.v("skip "+ p);
 			continue;
 		}
-		// check if the file should be ignored
-		if(env.project){
-			var fsconfigs = env.project.fsconfigs;
-			if(fsconfigs && fsconfigs[p]){
-				var fsconfig = fsconfigs[p];
-				if(fsconfig.ignore)
-					continue;
-				if(fsconfig.mv){
-					tdir = fsconfig.mv;
-				}
+		// check if the file should be ignored (folder already checked before)
+
+		var fsconfigs = globalenv.project.fsconfigs;
+		if(fsconfigs && fsconfigs[p]){
+			var fsconfig = fsconfigs[p];
+			if(fsconfig.ignore){
+				console.log("hehe");
+				continue;
 			}
 		}
+
 		// match filename
 		var ms;
 		if((ms = f.match(/%%%([^%]+)%/))){

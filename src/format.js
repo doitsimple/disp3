@@ -119,16 +119,18 @@ function checkKit(json, fjson, env){
 	switch (fjson.kit){
 		case "list":
 			for(var name in json){
+				json[name].name = name;
 				if(!checkFormat(json[name], fjson.format, env)){
 					log.e(name +  " wrong format");
 					return false;
 				}
-				json[name].name = name;
 			}
 			break;
 		case "array":
 			if(!libObject.isArray(json)) json = [];
 			for(var i=0; i<json.length; i++){
+				if(typeof json[i] === "string")
+					json[i] = {type: json[i]};
 				if(!checkFormat(json[i], fjson.format, env)){
 					log.e(i +  " wrong format");
 					return false;
@@ -157,6 +159,8 @@ function checkFormat(json, fjson, env){
 		if(!json.hasOwnProperty(key)){
 			if(entryFormat.default){
 				json[key] = entryFormat.default;
+			}else if(entryFormat.eq){
+				json[key] = json[entryFormat.eq];
 			}else	if(entryFormat.required){
 				log.e(key + " required but not existed");
 				return false;
@@ -212,7 +216,8 @@ function checkFormat(json, fjson, env){
 				if(!list){
 					log.e("no " + entryFormat.from + " in ");
 					log.e(env);
-					return false;
+					json[key] = [];
+					return true;
 				}
 				if(json[key]){
 					for(var i=0; i<json[key].length; i++){
