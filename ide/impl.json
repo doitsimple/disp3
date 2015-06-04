@@ -1,0 +1,8 @@
+{
+		"clients": {
+				"platform": {
+						"type": "html",
+						"mods": ["angularjs"]
+				}
+		}
+}
