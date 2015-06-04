@@ -1,6 +1,6 @@
 {
 		"clients": {
-				"platform": {
+				"ide": {
 						"type": "html",
 						"mods": ["angularjs"]
 				}

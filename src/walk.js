@@ -50,15 +50,23 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 	if(fsconfigs){
 
 		var fsconfig;
-		if(fsconfigs[dir]) fsconfig = fsconfigs[dir];
-		else if(fsconfigs[path.basename(dir)]) fsconfig = fsconfigs[path.basename(dir)];
-		if(fsconfig){
+		if(fsconfigs[dir]){
+			fsconfig = fsconfigs[dir];
 			if(fsconfig.ignore)
 				return true;
 			if(fsconfig.mv){
 				env.global = globalenv;
 				tdir = path.resolve(tmpl.render(fsconfig.mv, env));
-
+			}
+		}
+		else if(fsconfigs[path.basename(dir)]){
+			fsconfig = fsconfigs[path.basename(dir)];
+			if(fsconfig.ignoreall){
+				return true;
+			}
+			if(fsconfig.mvall){
+				env.global = globalenv;
+				tdir = path.relative("." + path.dirname(tdir) + "/" + tmpl.render(fsconfig.mv, env));
 			}
 		}
 	}

@@ -1,7 +1,0 @@
-{
-		"arch": "cs",
-		"fsconfigs": {
-				"%impl.clients@html%": {"mv":"."},
-				"%impl.clients@html,angularjs%": {"mv":"."}
-		}
-}

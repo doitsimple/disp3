@@ -154,11 +154,18 @@ function generate(fileList, globalEnv){
 		for(var i in keys){
 			var key = keys[i];
 			if(!env[key]) env[key] = "";
-			if(key != "env" && key != "main" && key != "src" && key != "self"){
+			if(key != "env" && !key.match("main") && key != "src" && key != "self"){
 				partConfig[key].forEach(function(file){
 					env[key] += render({file: file}, env);
 				});
 			}
+		}
+		for(var i in keys){
+			var key = keys[i];
+			if(key.match("main") && key!== "main")
+				partConfig[key].forEach(function(file){
+					env[key] += render({file: file}, env);
+				});
 		}
 		var str = "";
 		partConfig.main.forEach(function(file){
