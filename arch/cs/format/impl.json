@@ -61,10 +61,6 @@
 								"withDatabases": {
 										"type": "enums",
 										"from": "impl.databases"
-								},
-								"withClients": {
-										"type": "enums",
-										"from": "impl.clients"
 								}
             }
         },
@@ -84,6 +80,10 @@
 								"withUis": {
 										"type": "enums",
 										"from": "proto.uis"
+								},
+								"withServers": {
+										"type": "enums",
+										"from": "impl.servers"
 								}
             }
         }

@@ -1,6 +1,12 @@
 // Load required packages
 var express = require('express');
 var bodyParser = require('body-parser');
+var libReq = require("../lib/req");
+var libRes = require("./response");
+var sendErr = libRes.sendErr;
+var sendFile = libRes.sendFile;
+var sendJson = libRes.sendJson;
+
 ^^=require$$
 
 // Create our Express application
@@ -35,6 +41,36 @@ app.use(function(req, res, next){
 });
 ^^}$$
 ^^=setting$$
+^^function makeReq(json){
+	var arr = [];
+	for(var key in json){
+		arr.push(key + ":" + json[key]);
+	}
+	return arr.join(",");
+}$$
+
+^^function makeController(api){
+/* make controller */$$
+^^
+for(var j=0; j<api.controllers.length; j++){var ctrl = api.controllers[j];$$
+ ^^switch(ctrl.type){ case "req": $$
+libReq.^^=ctrl.method$$("^^=ctrl.url$$", {
+^^=makeReq(ctrl.data)$$
+}, function(err, result){
+if(err) return sendErr(res, err);
+^^if(ctrl.send){$$
+sendJson(res, ^^=ctrl.send$$)
+^^}$$
+ ^^break;}$$
+^^}$$
+
+^^for(var j=0; j<api.controllers.length; j++){$$
+});
+^^}
+/* make controller done */$$
+^^}$$
+
+
 
 var auth = require("./auth");
 var router = express.Router();
@@ -56,14 +92,20 @@ var router = express.Router();
 	
 	switch(api.type){
 		case "post":
-		
-		break;
-	}
 $$
 router.route('/^^=api.route$$^^=paramsStr$$').post(^^=midwaresStr$$function(req, res){
-	^^=local[api.name] || ""$$
-});
+^^for(var key in api.params){var param = api.params[key];$$
+var ^^=key$$ = req.body["^^=key$$"];
+ ^^if(param.required){$$
+if(!^^=key$$) return sendErr(res, "^^=key$$ not exist");
+ ^^}$$
 ^^}$$
+^^makeController(api)$$
+});
+^^break; case "rest":$$
+^^break;}$$
+^^}$$
+
 app.use('/api', router);
 
 ^^=apiblock$$

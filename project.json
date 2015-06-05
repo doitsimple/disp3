@@ -4,6 +4,9 @@
 				"bin": {"ignore": true},
 				"src": {"ignore": true},
 				"lib": {"ignore": true},
-				"arch": {"ignore": true}
+				"arch": {"ignore": true},
+				"example": {"ignore": true},
+				"ide": {"ignore": true},
+				"workspace": {"ignore": true}
 		}
 }

@@ -17,6 +17,7 @@ for(var file in json){
   if(json[file].main || json[file].src){
 		var rf = path.relative(__dirname + "/..", file);
     fs.appendFileSync(ig, rf+"\n");
-		fs.chmodSync(file, 0444);
+		if(fs.existsSync(file))
+			fs.chmodSync(file, 0444);
 	}
 }

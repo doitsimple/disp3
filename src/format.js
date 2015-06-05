@@ -59,6 +59,8 @@ function readAndCheckConfig(dir, rootDir){
       return null;
 		}
 	}
+	mountJSON(cache.config);
+	mountString(cache.config);
 	for(var label in cache.format){
 		if(label == "project") continue;
 		if(!checkKit(cache.config[label], cache.format[label], cache.config)){
@@ -100,11 +102,46 @@ function readConfig(dir, labels, cache){
 	}
 	return true;
 }
+
+function mountJSON(config, dir){
+	if(!dir) dir= ".";
+	libObject.iterate(config, function(key, itConfig, i){
+    var e;
+    if(i==undefined)
+      e = itConfig[key];
+    else
+      e = itConfig[key][i];
+    if(e[0] == "@" && e[1] == "@"){
+      var jpath = path.resolve(dir + "/" +e.substr(2));
+      var json = libFile.readJSON(jpath);
+      mountJSON(json, path.dirname(jpath));
+      if(i==undefined)
+        itConfig[key] = json;
+      else
+        itConfig[key][i] = json;
+    }
+  });
+}
+function mountString(config){
+	libObject.iterate(config, function(key, itConfig, i){
+    var e;
+    if(i==undefined)
+      e = itConfig[key];
+    else
+      e = itConfig[key][i];
+		if(typeof e != "string") return;
+		e = e.replace(/#([^#]+)#/g, function(match, p1) {
+			return libObject.getByKey(config, p1);
+		});
+    if(i==undefined)
+      itConfig[key] = e;
+    else
+      itConfig[key][i] = e;
+  });
+}
 module.exports.checkKit = checkKit;
 function checkKit(json, fjson, env){
-	if(!json){
-		json = {};
-	}
+	if(!json)	json = {};
 	if(!fjson.kit){
 		log.e("no key 'kit' in "+JSON.stringify(fjson, undefined, 2));
 		return false;
@@ -128,9 +165,13 @@ function checkKit(json, fjson, env){
 			break;
 		case "array":
 			if(!libObject.isArray(json)) json = [];
+			var abbr = fjson.abbr || "type";
 			for(var i=0; i<json.length; i++){
-				if(typeof json[i] === "string")
-					json[i] = {type: json[i]};
+				if(typeof json[i] === "string"){
+					var tmp ={};
+					tmp[abbr] = json[i];
+					json[i] = tmp;
+				}
 				if(!checkFormat(json[i], fjson.format, env)){
 					log.e(i +  " wrong format");
 					return false;
@@ -168,19 +209,25 @@ function checkFormat(json, fjson, env){
 				// default all enums
 				//	processed in the switch 
 				// done
-			}else if (entryFormat.type == "array"){
+			}else if (entryFormat.kit == "array" || entryFormat.type == "array"){
 				// default []
 				json[key] = [];
+			}else if(entryFormat.kit){
+				json[key] = {};
 			}else{
 				continue;
 			}
 		}
-		if(entryFormat.kit && json[key]){
-			if(!checkKit(json[key], entryFormat, env)){
-				log.e(key + " is not the format of kit " + entryFormat.kit);
-				return false;
+		if(entryFormat.kit){
+			if(json.hasOwnProperty(key)){
+				if(!checkKit(json[key], entryFormat, env)){
+					log.e(key + " is not the format of kit " + entryFormat.kit);
+					return false;
+				}else{
+					continue;
+				}
 			}else{
-				continue;
+				json[key] = [];
 			}
 		}
 		
@@ -196,7 +243,7 @@ function checkFormat(json, fjson, env){
 				log.e("project.json not support enums type");
 				return false;
 			}
-				
+			
 			if(typeof json[key] == "string")
 				json[key] = [json[key]];
 			if(entryFormat.sets){

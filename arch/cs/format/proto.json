@@ -34,6 +34,9 @@
 												}
 										}
 								},
+								"controllers": {
+										"kit": "array"
+								},
 								"params": {
 										"kit": "list",
 										"format": {
