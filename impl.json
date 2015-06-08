@@ -2,7 +2,13 @@
 		"clients": {
 				"ide": {
 						"type": "html",
-						"mods": ["angularjs"]
+						"mods": ["angularjs"],
+						"withUis": ["format"]
+				}
+		},
+		"scripts":{
+				"git": {
+						"type": "git"
 				}
 		}
 }

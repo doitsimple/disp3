@@ -36,10 +36,11 @@ function walk(dir, tdir, env, genFileList){
 	// then iterate file
 	return _walk(dir, tdir, env, genFileList, "", env);
 };
+
 function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 //	dir=path.resolve(dir);
 	dir=path.relative(".", dir);
-	tdir = path.relative(".", tdir);
+	tdir = path.relative(globalenv.project.target, tdir);
 	if(!dir) dir=".";
 	if(!tdir) tdir=".";
 
@@ -48,7 +49,6 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 
 	var fsconfigs = globalenv.project.fsconfigs;
 	if(fsconfigs){
-
 		var fsconfig;
 		if(fsconfigs[dir]){
 			fsconfig = fsconfigs[dir];
@@ -70,7 +70,6 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 			}
 		}
 	}
-
 
 
 	if(fs.existsSync(dir + "/disp-global.json"))

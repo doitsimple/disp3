@@ -3,7 +3,7 @@
 ^^}else{$$
 var rootApp = angular.module('rootApp',[]);
 rootApp.controller("mainController", function($scope, $rootScope, req){
-^^=mainctrl$$
+^^=ctrl$$
 })
 rootApp.factory('req', function($http){
 	var methods = {};

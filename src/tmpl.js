@@ -105,18 +105,32 @@ function render(config, data){
 }
 module.exports.generate = generate;
 function generate(fileList, globalEnv){
+
+/* check fsconfigs */
+	var fsconfigs = globalEnv.project.fsconfigs;
+	var fileListModified = {};
 	for (var filename in fileList){
-			
-		libFile.mkdirpSync(path.dirname(filename)); // should have a more efficient way
-		var partConfig = fileList[filename];
-
-		var fsconfigs = globalEnv.project.fsconfigs;
+		var tmpFilename = filename;
 		if(fsconfigs && fsconfigs[filename] && fsconfigs[filename].mv)
-			filename = fsconfigs[filename].mv;
+			tmpFilename = fsconfigs[filename].mv;
+		if(fileListModified[tmpFilename]){
+			log.e("duplicate generated "+tmpFilename);
+			log.e(fileListModified[tmpFilename]);
+			log.e(fileList[filename]);
+			return false;
+		}
+		fileListModified[tmpFilename] = fileList[filename];
+	}
+	fs.writeFileSync(globalEnv.project.target+"/.filelist.json", JSON.stringify(fileListModified, undefined, 2));
 
+/* generate file */
+	for (var filename in fileListModified){
+		var partConfig = fileListModified[filename];
 		if(partConfig.self){
 			continue;
 		}
+		filename = globalEnv.project.target + "/" + filename;
+		libFile.mkdirpSync(path.dirname(filename)); // should have a more efficient way
 /*todo sync*/
 /**/
 

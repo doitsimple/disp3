@@ -6,7 +6,7 @@
 				"lib": {"ignore": true},
 				"arch": {"ignore": true},
 				"example": {"ignore": true},
-				"ide": {"ignore": true},
+				"ide-old": {"ignore": true},
 				"workspace": {"ignore": true}
 		}
 }
