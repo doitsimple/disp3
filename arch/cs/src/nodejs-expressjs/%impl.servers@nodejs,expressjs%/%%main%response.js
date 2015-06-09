@@ -11,7 +11,7 @@ module.exports.sendErr = function(res, msg, code){
 		});
 }
 module.exports.sendJson = function(res, json){
-/*^^if(local.log){$$*/
+/*^^if(local.debug){$$*/
 	var log = "\x1b[1;35m";
 	log += JSON.stringify(json, undefined, 2);
 	log += "\x1b[0m";

@@ -22,7 +22,7 @@ app.use(express.static(__dirname + '/^^=static$$'));
 ^^}$$
 
 
-^^if(local.log){$$
+^^if(local.debug){$$
 app.use(function(req, res, next){
 //	console.log(Object.keys(req));
 	var log = "\x1b[1;36m";
@@ -54,18 +54,32 @@ app.use(function(req, res, next){
 ^^
 for(var j=0; j<api.controllers.length; j++){var ctrl = api.controllers[j];$$
  ^^switch(ctrl.type){ case "req": $$
+
 libReq.^^=ctrl.method$$("^^=ctrl.url$$", {
 ^^=makeReq(ctrl.data)$$
 }, function(err, result){
 if(err) return sendErr(res, err);
 ^^if(ctrl.send){$$
-sendJson(res, ^^=ctrl.send$$)
+sendJson(res, ^^=ctrl.send$$);
 ^^}$$
+
+ ^^break;case "send":$$
+^^if(ctrl.send){$$
+sendJson(res, ^^=ctrl.send$$);
+^^}$$
+
+ ^^break;case "updatedb":$$
+
  ^^break;}$$
 ^^}$$
 
 ^^for(var j=0; j<api.controllers.length; j++){$$
+ ^^switch(ctrl.type){ 
+  case "req":
+  case "updatedb":$$
 });
+ ^^break;default: $$
+ ^^break;}$$
 ^^}
 /* make controller done */$$
 ^^}$$
