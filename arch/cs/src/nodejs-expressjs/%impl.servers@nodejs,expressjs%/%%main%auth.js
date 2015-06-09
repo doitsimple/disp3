@@ -6,7 +6,7 @@ var BearerStrategy = require('passport-http-bearer').Strategy;
 passport.use("default", new BearerStrategy(
   function(token, done) {
 		console.log(token);
-		var User = db.getModels("^^=userdb$$");
+		var User = db.getModel("^^=userdb$$");
     User.select({ token: token }, function (err, user) {
       if (err) { return done(err); }
       if (!user) { return done(null, false); }

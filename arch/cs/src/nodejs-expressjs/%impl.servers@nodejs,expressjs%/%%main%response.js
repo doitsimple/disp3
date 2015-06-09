@@ -1,4 +1,4 @@
-var fs = require("./lib/fs.js");
+var fs = require("fs");
 module.exports.sendErr = function(res, msg, code){
 	if(code)
 		res.send({
@@ -11,7 +11,7 @@ module.exports.sendErr = function(res, msg, code){
 		});
 }
 module.exports.sendJson = function(res, json){
-/*^^if(local.debug){$$*/
+/*^^if(local.log){$$*/
 	var log = "\x1b[1;35m";
 	log += JSON.stringify(json, undefined, 2);
 	log += "\x1b[0m";

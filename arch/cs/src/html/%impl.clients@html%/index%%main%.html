@@ -24,9 +24,13 @@
 ^^=head$$
 </head>
 <body>
+^^if(!local.wrapper){$$
 ^^=nav$$
 ^^=content$$
 ^^=footer$$
+^^}else{$$
+^^=wrapper$$
+^^}$$
 ^^if(!local.scriptBefore){$$
 <script type="text/javascript" src="vendor/js/jquery.min.js"></script>
 <!--[if lt IE 9]>
