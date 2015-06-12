@@ -164,7 +164,6 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 		if(fsconfigs && fsconfigs[p]){
 			var fsconfig = fsconfigs[p];
 			if(fsconfig.ignore){
-				console.log("hehe");
 				continue;
 			}
 		}

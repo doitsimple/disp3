@@ -6,7 +6,9 @@ var libRes = require("./response");
 var sendErr = libRes.sendErr;
 var sendFile = libRes.sendFile;
 var sendJson = libRes.sendJson;
-
+var EventEmitter = require('events').EventEmitter;
+var emitter = new EventEmitter();
+var coreDb = require("../core/db");
 ^^=require$$
 
 // Create our Express application
@@ -51,37 +53,58 @@ app.use(function(req, res, next){
 
 ^^function makeController(api){
 /* make controller */$$
-^^
-for(var j=0; j<api.controllers.length; j++){var ctrl = api.controllers[j];$$
- ^^switch(ctrl.type){ case "req": $$
+^^for(var j=0; j<api.controllers.length; j++){var ctrl = api.controllers[j];$$
+^^if(ctrl.vars){for(var key in ctrl.vars){var vars = ctrl.vars[key];$$
+var ^^=key$$ = ^^=vars$$;
+^^}}$$
+^^switch(ctrl.type){ case "req": $$
 
-libReq.^^=ctrl.method$$("^^=ctrl.url$$", {
-^^=makeReq(ctrl.data)$$
-}, function(err, result){
-if(err) return sendErr(res, err);
+libReq.^^=ctrl.method$$("^^=ctrl.url$$", {^^=makeReq(ctrl.data)$$}, function(err, result){ 
+	if(err) return sendErr(res, err);
+
+^^break;case "send":$$
+
+^^break;case "db":var method = ctrl.method;$$
+^^if(method == "update" || method == "bupdate" || method =="upsert" || method == "update2" || method == "bupdate2" ){$$
+coreDb.getModel("^^=ctrl.db$$").^^=ctrl.method$$(^^=ctrl.where$$, ^^=ctrl.set$$, function(err, result){
+	console.log(err);
+^^}else if(method == "bselect" || method == "bdelete"){$$
+coreDb.getModel("^^=ctrl.db$$").^^=ctrl.method$$(^^=ctrl.where$$, ^^=ctrl.op||"{}"$$, function(err, result){
+^^}else if(method == "select" || method == "delete"){$$
+coreDb.getModel("^^=ctrl.db$$").^^=ctrl.method$$(^^=ctrl.where$$, function(err, result){
+^^}$$
+	if(err) return sendErr(res, err);
+^^break;}$$
+
+^^if(ctrl.check){for(var key in ctrl.check){var check = ctrl.check[key];$$
+^^if(typeof check == "string"){$$
+if(^^=key$$) return sendErr(res, "^^=check$$");
+^^}else{$$
+if(^^=key$$) return sendErr(res, "^^=check.message$$", "^^=check.code$$");
+^^}$$
+^^}}$$
+
+^^}$$
+
+^^for(var j=api.controllers.length-1; j>=0; j--){var ctrl = api.controllers[j];$$
 ^^if(ctrl.send){$$
 sendJson(res, ^^=ctrl.send$$);
 ^^}$$
 
- ^^break;case "send":$$
-^^if(ctrl.send){$$
-sendJson(res, ^^=ctrl.send$$);
-^^}$$
-
- ^^break;case "updatedb":$$
-
- ^^break;}$$
-^^}$$
-
-^^for(var j=0; j<api.controllers.length; j++){$$
  ^^switch(ctrl.type){ 
   case "req":
-  case "updatedb":$$
+  case "db":
+	 $$
+
 });
+
  ^^break;default: $$
  ^^break;}$$
 ^^}
 /* make controller done */$$
+
+	^^=local[api.name]$$
+
 ^^}$$
 
 
@@ -119,9 +142,10 @@ if(!^^=key$$) return sendErr(res, "^^=key$$ not exist");
 ^^break; case "rest":$$
 ^^break;}$$
 ^^}$$
-
+^^=methods$$
 app.use('/api', router);
 
 ^^=apiblock$$
+
 
 module.exports = app;

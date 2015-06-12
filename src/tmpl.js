@@ -124,16 +124,20 @@ function generate(fileList, globalEnv){
 	fs.writeFileSync(globalEnv.project.target+"/.filelist.json", JSON.stringify(fileListModified, undefined, 2));
 
 /* generate file */
-	for (var filename in fileListModified){
-		var partConfig = fileListModified[filename];
-		if(partConfig.self){
-			continue;
-		}
-		filename = globalEnv.project.target + "/" + filename;
+	for (var orifilename in fileListModified){
+		var partConfig = fileListModified[orifilename];
+		filename = globalEnv.project.target + "/" + orifilename;
+
 		libFile.mkdirpSync(path.dirname(filename)); // should have a more efficient way
 /*todo sync*/
 /**/
 
+		if(partConfig.self){
+			if(globalEnv.project.target != "."){
+				libFile.copySync(orifilename, filename);
+			}
+			continue;
+		}
 
 		if(partConfig.src){
 			if(partConfig.src != filename)
