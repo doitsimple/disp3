@@ -2,6 +2,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var libReq = require("../lib/req");
+var libDate = require("../lib/date");
 var libRes = require("./response");
 var sendErr = libRes.sendErr;
 var sendFile = libRes.sendFile;
@@ -28,15 +29,14 @@ app.use(express.static(__dirname + '/^^=static$$'));
 app.use(function(req, res, next){
 //	console.log(Object.keys(req));
 	var log = "\x1b[1;36m";
-	log += req.method + " " + req.originalUrl + "\n";
-	if(req.method != "GET" && req.method != "DELETE"){
-		var bodystr = JSON.stringify(req.body,undefined,2);
-		if(bodystr != "{}")
-			log+=JSON.stringify(req.body,undefined,2)+"\n";
-	}
-	log+=req.headers['user-agent'] + "\n";
 	var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-	log+=ip + "\n" + new Date();
+	log += req.method + " " + req.originalUrl + "  ip:" + ip + "  " + libDate.getSimple(new Date())+ "\n";
+	if(req.method != "GET" && req.method != "DELETE"){
+		var bodystr = JSON.stringify(req.body,undefined);
+		if(bodystr != "{}")
+			log+=JSON.stringify(req.body,undefined)+"\n";
+	}
+	log+=req.headers['user-agent'];
 	log+="\x1b[0m";
 	console.log(log);
 	next();
@@ -89,6 +89,9 @@ if(^^=key$$) return sendErr(res, "^^=check.message$$", "^^=check.code$$");
 ^^for(var j=api.controllers.length-1; j>=0; j--){var ctrl = api.controllers[j];$$
 ^^if(ctrl.send){$$
 sendJson(res, ^^=ctrl.send$$);
+^^}$$
+^^if(ctrl.sendJson){$$
+sendJson(res, ^^=JSON.stringify(ctrl.sendJson)$$);
 ^^}$$
 
  ^^switch(ctrl.type){ 
