@@ -78,13 +78,15 @@ $$
 ^^if(method == "update" || method == "bupdate" || method =="upsert" || method == "update2" || method == "bupdate2" ){
 $$
 coreDb.getModel("^^=ctrl.db$$").^^=ctrl.method$$(^^=ctrl.where$$, ^^=ctrl.set$$, function(err, ^^=result$$){
-	console.log(err);
 ^^}else if(method == "bselect" || method == "bdelete"){
 $$
 coreDb.getModel("^^=ctrl.db$$").^^=ctrl.method$$(^^=ctrl.where$$, ^^=ctrl.op||"{}"$$, function(err, ^^=result$$){
 ^^}else if(method == "select" || method == "delete"){
 $$
 coreDb.getModel("^^=ctrl.db$$").^^=ctrl.method$$(^^=ctrl.where$$, function(err, result){
+^^}else if(method == "binsert" || method == "insert"){
+$$
+coreDb.getModel("^^=ctrl.db$$").^^=ctrl.method$$(^^=ctrl.doc$$, function(err, result){
 ^^}$$
 	if(err) return sendErr(res, err);
 ^^break;}$$
