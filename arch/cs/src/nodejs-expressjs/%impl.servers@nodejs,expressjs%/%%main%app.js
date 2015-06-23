@@ -50,33 +50,48 @@ app.use(function(req, res, next){
 	}
 	return arr.join(",");
 }$$
-
+/////////////////////////////////
 ^^function makeController(api){
-/* make controller */$$
-^^for(var j=0; j<api.controllers.length; j++){var ctrl = api.controllers[j];$$
-^^if(ctrl.vars){for(var key in ctrl.vars){var vars = ctrl.vars[key];$$
+/*make controller*/$$
+^^for(var j=0; j<api.controllers.length; j++){
+ var ctrl = api.controllers[j];
+ var result= ctrl.result || "result";
+$$
+^^if(ctrl.vars){
+ for(var key in ctrl.vars){
+  var vars = ctrl.vars[key];
+$$
 var ^^=key$$ = ^^=vars$$;
-^^}}$$
-^^switch(ctrl.type){ case "req": $$
+^^}
+ }
+$$
+^^switch(ctrl.type){ case "req":$$
 
-libReq.^^=ctrl.method$$("^^=ctrl.url$$", {^^=makeReq(ctrl.data)$$}, function(err, result){ 
+libReq.^^=ctrl.method$$("^^=ctrl.url$$", {^^=makeReq(ctrl.data)$$}, function(err, ^^=result$$){ 
 	if(err) return sendErr(res, err);
 
-^^break;case "send":$$
+^^break;case "send":case "raw": $$
 
-^^break;case "db":var method = ctrl.method;$$
-^^if(method == "update" || method == "bupdate" || method =="upsert" || method == "update2" || method == "bupdate2" ){$$
-coreDb.getModel("^^=ctrl.db$$").^^=ctrl.method$$(^^=ctrl.where$$, ^^=ctrl.set$$, function(err, result){
+^^break;case "db":
+ var method = ctrl.method;
+$$
+^^if(method == "update" || method == "bupdate" || method =="upsert" || method == "update2" || method == "bupdate2" ){
+$$
+coreDb.getModel("^^=ctrl.db$$").^^=ctrl.method$$(^^=ctrl.where$$, ^^=ctrl.set$$, function(err, ^^=result$$){
 	console.log(err);
-^^}else if(method == "bselect" || method == "bdelete"){$$
-coreDb.getModel("^^=ctrl.db$$").^^=ctrl.method$$(^^=ctrl.where$$, ^^=ctrl.op||"{}"$$, function(err, result){
-^^}else if(method == "select" || method == "delete"){$$
+^^}else if(method == "bselect" || method == "bdelete"){
+$$
+coreDb.getModel("^^=ctrl.db$$").^^=ctrl.method$$(^^=ctrl.where$$, ^^=ctrl.op||"{}"$$, function(err, ^^=result$$){
+^^}else if(method == "select" || method == "delete"){
+$$
 coreDb.getModel("^^=ctrl.db$$").^^=ctrl.method$$(^^=ctrl.where$$, function(err, result){
 ^^}$$
 	if(err) return sendErr(res, err);
 ^^break;}$$
 
-^^if(ctrl.check){for(var key in ctrl.check){var check = ctrl.check[key];$$
+
+^^//check
+if(ctrl.check){for(var key in ctrl.check){var check = ctrl.check[key];$$
 ^^if(typeof check == "string"){$$
 if(^^=key$$) return sendErr(res, "^^=check$$");
 ^^}else{$$
@@ -84,20 +99,33 @@ if(^^=key$$) return sendErr(res, "^^=check.message$$", "^^=check.code$$");
 ^^}$$
 ^^}}$$
 
-^^}$$
+^^//if
+if(ctrl.if){
+ for(var key in ctrl.if){
+  var ifstr = ctrl.if[key];
+$$
+if(^^=key$$) return sendJson(res, "^^=ifstr$$");
+^^
+ }
+}
+$$
 
+^^}$$
+	^^=local[api.name]$$
 ^^for(var j=api.controllers.length-1; j>=0; j--){var ctrl = api.controllers[j];$$
+^^if(ctrl.do){$$
+^^=ctrl.do$$
+^^}$$
 ^^if(ctrl.send){$$
 sendJson(res, ^^=ctrl.send$$);
 ^^}$$
 ^^if(ctrl.sendJson){$$
 sendJson(res, ^^=JSON.stringify(ctrl.sendJson)$$);
 ^^}$$
-
  ^^switch(ctrl.type){ 
   case "req":
   case "db":
-	 $$
+ $$
 
 });
 
@@ -106,10 +134,8 @@ sendJson(res, ^^=JSON.stringify(ctrl.sendJson)$$);
 ^^}
 /* make controller done */$$
 
-	^^=local[api.name]$$
-
 ^^}$$
-
+////////////////////////////////////////////
 
 
 var auth = require("./auth");
@@ -117,11 +143,15 @@ var router = express.Router();
 ^^for(var i=0; i<withApis.length; i++){ 
 	var api = global.proto.apis[withApis[i]];
 	var paramsStr = "";
+	for(var key in api.params){
+		var param = api.params[key];
+		if(param.isParams) paramsStr += "/:" + key;
+	}
 	var midwaresStr = "";
 	for(var j in api.midwares){
 		var midware= api.midwares[j];
 		switch (midware.type){
-			case "auth": 
+			case "auth":
 				if(!midware.scope)
 					midwaresStr += "auth.midware, ";
 				else
@@ -132,23 +162,31 @@ var router = express.Router();
 	
 	switch(api.type){
 		case "post":
+/////////////////post//////////////////////////
 $$
 router.route('/^^=api.route$$^^=paramsStr$$').post(^^=midwaresStr$$function(req, res){
 ^^for(var key in api.params){var param = api.params[key];$$
+^^if(param.isQuery){$$
+var ^^=key$$ = req.query["^^=key$$"];
+^^}else if(!param.isParams){$$
 var ^^=key$$ = req.body["^^=key$$"];
+^^}else{$$
+var ^^=key$$ = req.params["^^=key$$"];
+^^}$$
  ^^if(param.required){$$
-if(!^^=key$$) return sendErr(res, "^^=key$$ not exist");
+if(!^^=key$$) return sendErr(res, "参数错误：没有^^=key$$");
  ^^}$$
 ^^}$$
 ^^makeController(api)$$
 });
-^^break; case "rest":$$
+^^
+///////////////rest//////////////////////////////////
+break; case "rest":$$
 ^^break;}$$
 ^^}$$
 ^^=methods$$
 app.use('/api', router);
 
 ^^=apiblock$$
-
 
 module.exports = app;

@@ -131,7 +131,11 @@ function mountString(config){
       e = itConfig[key][i];
 		if(typeof e != "string") return;
 		e = e.replace(/#([^#]+)#/g, function(match, p1) {
-			return libObject.getByKey(config, p1);
+			if(!p1.match(/\(/)){
+				return libObject.getByKey(config, p1);
+			}else{
+				return eval(p1);
+			}
 		});
     if(i==undefined)
       itConfig[key] = e;
