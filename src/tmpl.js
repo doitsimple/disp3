@@ -107,7 +107,14 @@ module.exports.generate = generate;
 function generate(fileList, globalEnv){
 
 /* check fsconfigs */
-	var fsconfigs = globalEnv.project.fsconfigs;
+	var fsconfigs;
+	var target;
+	if(globalEnv.project){
+		fsconfigs = globalEnv.project.fsconfigs;
+		target = globalEnv.project.target;
+	}
+	target = target || ".";
+
 	var fileListModified = {};
 	for (var filename in fileList){
 		var tmpFilename = filename;
@@ -121,12 +128,12 @@ function generate(fileList, globalEnv){
 		}
 		fileListModified[tmpFilename] = fileList[filename];
 	}
-	fs.writeFileSync(globalEnv.project.target+"/.filelist.json", JSON.stringify(fileListModified, undefined, 2));
+	fs.writeFileSync(target+"/.filelist.json", JSON.stringify(fileListModified, undefined, 2));
 
 /* generate file */
 	for (var orifilename in fileListModified){
 		var partConfig = fileListModified[orifilename];
-		filename = globalEnv.project.target + "/" + orifilename;
+		filename = target + "/" + orifilename;
 
 		libFile.mkdirpSync(path.dirname(filename)); // should have a more efficient way
 /*todo sync*/

@@ -4,12 +4,14 @@ var libFile = require("../lib/nodejs/file");
 var walk = require("../src/walk");
 describe('walk.js', function() {
 	it('function walk', function() {
-		fs.mkdirSync("tmptest");
+		if(!fs.existsSync("tmptest"))
+			fs.mkdirSync("tmptest");
 		fs.writeFileSync("tmptest/%%main%filea", "^^=var1$$^^=body$$");
 		fs.writeFileSync("tmptest/%%body%filea", "^^=var2$$");
 		fs.writeFileSync("tmptest/%var1%filea", "^^=var2$$");
 		var filelist = {};
 		assert.equal(true, walk.walk("tmptest", ".", {
+			"project": {target: "."},
 			"var1": "a",
 			"var2": "b"
 		}, filelist));

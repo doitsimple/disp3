@@ -112,9 +112,6 @@ if(^^=key$$) return sendJson(res, "^^=ifstr$$");
 }
 $$
 
-^^}$$
-	^^=local[api.name]$$
-^^for(var j=api.controllers.length-1; j>=0; j--){var ctrl = api.controllers[j];$$
 ^^if(ctrl.do){$$
 ^^=ctrl.do$$
 ^^}$$
@@ -124,6 +121,10 @@ sendJson(res, ^^=ctrl.send$$);
 ^^if(ctrl.sendJson){$$
 sendJson(res, ^^=JSON.stringify(ctrl.sendJson)$$);
 ^^}$$
+
+^^}$$
+	^^=local[api.name]$$
+^^for(var j=api.controllers.length-1; j>=0; j--){var ctrl = api.controllers[j];$$
  ^^switch(ctrl.type){ 
   case "req":
   case "db":
@@ -166,7 +167,9 @@ var router = express.Router();
 		case "post":
 /////////////////post//////////////////////////
 $$
-router.route('/^^=api.route$$^^=paramsStr$$').post(^^=midwaresStr$$function(req, res){
+router.route('/^^=api.route$$^^=paramsStr$$').post(^^=midwaresStr$$^^=api.name$$);
+function ^^=api.name$$(req, res){
+
 ^^for(var key in api.params){var param = api.params[key];$$
 ^^if(param.isQuery){$$
 var ^^=key$$ = req.query["^^=key$$"];
@@ -180,7 +183,7 @@ if(!^^=key$$) return sendErr(res, "参数错误：没有^^=key$$");
  ^^}$$
 ^^}$$
 ^^makeController(api)$$
-});
+};
 ^^
 ///////////////rest//////////////////////////////////
 break; case "rest":$$

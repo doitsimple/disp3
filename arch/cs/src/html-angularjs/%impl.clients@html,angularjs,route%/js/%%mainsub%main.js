@@ -128,6 +128,20 @@ rootApp.factory('auth', function($http, $cookieStore, $rootScope){
 	methods.setUserId = function(userid){
 		$cookieStore.put('userid'+idstr, userid);
 	};
+	methods.getUser = function() {
+    var user, userTemp;
+    try {
+      user = JSON.parse($cookieStore.get('user'));
+    }catch(e) {
+      return null;
+    }
+    return user;
+  };
+  methods.setUser = function(user) {
+    var str = JSON.stringify(user);
+    $cookieStore.put('user', str);
+  };
+
 	methods.signout = function(){
 		methods.setToken("");
 		methods.setUserId("");

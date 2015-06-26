@@ -243,10 +243,6 @@ function checkFormat(json, fjson, env){
 		}
 		switch(entryFormat.type){
 		case "enums":
-			if(!env){
-				log.e("project.json not support enums type");
-				return false;
-			}
 			
 			if(typeof json[key] == "string")
 				json[key] = [json[key]];
@@ -263,6 +259,10 @@ function checkFormat(json, fjson, env){
 					json[key] = entryFormat.sets;
 				}
 			}else if(entryFormat.from){
+				if(!env){
+					log.e("project.json not support enums type");
+					return false;
+				}
 				var list = libObject.getByKey(env, entryFormat.from);
 				if(!list){
 					log.e("no " + entryFormat.from + " in ");
@@ -284,16 +284,16 @@ function checkFormat(json, fjson, env){
 			}
 			break;
 		case "enum":
-			if(!env){
-				log.e("project.json not support enums type");
-				return false;
-			}
 			if(entryFormat.sets){
 				if(libArray.indexOf(entryFormat.sets, json[key]) == -1){
 					log.e(key + ":" + json[key] + " is not in " + entryFormat.sets.join(", "));
 					return false;					
 				}
 			}else if(entryFormat.from){
+				if(!env){
+					log.e("project.json not support enum type");
+					return false;
+				}
 				var list = libObject.getByKey(env, entryFormat.from);
 				if(!list){
 					log.e("no " + entryFormat.from + " in ");

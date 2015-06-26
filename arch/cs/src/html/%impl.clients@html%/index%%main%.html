@@ -1,3 +1,5 @@
+^^
+function before(){$$
 <!DOCTYPE html>
 <html^^=htmlAttr$$>
 <head>
@@ -24,6 +26,10 @@
 ^^=head$$
 </head>
 <body>
+^^}$$
+
+^^before()$$
+
 ^^if(!local.wrapper){$$
 ^^=nav$$
 ^^=content$$
@@ -31,6 +37,8 @@
 ^^}else{$$
 ^^=wrapper$$
 ^^}$$
+
+^^function after(){$$
 ^^if(!local.scriptBefore){$$
 <script type="text/javascript" src="vendor/js/jquery.min.js"></script>
 <!--[if lt IE 9]>
@@ -41,6 +49,8 @@
 ^^}$$
 </body>
 </html>
+^^}$$
+
 ^^
 function getCss(libs){
  if(!libs) return;
@@ -68,4 +78,4 @@ $$
  }
 }
 $$
-
+^^after()$$
