@@ -103,6 +103,13 @@ function render(config, data){
 	delete(data.p);
 	return rtstr;
 }
+var reservedKey = {
+	"env": 1,
+	"src": 1,
+	"srclink": 1,
+	"self": 1,
+	"tmpl": 1
+}
 module.exports.generate = generate;
 function generate(fileList, globalEnv){
 
@@ -120,7 +127,7 @@ function generate(fileList, globalEnv){
 		var tmpFilename = filename;
 		if(fsconfigs && fsconfigs[filename] && fsconfigs[filename].mv)
 			tmpFilename = fsconfigs[filename].mv;
-		if(fileListModified[tmpFilename]){
+		if(fileListModified[tmpFilename] && fileListModified[tmpFilename].self){
 			log.e("duplicate generated "+tmpFilename);
 			log.e(fileListModified[tmpFilename]);
 			log.e(fileList[filename]);
@@ -179,7 +186,7 @@ function generate(fileList, globalEnv){
 		for(var i in keys){
 			var key = keys[i];
 			if(!env[key]) env[key] = "";
-			if(key != "env" && !key.match("main") && key != "src" && key != "self"){
+			if(!reservedKey[key] && !key.match("main") ){
 				partConfig[key].forEach(function(file){
 					env[key] += render({file: file}, env);
 				});
@@ -196,6 +203,26 @@ function generate(fileList, globalEnv){
 		partConfig.main.forEach(function(file){
       str += render({file: file}, env);
     });
+
+		if(partConfig.tmpl){
+			var tmplPath;
+			if(env.tmpl)
+				tmplPath = env.tmpl[partConfig.tmpl];
+			if(!tmplPath && globalEnv.tmpl)
+				tmplPath = globalEnv.tmpl[partConfig.tmpl];
+			if(!tmplPath){
+				log.e("no tmpl " + partConfig.tmpl);
+				return false;
+			}
+			if(fs.existsSync(tmplPath)){	
+				env.main = str;
+				str = render({file: tmplPath}, env);
+			}else{
+				log.e("template file: " + tmplPath + " not exist!!!");
+			}
+		}
+
+
 		if(fs.existsSync(filename))
 			fs.unlinkSync(filename);
 		fs.writeFileSync(filename, str, {mode: 0444});

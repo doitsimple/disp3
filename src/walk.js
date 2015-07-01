@@ -77,13 +77,23 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 		libObject.extend(globalenv, libFile.readJSON(dir + "/disp-global.json"));
 	if(fs.existsSync(dir + "/disp-local.json"))
 		libObject.extend(env, libFile.readJSON(dir + "/disp-local.json"));
-	if(fs.existsSync(dir + "/disp.json"))
-		libObject.extend(env, libFile.readJSON(dir + "/disp.json"));
+	if(fs.existsSync(dir + "/disp.json")){
+		var dispJson = libFile.readJSON(dir + "/disp.json");
+		if(dispJson.tmpl){
+			for(var tmplKey in dispJson.tmpl){
+				dispJson.tmpl[tmplKey] = path.resolve(dir + "/" + dispJson.tmpl[tmplKey]);
+
+			}
+		}
+		libObject.extend(env, dispJson);
+		
+	}
 	/*
 	 if(fs.existsSync(dir + "/disp.func")){
 	 tmpl.render({file: dir + "/disp.func"}, env);
 	 }
 	 */
+	
 	var files = fs.readdirSync(dir);
 
 	for(var i=0; i<files.length; i++){
@@ -95,8 +105,9 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 			}
 
 		var p = path.relative(".", dir + '/' + f);
-		var t, rt;
+		var t, rt, newenvkey;
 
+/////////////directory start///////////
 		//check if is directory, _walk
 		var	stat = fs.lstatSync(p);
 		if(stat.isDirectory() && !stat.isSymbolicLink()){
@@ -104,6 +115,7 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 				// dir with %% name
 				var envkey = ms[1];
 				var matchStr = ms[2];
+
 				var contentkey = ms[3];
 				var stemp = ms[4];
 				var sdir = ms[5];
@@ -129,10 +141,9 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 							continue;
 						
 						t = tdir + '/' + f.replace(/%\S+%/, name);
-						var nenvkey;
-						if(enums) nenvkey = enums.from + "." + name;
-						else nenvkey = penvkey + "." + envkey + "." + name;
-						if(!_walk(p, t, envlist[name], genFileList, nenvkey, globalenv)){
+						if(enums) newenvkey = enums.from + "." + name;
+						else newenvkey = penvkey + "." + envkey + "." + name;
+						if(!_walk(p, t, envlist[name], genFileList, newenvkey, globalenv)){
 							log.e("walk " + p + " failed");
 							return false;
 						}
@@ -148,7 +159,7 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 			}
 			continue;
 		}
-
+/////////////directory end///////////
 
 		// check if the file is the generated file
 		if(isGenFile(env.filelist, p)){
@@ -165,30 +176,29 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 		}
 
 		// match filename
+//////////////file start/////////////////
 		var ms;
 		if((ms = f.match(regex))){
 			var envkey = ms[1];
 			var matchStr = ms[2];
 			var contentkey = ms[3];
 			var stemp = ms[4];
+
 			var sdir = ms[5];
 			if(envkey && envkey[0] == "~") penvkey = "";
 			var envlist = getEnv(env, globalenv, envkey);
 			if(!contentkey) contentkey = "main";
 
 			if(sdir){
-				var mss = sdir.split("-");
+				var mss = sdir.split(/[-,]/);
 				for(var k=0; k<mss.length; k++){
 					var srcDir = path.resolve(__dirname + "/../lib/" + mss[k]);
 					if(fs.existsSync(srcDir)){
 						libFile.forEachFile(srcDir, function(f2){
 							if(!f2.match(/~$/) && f2[0] != '#' ){
 								t = tdir + "/" + f2;
-								rt=path.relative(".",t);
-								if(!genFileList[rt]) genFileList[rt] = {};
-								if(!genFileList[rt][contentkey])
-									genFileList[rt][contentkey] = [];
-								genFileList[rt][contentkey].push(path.resolve(srcDir + "/" + f2));
+								p = path.resolve(srcDir + "/" + f2);
+								addGenFileList(genFileList, t, contentkey, p, penvkey, stemp);
 							}
 						});
 					}
@@ -199,13 +209,7 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 			if(typeof envlist != "object"){
 				var name = envlist;
 				t = tdir + '/' + f.replace(/%\S+%/, name);
-				rt = path.relative(".", t);
-				if(!genFileList[rt]) genFileList[rt] = {};
-				if(penvkey)
-					genFileList[rt].env = penvkey;
-				if(!genFileList[rt][contentkey])
-					genFileList[rt][contentkey] = [];
-				genFileList[rt][contentkey].push(p);
+				addGenFileList(genFileList, t, contentkey, p, penvkey, stemp);
 			}else{
 				var enums;
 				if(envlist.from){
@@ -218,15 +222,11 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 					if(matchStr && !matchEnv(envlist[name], matchStr))
 						continue;
 					t = tdir + '/' + f.replace(/%\S+%/, name);
-					rt = path.relative(".", t);
-					if(!genFileList[rt]) genFileList[rt] = {};
 					if(enums)
-						genFileList[rt].env = enums.from + "." + name;
+						newenvkey = enums.from + "." + name;
 					else
-						genFileList[rt].env = penvkey + "." + envkey+ "." + name;
-					if(!genFileList[rt][contentkey])
-						genFileList[rt][contentkey] = [];
-					genFileList[rt][contentkey].push(p);
+						newenvkey = penvkey + "." + envkey+ "." + name;
+					addGenFileList(genFileList, t, contentkey, p, newenvkey, stemp);
 				}
 			}
 		}else if(dir != tdir){
@@ -243,8 +243,21 @@ function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
 			if(!genFileList[rt])
 				genFileList[rt] = {self: 1};
 		}
+//////////////file end/////////////////
 	};
 	return true;
+}
+function addGenFileList(genFileList, t, contentkey, p, newenvkey, stemp){
+	var rt=path.relative(".", t);
+	if(!genFileList[rt]) genFileList[rt] = {};
+	if(!genFileList[rt][contentkey])
+		genFileList[rt][contentkey] = [];
+	genFileList[rt][contentkey].push(p);
+	if(newenvkey)
+		genFileList[rt].env = newenvkey;
+	if(stemp)
+		genFileList[rt].tmpl = stemp;
+
 }
 function getEnv(env, globalenv, envkey){
 	var envlist;
@@ -267,7 +280,7 @@ function isGenFile(list, file){
 }
 function matchEnv(localenv, str, i){
 
-	var tokens = str.split(",");
+	var tokens = str.split(/[-,]/);
 	if(!i) i=0;
 	if(!tokens[i])
 		return true;

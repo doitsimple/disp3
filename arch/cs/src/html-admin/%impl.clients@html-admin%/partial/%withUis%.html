@@ -1,0 +1,14 @@
+^^if(local.content){$$
+^^=content$$
+^^}else{$$
+<h3>^^=local.title || name$$</h3>
+^^}$$
+
+^^
+for(var key in local.elements){
+ var el = elements[key];
+ if(origin[el.type])
+  origin[el.type](el);
+}
+
+^^=supp$$

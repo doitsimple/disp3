@@ -7,8 +7,10 @@ function setLevel(_level){
 	level = _level;
 }
 function e(str){
-	if(level >= 1)
+	if(level >= 1){
 		console.error(str);
+		console.trace();
+	}
 }
 function i(str){
 	if(level >= 2)

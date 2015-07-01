@@ -1,8 +1,12 @@
 {
-		"css": {
-				"css/main.css": 1
-		},
-		"js": {
-				"js/main.js": 1
-		}
+	"css": {
+		"css/main.css": 1
+	},
+	"js": {
+		"js/main.js": 1
+	},
+	"tmpl": {
+		"html": "disp.tpl.html",
+		"basic": "disp.basic.html"
+	}
 }
