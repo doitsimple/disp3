@@ -17,14 +17,17 @@ module.exports = function(dbnameMap, genModelFuncList, connectFuncs){
 }
 function connect(env, cb){
 	var url = 'mongodb://^^=host$$';
-  MongoClient.connect(url, function(err, client) {
-    module.exports.client = client;
-    db = client;
-		/*
+	if(!db)
+		MongoClient.connect(url, function(err, client) {
+			module.exports.client = client;
+			db = client;
+			/*
 
-		 */
-    cb(err);
-  });
+			 */
+			cb(err);
+		});
+	else
+		cb(null);
 
 };
 module.exports.getModel = getModel;

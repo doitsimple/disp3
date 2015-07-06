@@ -9,20 +9,7 @@
   <div class="form-group">
     <label for="^^=name$$" class="control-label col-sm-3">^^=input.text$$</label>
     <div class="col-sm-5">
-			^^if(input.eq){$$
-      <input id="^^=name$$" ng-model="^^=config.name$$.$eq.^^=name$$" placeholder="^^=input.hint || input.text$$" class="form-control" type="text"/>
-			^^}else if(input.match){$$
-      <input id="^^=name$$" ng-model="^^=config.name$$.$match.^^=name$$" placeholder="^^=input.hint || input.text$$" class="form-control" type="text"/>
-			^^}else if(input.lt && input.gt){$$
-      <input id="^^=name$$" ng-model="^^=config.name$$.$gt.^^=name$$" placeholder="^^=input.hint || '开始'+input.text$$" class="form-control" type="date"/>
-      <input id="^^=name$$" ng-model="^^=config.name$$.$lt.^^=name$$" placeholder="^^=input.hint || '结束'+input.text$$" class="form-control" type="date"/>
-			^^}else if(input.ne){$$
-      <input id="^^=name$$" ng-model="^^=config.name$$.$ne.^^=name$$" placeholder="^^=input.hint || input.text$$" class="form-control" type="text"/>
-			^^}else if(input.exists){$$
-      <input id="^^=name$$" ng-model="^^=config.name$$.$exists.^^=name$$" placeholder="^^=input.hint || input.text$$" class="form-control" type="text"/>
-			^^}else{$$
-      <input id="^^=name$$" ng-model="^^=config.name$$.^^=name$$" placeholder="^^=input.hint || input.text$$" class="form-control" type="text"/>
-			^^}$$
+      <input ng-model="^^=config.name$$.^^=name$$" placeholder="^^=input.hint || input.text$$" class="form-control" type="text"/>
     </div>
   </div>
  ^^}$$
