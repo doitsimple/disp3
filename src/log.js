@@ -1,6 +1,7 @@
-module.exports.e = e;
-module.exports.i = i;
-module.exports.v = v;
+
+module.exports.erorr = module.exports.e = e;
+module.exports.info = module.exports.i = i;
+module.exports.verbose = module.exports.v = v;
 module.exports.setLevel = setLevel;
 var level = 3;
 function setLevel(_level){

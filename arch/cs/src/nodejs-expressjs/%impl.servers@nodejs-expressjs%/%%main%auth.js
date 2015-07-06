@@ -17,3 +17,4 @@ passport.use("default", new BearerStrategy(
 ));
 var midwares = {};
 module.exports.midware = midwares["default"] = passport.authenticate('default', { session: false });
+

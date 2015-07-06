@@ -42,6 +42,7 @@ $$
 
 rootApp.run(function ($rootScope, auth) {
     $rootScope.$on("$routeChangeStart", function (event, next, current) {
+
       if(!auth.gettoken()){
         event.preventDefault();
         window.location = signinUrl;

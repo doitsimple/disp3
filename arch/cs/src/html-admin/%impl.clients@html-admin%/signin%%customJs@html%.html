@@ -1,0 +1,11 @@
+<script>
+$("#submit").click(function(){
+	$.post("/api/signin", {
+		email: $("#email").val(),
+		password: $("#password").val()
+	}).done(function(result){
+		if(result && result.error) alert(result.error.toString());
+		else if(result) location = "/";
+	});
+});
+</script>

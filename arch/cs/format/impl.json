@@ -1,91 +1,92 @@
 {
-    "kit": "mono",
-    "format": {
-        "databases": {
-            "kit": "list",
-            "format": {
-                "type": {
-                    "type": "enum",
-                    "sets": [
-                        "mongo",
-                        "mysql"
-                    ],
-										"default": "mongo"
-                },
-                "host": "string",
-                "port": "number",
-                "username": "string",
-                "password": "string",
-                "database": {
-										"type": "string",
-										"default": "test"
-								},
-								"withSchemas": {
-										"type": "enums",
-										"from": "proto.schemas"
-								}
-            }
+  "kit": "mono",
+  "format": {
+    "databases": {
+      "kit": "list",
+      "format": {
+        "type": {
+          "type": "enum",
+          "sets": [
+            "mongo",
+            "mysql",
+						"redis"
+          ],
+					"default": "mongo"
         },
-        "servers": {
-            "kit": "list",
-            "format": {
-                "type": {
-                    "type": "enum",
-                    "sets": [
-                        "expressjs",
-                        "nodejs",
-												"none"
-                    ],
-										"default": "nodejs"
-                },
-                "ip": "string",
-                "port": "number",
-                "protocol": {
-										"type": "enums",
-										"sets": ["http", "https"],
-										"default": "http"
-								},
-								"static": {
-										"type": "string"
-								},
-								"log": "number",
-								"withApis": {
-										"type": "enums",
-										"from": "proto.apis",
-										"check": {
-												"in": {
-														"auth": "impl.server.withAuths"
-												}
-										}
-								},
-								"withDatabases": {
-										"type": "enums",
-										"from": "impl.databases"
-								}
-            }
+        "host": "string",
+        "port": "number",
+        "username": "string",
+        "password": "string",
+        "database": {
+					"type": "string",
+					"default": "test"
+				},
+				"withSchemas": {
+					"type": "enums",
+					"from": "proto.schemas"
+				}
+      }
+    },
+    "servers": {
+      "kit": "list",
+      "format": {
+        "type": {
+          "type": "enum",
+          "sets": [
+            "expressjs",
+            "nodejs",
+						"none"
+          ],
+					"default": "nodejs"
         },
-        "clients": {
-            "kit": "list",
-            "format": {
-                "type": {
-                    "type": "enum",
-                    "sets": [
-												"html",
-                        "android",
-                        "ios",
-												"none"
-                    ],
-										"default": "html"
-                },
-								"withUis": {
-										"type": "enums",
-										"from": "proto.uis"
-								},
-								"withServers": {
-										"type": "enums",
-										"from": "impl.servers"
-								}
-            }
-        }
+        "ip": "string",
+        "port": "number",
+        "protocol": {
+					"type": "enums",
+					"sets": ["http", "https"],
+					"default": "http"
+				},
+				"static": {
+					"type": "string"
+				},
+				"log": "number",
+				"withApis": {
+					"type": "enums",
+					"from": "proto.apis",
+					"check": {
+						"in": {
+							"auth": "impl.server.withAuths"
+						}
+					}
+				},
+				"withDatabases": {
+					"type": "enums",
+					"from": "impl.databases"
+				}
+      }
+    },
+    "clients": {
+      "kit": "list",
+      "format": {
+        "type": {
+          "type": "enum",
+          "sets": [
+						"html",
+            "android",
+            "ios",
+						"none"
+          ],
+					"default": "html"
+        },
+				"withUis": {
+					"type": "enums",
+					"from": "proto.uis"
+				},
+				"withServers": {
+					"type": "enums",
+					"from": "impl.servers"
+				}
+      }
     }
+  }
 }

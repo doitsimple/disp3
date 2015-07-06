@@ -3,6 +3,8 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var libReq = require("../lib/req");
 var libDate = require("../lib/date");
+var libEncrypt = require("../lib/encrypt");
+var libRandom = require("../lib/random");
 var libRes = require("./response");
 var sendErr = libRes.sendErr;
 var sendFile = libRes.sendFile;
@@ -83,10 +85,10 @@ $$
 coreDb.getModel("^^=ctrl.db$$").^^=ctrl.method$$(^^=ctrl.where$$, ^^=ctrl.op||"{}"$$, function(err, ^^=result$$){
 ^^}else if(method == "select" || method == "delete"){
 $$
-coreDb.getModel("^^=ctrl.db$$").^^=ctrl.method$$(^^=ctrl.where$$, function(err, result){
+coreDb.getModel("^^=ctrl.db$$").^^=ctrl.method$$(^^=ctrl.where$$, function(err, ^^=result$$){
 ^^}else if(method == "binsert" || method == "insert"){
 $$
-coreDb.getModel("^^=ctrl.db$$").^^=ctrl.method$$(^^=ctrl.doc$$, function(err, result){
+coreDb.getModel("^^=ctrl.db$$").^^=ctrl.method$$(^^=ctrl.doc$$, function(err, ^^=result$$){
 ^^}$$
 	if(err) return sendErr(res, err);
 ^^break;}$$

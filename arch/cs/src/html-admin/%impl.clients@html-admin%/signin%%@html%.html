@@ -6,21 +6,21 @@
           <h3 class="panel-title">Please Sign In</h3>
         </div>
         <div class="panel-body">
-          <form role="form" action="/api/adminSignin" method="post">
+          <form role="form">
             <fieldset>
               <div class="form-group">
-                <input class="form-control" placeholder="E-mail" name="email" type="email" autofocus>
+                <input class="form-control" placeholder="E-mail" id="email" type="email" autofocus>
               </div>
               <div class="form-group">
-                <input class="form-control" placeholder="Password" name="password" type="password" value="">
+                <input class="form-control" placeholder="Password" id="password" type="password" value="">
               </div>
-              <div class="checkbox">
+<!--              <div class="checkbox">
                 <label>
                   <input disabled name="remember" type="checkbox" value="Remember Me">Remember Me
                 </label>
-              </div>
+              </div>-->
               <!-- Change this to a button or input when using this as a form -->
-              <a id="submit" type="submit" href="index.html" class="btn btn-lg btn-success btn-block">Login</a>
+              <a id="submit" class="btn btn-lg btn-success btn-block">Login</a>
             </fieldset>
           </form>
         </div>
