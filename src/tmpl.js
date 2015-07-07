@@ -127,13 +127,18 @@ function generate(fileList, globalEnv){
 		var tmpFilename = filename;
 		if(fsconfigs && fsconfigs[filename] && fsconfigs[filename].mv)
 			tmpFilename = fsconfigs[filename].mv;
-		if(fileListModified[tmpFilename] && fileListModified[tmpFilename].self){
-			log.e("duplicate generated "+tmpFilename);
-			log.e(fileListModified[tmpFilename]);
-			log.e(fileList[filename]);
-			return false;
+		if(fileListModified[tmpFilename]){
+			if(!fileList[filename].self && !fileListModified[tmpFilename].self){
+				log.e("duplicate generated "+tmpFilename);
+				log.e(fileListModified[tmpFilename]);
+				log.e(fileList[filename]);
+				return false;
+			}else if(!fileList[filename].self){
+				fileListModified[tmpFilename] = fileList[filename];
+			}
+		}else{
+			fileListModified[tmpFilename] = fileList[filename];
 		}
-		fileListModified[tmpFilename] = fileList[filename];
 	}
 	fs.writeFileSync(target+"/.filelist.json", JSON.stringify(fileListModified, undefined, 2));
 
