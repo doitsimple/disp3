@@ -1,14 +1,19 @@
 ^^if(local.content){$$
 ^^=content$$
 ^^}else{$$
-<h3>^^=local.title || name$$</h3>
+<div class="row">
+<div class="col-lg-12">
+  <h1 class="page-header">^^=local.title || name$$</h1>
+</div>
+<div>
 ^^}$$
 
 ^^
 for(var key in local.elements){
  var el = elements[key];
- if(origin[el.type])
+ if(origin[el.type]) 
   origin[el.type](el);
 }
+$$
 
 ^^=supp$$

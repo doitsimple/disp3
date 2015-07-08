@@ -43,20 +43,30 @@ function getModel(cname){
 
 	 */
 	model.insert = function(doc, fn){
+//fn: function(err, result)
+//result: {insertedId: "abcdedf"}
 		if(!doc) return fn("no doc");
 		origin.insertOne(doc, fn);
 	};
 	model.update = function(criteria, doc, fn){
+//fn: function(err, result)
+//result: {n: 1}
 		origin.updateOne(criteria, {$set: doc}, fn);
 	};
 	model.delete = function(criteria, fn){
+//fn: function(err, result)
+//result: {n: 1}
 		if(!criteria) return fn("no criteria");
 		origin.deleteOne(criteria, fn);
 	};
 	model.select = function(criteria, fn){
+//fn: function(err, result)
+//result: doc
 		origin.findOne(criteria, fn);
 	};
 	model.binsert = function(docs, fn){
+//fn: function(err, result)
+//result: {n: 10}
 		origin.insertMany(docs, fn);
 	};
 	model.bupdate = function(criteria, doc, fn){
@@ -88,15 +98,31 @@ function getModel(cname){
 	model.upsert = function(criteria, doc, fn){
 		origin.updateOne(criteria, {$set: doc}, {upsert:true}, fn);
 	};
+	model.sedate = function(criteria, doc, fn){
+		origin.findAndModify(criteria, [], {$set: doc}, function(err, doc){
+			if(err) return fn(err);
+			if(!doc) return fn(null, doc);
+			fn(err, doc.value);
+		});
+	};
 	model.update2 = function(criteria, updateParam, fn){
 		origin.updateOne(criteria, updateParam, fn);
-	};
-	model.bupdate2 = function(criteria, updateParam, fn){
-		origin.updateMany(criteria, updateParam, fn);
 	};
 	model.upsert2 = function(criteria, updateParam, fn){
 		origin.updateOne(criteria, updateParam, {upsert:true}, fn);
 	};
+	model.bupdate2 = function(criteria, updateParam, fn){
+		origin.updateMany(criteria, updateParam, fn);
+	};
+	model.sedate2 = function(criteria, updateParam, fn){
+		origin.findAndModify(criteria, [], updateParam, function(err, doc){
+			if(err) return fn(err);
+			if(!doc) return fn(null, doc);
+			fn(err, doc.value);
+		});
+	};
+
+
 	model.count = function(criteria, fn){
 		origin.count(criteria, fn);
 	};

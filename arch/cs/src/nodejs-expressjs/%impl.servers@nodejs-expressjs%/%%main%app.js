@@ -77,7 +77,7 @@ libReq.^^=ctrl.method$$("^^=ctrl.url$$", {^^=makeReq(ctrl.data)$$}, function(err
 ^^break;case "db":
  var method = ctrl.method;
 $$
-^^if(method == "update" || method == "bupdate" || method =="upsert" || method == "update2" || method == "bupdate2" ){
+^^if(method == "update" || method == "bupdate" || method =="upsert" || method == "update2" || method == "bupdate2" || method == "sedate" || method == "sedate2"){
 $$
 coreDb.getModel("^^=ctrl.db$$").^^=ctrl.method$$(^^=ctrl.where$$, ^^=ctrl.set$$, function(err, ^^=result$$){
 ^^}else if(method == "bselect" || method == "bdelete"){

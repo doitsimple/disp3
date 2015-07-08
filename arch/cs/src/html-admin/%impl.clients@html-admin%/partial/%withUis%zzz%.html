@@ -1,129 +1,40 @@
+
 ^^origin.form = function(config){$$
-<div>
- ^^if(config.toggle){$$
-<a ng-click="^^=config.name$$form=!^^=config.name$$form" class="btn btn-small btn-default"><i class="fa fa-arrow-circle-o-down"></i>^^=config.toggle.text$$</a>
-<div ng-show="^^=config.name$$form">
- ^^}$$
-<form class="form-horizontal" role="form">
- ^^for (var name in config.inputs){var input = config.inputs[name];$$
-  <div class="form-group">
-    <label for="^^=name$$" class="control-label col-sm-3">^^=input.text$$</label>
-    <div class="col-sm-5">
-      <input ng-model="^^=config.name$$.^^=name$$" placeholder="^^=input.hint || input.text$$" class="form-control" type="text"/>
-    </div>
-  </div>
- ^^}$$
-  <div class="form-group buttons">
+
+^^}$$
+^^origin.checkList = function(config){$$
+
+^^}$$
+^^origin.displayTable = function(config){$$
+
+^^}$$
+^^origin.summaryTable = function(config){$$
+
+^^}$$
+^^origin.editTable = function(config){$$
+
+^^}$$
+
+
+^^origin.leadPanel = function(config){$$
+<div class="panel panel-primary">
+  <div class="panel-heading">
     <div class="row">
-      <div class="col-sm-10 text-center">
-        <button class="btn btn-primary" ng-click="^^=config.name$$QueryForm()">^^=config.submitText || "提交"$$</button>
-        <button class="btn btn-cancel" ng-click="^^=config.name$$ResetForm()">重置</button>
+      <div class="col-xs-3">
+        <i class="fa fa-comments fa-5x"></i>
+      </div>
+      <div class="col-xs-9 text-right">
+        <div class="huge">26</div>
+        <div>New Comments!</div>
       </div>
     </div>
   </div>
-</form>
- ^^if(config.toggle){$$
+  <a href="#">
+    <div class="panel-footer">
+      <span class="pull-left">View Details</span>
+      <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+      <div class="clearfix"></div>
+    </div>
+  </a>
 </div>
- ^^}$$
-</div>
-^^}$$
-
-
-^^function pagenator(config){$$
-<div style="text-align:right;">
-<ul class="pagination">
-  <li>
-    <a ng-click="^^=config.name$$.gotoFirst()" aria-label="Previous">
-      <span aria-hidden="true">&laquo;</span>
-    </a>
-  </li>
-  <li ng-class="{active: p==^^=config.name$$.currPage}" ng-repeat="p in ^^=config.name$$.adj()"><a style="cursor:pointer;" ng-click="^^=config.name$$.gotoPage(p)">{{p}}</a></li>
-  <li>
-    <a ng-click="^^=config.name$$.gotoLast()" aria-label="Next">
-      <span aria-hidden="true">&raquo;</span>
-    </a>
-  </li>
-</ul>
-</div>
-^^}$$
-^^origin.table = function(config){$$
-
-^^pagenator(config)$$
-<div>人数：{{^^=config.name$$.count}}</div>
-<table class="table table-bordered">
-  <thead>
- ^^for(var name in config.cols){var col = config.cols[name];$$
-	 <th>^^=col.text$$<a ng-click="^^=config.name$$.sort.^^=name$$ = -^^=config.name$$.sort.^^=name$$ || 1"><i class="fa fa-sort"></i></a></th>
- ^^}$$
-  </thead>
-	<tbody>
-
-		<tr ng-show="!^^=config.api$$.loading" ng-repeat="row in ^^=config.name$$.data">
-  ^^for(var name in config.cols){var col = config.cols[name];$$
-	 ^^switch(col.type){case "op":$$
-	    <td>
-		^^for(var bt in col.buttons){var subcol = col.buttons[bt];$$
-			^^if(subcol.href){$$
-				<a class="btn btn-default btn-xs" href="^^=subcol.href$$" target="_blank">^^=subcol.text$$</a>
-			^^}else if(subcol.click){$$
-				<a class="btn btn-default btn-xs" ng-click="^^=subcol.click$$">^^=subcol.text$$</a>
-			^^}$$
-		^^}$$
-			</td>
-   ^^break; case "date":$$
-			<td>{{row.^^=name$$ | date:'yyyy-MM-dd'}}</td>
-   ^^break; case "image":$$
-			<td><a ng-href="^^=col.src$${{row.^^=name$$}}" target="_blank"><img style="max-width:400px;" ng-src="^^=col.src$${{row.^^=name$$}}"></img></a></td>
-   ^^break; default:$$
-			<td>{{row.^^=name$$}}</td>
-   ^^}$$
-  ^^}$$
-		</tr>
-		<tr ng-show="^^=config.name$$.data.length==0 && !^^=config.api$$.loading"><th colspan="^^=Object.keys(config.cols).length$$" style="text-align:center;">没有记录</th></tr>
-		<tr ng-show="^^=config.api$$.loading"><th colspan="^^=Object.keys(config.cols).length$$" style="text-align:center;">正在加载...</th></tr>
-	</tbody>
-</table>
-^^pagenator(config)$$
-  每页条数
-		<select name="perpage" class="form-control" style="width:10%;" ng-model="^^=config.name$$.perPage">
-			<option>5</option>
-			<option>10</option>
-			<option>20</option>
-			<option>50</option>
-			<option>100</option>
-		</select>
-^^}$$
-
-^^origin.dynamicTable = function(config){$$
-
-<table ng-repeat="tbl in ^^=config.name$$" class="table table-bordered">
-  <thead>
-	 <th ng-repeat="titleText in tbl.title">{{titleText}}</th>
-  </thead>
-	<tbody>
-		<tr ng-repeat="row in tbl.data track by $index">
-			<td ng-repeat="e in row track by $index">{{e}}</td>
-		</tr>
-	</tbody>
-</table>
-
-^^}$$
-
-^^origin.tab = function(config){$$
-<ul class="nav nav-tabs" id="^^=config.name$$">
-  <li ng-repeat="tab in ^^=config.name$$.tabs" ng-class="{active:isActiveTab(tab.url)}">
-    <a ng-click="^^=config.name$$.onClickTab(tab)" data-toggle="tab">{{tab.title}}</a>
-  </li>
-</ul>
-<div id="mainView">
-  <div ng-include="^^=config.name$$.currentTab"></div>
-</div>
-^^}$$
-^^origin.filltab = function(id, fn){$$
-<script type="text/ng-template" id="^^=id$$">
-^^fn();$$
-</script>
-^^}$$
-^^origin.info = function(config){$$
-
 ^^}$$
