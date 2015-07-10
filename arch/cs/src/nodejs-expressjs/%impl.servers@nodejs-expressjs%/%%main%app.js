@@ -169,7 +169,9 @@ var router = express.Router();
 		case "post":
 /////////////////post//////////////////////////
 $$
-router.route('/^^=api.route$$^^=paramsStr$$').post(^^=midwaresStr$$^^=api.name$$);
+router.route('/^^=api.route$$^^=paramsStr$$').post(^^=midwaresStr$$^^=api.controller || api.name$$);
+^^///////////make function start//////////////////
+if(!api.controller){$$
 function ^^=api.name$$(req, res){
 
 ^^for(var key in api.params){var param = api.params[key];$$
@@ -186,6 +188,9 @@ if(!^^=key$$) return sendErr(res, "参数错误：没有^^=key$$");
 ^^}$$
 ^^makeController(api)$$
 };
+^^}
+/////////////////make function end//////////////$$
+
 ^^
 ///////////////rest//////////////////////////////////
 break; case "rest":$$
