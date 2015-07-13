@@ -2,6 +2,7 @@
 	$scope["^^=config.name$$"] = new displayTable($scope);
 	$scope["^^=config.name$$"].refresh();
 $scope.xxx=1;
+$scope.aaa=["A","ab", "cb"];
  ^^if(!local.hasDisplayTable){local.hasDisplayTable = 1;$$
 function displayTable($scope){
 	this.$scope = $scope;

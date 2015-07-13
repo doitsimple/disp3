@@ -71,6 +71,19 @@ $$
 
 })
 ^^});$$
+rootApp.directive('autocomplete', function($parse) {
+  return {
+    require: 'ngModel',
+		link: function(scope, element, attrs) {
+    var setSelection = $parse(attrs.ngModel).assign;
+    scope.$watch(attrs.autocomplete, function(value) {
+      element.autocomplete({				
+        source: value
+      });
+    });
+		}
+	};
+});
 rootApp.directive('contenteditable', function() {
   return {
     require: 'ngModel',

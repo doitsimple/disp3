@@ -51,7 +51,12 @@ function getModel(cname){
 	model.update = function(criteria, doc, fn){
 //fn: function(err, result)
 //result: {n: 1}
-		origin.updateOne(criteria, {$set: doc}, fn);
+		origin.updateOne(criteria, {$set: doc}, function(err, result){
+			var rtn;
+			if(result) rtn = result.result;
+			else rtn = {n: 0};
+			if(fn) fn(err, rtn);
+		});
 	};
 	model.delete = function(criteria, fn){
 //fn: function(err, result)
@@ -70,7 +75,12 @@ function getModel(cname){
 		origin.insertMany(docs, fn);
 	};
 	model.bupdate = function(criteria, doc, fn){
-		origin.updateMany(criteria, {$set: doc}, fn);
+		origin.updateMany(criteria, {$set: doc}, function(err, result){
+			var rtn;
+			if(result) rtn = result.result;
+			else rtn = {n: 0};
+			if(fn) fn(err, rtn);
+		});
 	};
 	model.bdelete = function(criteria, fn){
 		if(!criteria){
@@ -96,29 +106,49 @@ function getModel(cname){
 		origin.aggregate(aggrarr, fn);
 	};
 	model.upsert = function(criteria, doc, fn){
-		origin.updateOne(criteria, {$set: doc}, {upsert:true}, fn);
+		origin.updateOne(criteria, {$set: doc}, {upsert:true}, function(err, result){
+			var rtn;
+			if(result) rtn = result.result;
+			else rtn = {n: 0};
+			if(fn) fn(err, rtn);
+		});
 	};
 	model.sedate = function(criteria, doc, fn){
 		origin.findAndModify(criteria, [], {$set: doc}, function(err, doc){
 			if(err) return fn(err);
 			if(!doc) return fn(null, doc);
-			fn(err, doc.value);
+			if(fn) fn(err, doc.value);
 		});
 	};
 	model.update2 = function(criteria, updateParam, fn){
-		origin.updateOne(criteria, updateParam, fn);
+		origin.updateOne(criteria, updateParam, function(err, result){
+			var rtn;
+			if(result) rtn = result.result;
+			else rtn = {n: 0};
+			if(fn) fn(err, rtn);
+		});
 	};
 	model.upsert2 = function(criteria, updateParam, fn){
-		origin.updateOne(criteria, updateParam, {upsert:true}, fn);
+		origin.updateOne(criteria, updateParam, {upsert:true}, function(err, result){
+			var rtn;
+			if(result) rtn = result.result;
+			else rtn = {n: 0};
+			if(fn) fn(err, rtn);
+		});
 	};
 	model.bupdate2 = function(criteria, updateParam, fn){
-		origin.updateMany(criteria, updateParam, fn);
+		origin.updateMany(criteria, updateParam, function(err, result){
+			var rtn;
+			if(result) rtn = result.result;
+			else rtn = {n: 0};
+			if(fn) fn(err, rtn);
+		});
 	};
 	model.sedate2 = function(criteria, updateParam, fn){
 		origin.findAndModify(criteria, [], updateParam, function(err, doc){
 			if(err) return fn(err);
 			if(!doc) return fn(null, doc);
-			fn(err, doc.value);
+			if(fn) fn(err, doc.value);
 		});
 	};
 
