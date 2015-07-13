@@ -95,15 +95,34 @@ function getModel(cname){
 			selectOptions = {};
 		};
 		var aggrarr = [{$match: criteria}];
-		if(selectOptions.$sort)
+		if(selectOptions.$sort && Object.keys(selectOptions.$sort).length>0)
 			aggrarr.push({$sort: selectOptions.$sort});
 		if(selectOptions.$skip)
-			aggrarr.push({$skip: selectOptions.$skip});
+			aggrarr.push({$skip: parseInt(selectOptions.$skip)});
 		if(selectOptions.$limit)
-			aggrarr.push({$limit: selectOptions.$limit});
-		if(selectOptions.$project)
+			aggrarr.push({$limit: parseInt(selectOptions.$limit)});
+		if(selectOptions.$project && Object.keys(selectOptions.$project).length>0)
 			aggrarr.push({$project: selectOptions.$project});
 		origin.aggregate(aggrarr, fn);
+	};
+	model.count = function(criteria, fn){
+		origin.count(criteria, fn);
+	};
+	model.bcolect = function(criteria, selectOptions, fn){
+		if(!fn){
+			fn = selectOptions; 
+			selectOptions = {};
+		};
+		model.count(criteria, function(err, count){
+			if(err) return fn(err);
+			model.bselect(criteria, selectOptions, function(err, data){
+				if(err) return fn(err);
+				fn(err, {
+					data: data,
+					count: count
+				});
+			});
+		});
 	};
 	model.upsert = function(criteria, doc, fn){
 		origin.updateOne(criteria, {$set: doc}, {upsert:true}, function(err, result){
@@ -153,9 +172,6 @@ function getModel(cname){
 	};
 
 
-	model.count = function(criteria, fn){
-		origin.count(criteria, fn);
-	};
 	/*[{a:1},{a:1},{a:2},{a:3}] distinct a:[1,2,3]*/
 	model.distinct = function(criteria, fn){
 		origin.distinct(criteria, fn);

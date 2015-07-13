@@ -80,7 +80,7 @@ $$
 ^^if(method == "update" || method == "bupdate" || method =="upsert" || method == "update2" || method == "bupdate2" || method == "sedate" || method == "sedate2"){
 $$
 coreDb.getModel("^^=ctrl.db$$").^^=ctrl.method$$(^^=ctrl.where$$, ^^=ctrl.set$$, function(err, ^^=result$$){
-^^}else if(method == "bselect" || method == "bdelete"){
+^^}else if(method == "bselect" || method == "bdelete" || method == "bcolect"){
 $$
 coreDb.getModel("^^=ctrl.db$$").^^=ctrl.method$$(^^=ctrl.where$$, ^^=ctrl.op||"{}"$$, function(err, ^^=result$$){
 ^^}else if(method == "select" || method == "delete"){

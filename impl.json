@@ -1,14 +1,14 @@
 {
-		"clients": {
-				"ide": {
-						"type": "html",
-						"mods": ["angularjs"],
-						"withUis": ["format"]
-				}
-		},
-		"scripts":{
-				"git": {
-						"type": "git"
-				}
+	"clients": {
+		"ide": {
+			"type": "html",
+			"mods": ["libabj"],
+			"withUis": ["format"]
 		}
+	},
+	"scripts":{
+		"git": {
+			"type": "git"
+		}
+	}
 }

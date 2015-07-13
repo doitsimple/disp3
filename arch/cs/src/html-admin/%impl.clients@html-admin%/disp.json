@@ -1,14 +1,12 @@
 {
   "cssLibs": {
-    "vendor/font-awesome/css/font-awesome.min.css": 1,
-    "vendor/metisMenu/metisMenu.min.css":1,
-		"vendor/jquery-ui/jquery-ui.css":1
+    "vendor/metisMenu/metisMenu.min.css":1
   },
   "jsLibs": {
-		"vendor/jquery-ui/jquery-ui.js": 1,
- 		"vendor/js/angular.min.js": 1,
-    "vendor/js/angular-route.min.js": 1,
-    "vendor/js/angular-cookies.min.js": 1,
-		"vendor/metisMenu/metisMenu.min.js": 1
-	}
+		"vendor/metisMenu/metisMenu.min.js": 1,
+		"vendor/js/angular-route.min.js": 1,
+		"vendor/js/angular-cookies.min.js": 1
+
+	},
+	"angularDeps": ["ngRoute", "ngCookies"]
 }

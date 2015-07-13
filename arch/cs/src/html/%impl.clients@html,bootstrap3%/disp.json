@@ -1,8 +1,0 @@
-{
-		"cssLibs": {
-				"vendor/bootstrap/css/bootstrap.min.css": 1
-		},
-		"jsLibs": {
-				"vendor/bootstrap/js/bootstrap.min.js": 1
-		}
-}
