@@ -166,12 +166,82 @@ function getModel(table) {
 			console.error("skip must be used with limit for mysql");
 		execute(selectStr, fn);
 	};
+	model.upsert = function(where, upsertObj, fn){
+		model.select(where, {},function(err,result){
+			if(err){
+				fn(err);
+				return;
+			}
+			if(result){
+				model.update(where, upsertObj,fn);
+			}else{
+				model.insert(upsertObj, fn);
+			}
+		});
+	};
+	model.count = function(where, fn){
+		var selectStr = getSelectStr(where, {}, model.table);
+		execute(selectStr.replace("SELECT *", "SELECT COUNT(*)"), function(err, result){
+			if(err){
+				fn(err);
+				return;
+			}
+			fn(null, {"n": result[0]["COUNT(*)"]});
+		});
+	};
 	model.drop = function(fn) {
 		execute("DROP TABLE " + model.table, fn);
+	};
+	model.sedate = function(criteria, doc, fn){
+		fn("no supported!");
+		// origin.findAndModify(criteria, [], {$set: doc}, function(err, doc){
+		// 	if(err) return fn(err);
+		// 	if(!doc) return fn(null, doc);
+		// 	fn(err, doc.value);
+		// });
+	};
+	//xxxxx2
+	model.update2 = function(criteria, updateParam, fn){
+		fn("no supported!");
+		// origin.updateOne(criteria, updateParam, fn);
+	};
+	model.upsert2 = function(criteria, updateParam, fn){
+		fn("no supported!");
+		// origin.updateOne(criteria, updateParam, {upsert:true}, fn);
+	};
+	model.bupdate2 = function(criteria, updateParam, fn){
+		fn("no supported!");
+		// origin.updateMany(criteria, updateParam, fn);
+	};
+	model.sedate2 = function(criteria, updateParam, fn){
+		fn("no supported!");
+		// origin.findAndModify(criteria, [], updateParam, function(err, doc){
+		// 	if(err) return fn(err);
+		// 	if(!doc) return fn(null, doc);
+		// 	fn(err, doc.value);
+		// });
+	};
+
+	/*[{a:1},{a:1},{a:2},{a:3}] distinct a:[1,2,3]*/
+	model.distinct = function(criteria, fn){
+		fn("no supported!");
+		// origin.distinct(criteria, fn);
+	};
+	model.group = function(criteria, groupOptions, fn){
+		fn("no supported!");
+		// var aggr;
+		// if(!fn){
+		// 	aggr = [{$group:criteria}];
+		// 	fn = groupOptions;
+		// }else{
+		// 	aggr = [{$match: criteria},{$group:groupOptions}];
+		// }
+		// origin.aggregate(aggr, fn);
 	};
 	return model;
 }
 
+module.exports.execute = execute;
 function execute(executable, fn) {
 	if (executable) {
 		mysqlConnection.query(executable, function(err, results) {
@@ -187,7 +257,7 @@ function execute(executable, fn) {
 	}
 
 }
-
+module.exports.getInsertStr = getInsertStr;
 function getInsertStr(json, table) {
 	var cols = [];
 	for (var key in json) {
@@ -195,7 +265,7 @@ function getInsertStr(json, table) {
 	}
 	return "INSERT INTO " + table + "(" + cols.join(", ") + ") VALUES " + genInsertedValuesStr(json, table, false);
 }
-
+module.exports.getInsertsFields = getInsertsFields;
 function getInsertsFields(table){
 	var fields = [];
 	for(var field in schemas[table].fields){
@@ -205,6 +275,7 @@ function getInsertsFields(table){
 	}
 	return fields;
 }
+module.exports.getInsertsStr = getInsertsStr;
 function getInsertsStr(jsonArr, table) {
 	var values = [];
 	for (var i in jsonArr) {
@@ -214,6 +285,7 @@ function getInsertsStr(jsonArr, table) {
 	return "INSERT INTO " + table + "(" + getInsertsFields(table).join(", ") + ") VALUES " + values.join(", ");
 }
 
+module.exports.getSelectStr = getSelectStr;
 function getSelectStr(where, coljson, table) {
 	var colStr, key;
 	var cols = [];
@@ -226,6 +298,7 @@ function getSelectStr(where, coljson, table) {
 	return str;
 }
 
+module.exports.getUpdateStr = getUpdateStr;
 function getUpdateStr(where, doc, table) {
 	var incstr = "";
 	if (doc.$inc) {
@@ -249,6 +322,7 @@ function getUpdateStr(where, doc, table) {
 	return str;
 }
 
+module.exports.getDeleteStr = getDeleteStr;
 function getDeleteStr(where, table) {
 	var str = "DELETE FROM " + table;
 	if (where && Object.keys(where).length)
@@ -257,6 +331,7 @@ function getDeleteStr(where, table) {
 }
 
 
+module.exports.genInsertedValuesStr = genInsertedValuesStr;
 function genInsertedValuesStr(json, table, isAllField) {
 	var values = [];
 	if (isAllField) {
@@ -312,6 +387,7 @@ function genInsertedValuesStr(json, table, isAllField) {
 	return "(" + values.join(", ") + ")";
 }
 
+module.exports.genEqualStr = genEqualStr;
 function genEqualStr(where, sep) {
 	if (!sep) sep = " and ";
 	var whereStr, key;
@@ -336,6 +412,7 @@ function genEqualStr(where, sep) {
 	return whereStr;
 }
 
+module.exports.connect = connect;
 function connect(env, fn) {
 	var str = "^^=host$$";
 	var host_tmp = str.split(":");
