@@ -2,7 +2,7 @@
 	"clients": {
 		"ide": {
 			"type": "html",
-			"mods": ["libabj"],
+			"mods": ["libabfj"],
 			"withUis": ["format"]
 		}
 	},

@@ -3,7 +3,11 @@
 
 ^^}$$
 ^^origin.checkList = function(config){$$
-
+<div>
+<ul class="list-group">
+  <li class="list-group-item" ng-repeat="item in ^^=config.model$$">{{item.name}}</li>
+</ul>
+</div>
 ^^}$$
 ^^origin.displayTable = function(config){$$
 <div class="panel panel-primary">

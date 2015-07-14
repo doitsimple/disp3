@@ -1,3 +1,8 @@
+^^origin.displayJson = function(config){$$
+^^}$$
+^^origin.displayList = function(config){$$
+
+^^}$$
 ^^origin.displayTable = function(config){$$
 	$scope["^^=config.name$$"] = new displayTable($scope, {
 		api: "^^=config.api$$"

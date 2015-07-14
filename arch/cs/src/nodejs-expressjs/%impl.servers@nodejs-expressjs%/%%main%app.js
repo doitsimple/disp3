@@ -167,9 +167,10 @@ var router = express.Router();
 	
 	switch(api.type){
 		case "post":
+		case "get":
 /////////////////post//////////////////////////
 $$
-router.route('/^^=api.route$$^^=paramsStr$$').post(^^=midwaresStr$$^^=api.controller || api.name$$);
+router.route('/^^=api.route$$^^=paramsStr$$').^^=api.type$$(^^=midwaresStr$$^^=api.controller || api.name$$);
 ^^///////////make function start//////////////////
 if(!api.controller){$$
 function ^^=api.name$$(req, res){

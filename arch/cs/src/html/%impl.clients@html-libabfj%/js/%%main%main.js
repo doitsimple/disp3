@@ -186,8 +186,7 @@ rootApp.controller("navbar", function($scope, $rootScope, auth, req){
   });
 });
 rootApp.controller("error", function($scope, $rootScope, auth, req){
-	location = redirect404;
 });
 
 
-^^=controllers$$
+^^=ctrl$$
