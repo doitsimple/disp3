@@ -1,7 +1,12 @@
 {
 		"uis": {
-				"format": {
-						"type": "format"
+				"start": {
+					"elements": [
+					]
+				},
+				"project": {
+					"elements": [
+					]
 				}
 		}
 }

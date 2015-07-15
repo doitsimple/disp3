@@ -21,6 +21,7 @@ function run(projectDir, rootDir, task){
 		return 0;
 	}
 	var configCache = cache.config;
+	configCache.format = cache.format;
 	configCache.env = {};
 	configCache.env.rootDir = rootDir;
 	var formatCache = cache.format;

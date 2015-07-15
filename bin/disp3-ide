@@ -3,6 +3,7 @@ var http = require('http');
 var fs = require('fs');
 var path = require('path');
 var libFile = require("../lib/nodejs/file");
+var libReq = require("../lib/nodejs/req");
 var libIde = require("../src/ide");
 var cp = require("child_process");
 var port = 6174;
@@ -16,12 +17,14 @@ if(!fs.existsSync(global.workspace))
 
 http.createServer(function(req, res) {
 	console.log(req.url);
+	//rfc2616
+
 	var filePath;
 	if(req.url.match(/^\/read\/(\S+)/)){
 		console.log("read");
 		filePath = global.workspace + "/" + decodeURIComponent(req.url.match(/^\/read\/(\S+)/)[1]);
 		console.log(filePath);
-		sendFile(filePath, res);
+		sendFile(filePath, req, res);
 	}else if(req.url.match(/^\/write\/\S+/)){
 		console.log("write");
 		filePath = global.workspace + "/" + decodeURIComponent(req.url.match(/^\/write\/(\S+)/)[1]);
@@ -67,10 +70,10 @@ http.createServer(function(req, res) {
 				if(!fs.existsSync(rp)){
 					gen(path.join(global.workspace, proj), function(err){
 						if(err) {res.end("0"); return;}
-						sendFile(rp, res);
+						sendFile(rp, req, res);
 					});
 				}else{
-					sendFile(rp, res);
+					sendFile(rp, req, res);
 				}
 				break;
 			}
@@ -90,7 +93,7 @@ http.createServer(function(req, res) {
 		if(req.url == "/") req.url = "/index.html";
 
 		filePath = path.join(idePath, url.parse(req.url).pathname);
-		sendFile(filePath, res);
+		sendFile(filePath, req, res);
 	}
 }).listen(port, function(err){
 	if(err) console.log(err);
@@ -116,17 +119,46 @@ function receiveFile(filePath, req, res){
   });
 	req.pipe(stream);
 }
-function sendFile(filePath, res){
-	if(fs.existsSync(filePath)){
+function setLastModified(res, stat){
+	if (!res.getHeader('Date')) res.setHeader('Date', new Date().toUTCString());
+  if (!res.getHeader('Cache-Control')) res.setHeader('Cache-Control', 'public, max-age=0');
+
+	if(!res.getHeader("last-modified")){
+		var modified = stat.mtime.toUTCString();
+		res.setHeader("last-modified", modified);
+	}
+}
+function sendFile(filePath, req, res){
+	fs.stat(filePath, function onstat(err, stat) {
+    if (err && err.code === 'ENOENT'
+      && !path.extname(path)
+      && path[path.length - 1] !== path.sep) {
+      // not found, check extensions
+			res.writeHead(404);
+			res.end("0");
+			return;
+    }
+    if (err) {
+			res.writeHead(404);
+			res.end("0");
+			return;
+		}
+    if (stat.isDirectory()) {
+			res.writeHead(404);
+			res.end("0");
+			return;
+		}
+		setLastModified(res, stat);
+		if(libReq.fresh(req.headers, (res._headers || {}))){
+			res.writeHead(304);
+			res.end();
+			return;
+		}
 		var stream = fs.createReadStream(filePath);
 		stream.on('error', function() {
 			res.writeHead(404);
 			res.end("0");
 		});
 		stream.pipe(res);
-	}
-	else{
-		res.writeHead(404);
-    res.end("0");
-	}
+	});
 }

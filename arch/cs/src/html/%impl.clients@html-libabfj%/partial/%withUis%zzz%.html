@@ -2,14 +2,34 @@
 ^^origin.form = function(config){$$
 
 ^^}$$
-^^origin.checkList = function(config){$$
-<div>
-<ul class="list-group">
-  <li class="list-group-item" ng-repeat="item in ^^=config.model$$">{{item.name}}</li>
-</ul>
-</div>
+
+^^function genKit(config, model){
+ if(config.kit == "list"){
+  origin.list({model: model})
+ }else if(config.kit == "mono"){
+ }
+}$$
+^^function genFormat(config){$$
 ^^}$$
-^^origin.displayTable = function(config){$$
+^^origin.format = function(config){
+var model = config.model, format=config.format;$$
+genKit(format, model);
+^^}$$
+
+^^origin.table2list = function(config){
+var styleStr = "";
+var clickStr = "";
+if(config.click){
+clickStr='ng-click="'+config.click+'"'
+styleStr+="cursor:pointer;";
+}
+$$
+<ul class="list-group">
+  <li class="list-group-item" ng-repeat="item in ^^=config.model$$" ^^=clickStr$$ style="^^=styleStr$$">^^=config.content || '{{item.name}}'$$</li>
+</ul>
+^^}$$
+
+^^origin.table2table = function(config){$$
 <div class="panel panel-primary">
 <div class="panel-heading">^^=config.title || config.name$$</div>
 <div class="panel-body">

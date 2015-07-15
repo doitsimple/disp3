@@ -3,7 +3,7 @@
 		"ide": {
 			"type": "html",
 			"mods": ["libabfj"],
-			"withUis": ["format"]
+			"withUis": ["start", "project"]
 		}
 	},
 	"scripts":{

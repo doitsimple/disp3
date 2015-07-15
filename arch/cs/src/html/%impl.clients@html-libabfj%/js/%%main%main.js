@@ -57,42 +57,6 @@ rootApp.directive('fileModel', ['$parse', function ($parse) {
   };
 }]);
 
-rootApp.factory('auth', function($http, $cookieStore, $rootScope){
-	var methods = {};
-	var idstr = "^^=name$$";
-	var persist = ["token", "userid"];
-	persist.forEach(function(p){
-		methods["get" + p] = function(){
-			var str;
-			try{
-				str = $cookieStore.get(p+idstr);
-			}catch(e){
-				return null;
-			}
-			return str;
-		};
-		methods["set" + p] = function(str){
-			$cookieStore.put(p+idstr, str.toString());
-		};
-	});
-	methods.get = function(){
-		var rtn = {};
-		persist.forEach(function(p){
-			rtn[p] = methods["get" + p]();
-		});
-		return rtn;
-	}
-	methods.set = function(json){
-		persist.forEach(function(p){
-      methods["set" + p](json[p]);
-    });
-	}
-	methods.signout = function(){
-		methods.set({});
-		location = signinUrl;
-	}
-  return methods;
-});
 rootApp.factory('req', function($http){
 	var methods = {};
 	var ajax;
@@ -169,23 +133,8 @@ rootApp.factory('req', function($http){
 	});
 	return methods;
 });
-rootApp.controller("navbar", function($scope, $rootScope, auth, req){
-  $rootScope.$watchCollection("user", function(){
-    if($rootScope.user){
-      $scope.welcome = "欢迎，" + $rootScope.user.username;
-    }else{
-      $scope.welcome = "";
-    }
-  });
-  $scope.signout = auth.signout;
-  ["admin", "censor","stat","op"].forEach(function(tag){
-    $scope["is" + tag] = function(){
-      if(!$rootScope.user) return false;
-      return $rootScope.user[tag];
-    }
-  });
-});
-rootApp.controller("error", function($scope, $rootScope, auth, req){
+
+rootApp.controller("error", function($scope, $rootScope, req){
 });
 
 
