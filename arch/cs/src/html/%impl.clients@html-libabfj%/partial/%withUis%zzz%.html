@@ -3,33 +3,62 @@
 
 ^^}$$
 
-^^function genKit(config, model){
- if(config.kit == "list"){
-  origin.list({model: model})
- }else if(config.kit == "mono"){
+
+^^origin.format = format;
+function format(config){
+ var model = config.model, format=config.format;
+ console.log(format);
+ if(typeof format == "string")
+  format = {type: format};
+ if(format.kit)
+  genKit(format, model);
+ else{
+   switch(format.type){
+    case "array":{
+$$
+
+^^
+    break;} case "number":{
+    break;} case "string":default: {
+$$
+: {{^^=model$$}}
+^^  break;}
+   }
  }
 }$$
-^^function genFormat(config){$$
-^^}$$
-^^origin.format = function(config){
-var model = config.model, format=config.format;$$
-genKit(format, model);
-^^}$$
 
-^^origin.table2list = function(config){
-var styleStr = "";
-var clickStr = "";
-if(config.click){
-clickStr='ng-click="'+config.click+'"'
-styleStr+="cursor:pointer;";
-}
-$$
+^^origin.mono = mono;
+function mono(config){$$
 <ul class="list-group">
-  <li class="list-group-item" ng-repeat="item in ^^=config.model$$" ^^=clickStr$$ style="^^=styleStr$$">^^=config.content || '{{item.name}}'$$</li>
+ ^^for(var key in config.format){$$
+  <li class="list-group-item">^^=key$$
+  ^^format({
+		 model: config.model+"."+key,
+     format: config.format[key]
+		});$$
+	</li>
+ ^^}$$
 </ul>
 ^^}$$
 
-^^origin.table2table = function(config){$$
+^^origin.list = list;
+function list(config){
+var itemStr = "item";
+var styleStr = "";
+var clickStr = "";
+if(config.click){
+ clickStr='ng-click="'+config.click+'"'
+ styleStr+="cursor:pointer;";
+}
+if(!$.isArray(config))
+ itemStr = "(name, item)";
+$$
+<ul class="list-group">
+  <li class="list-group-item" ng-repeat="^^=itemStr$$ in ^^=config.model$$" ^^=clickStr$$ style="^^=styleStr$$">^^=config.content || '{{item.name}}'$$</li>
+</ul>
+^^}$$
+
+^^origin.table = function(config){$$
 <div class="panel panel-primary">
 <div class="panel-heading">^^=config.title || config.name$$</div>
 <div class="panel-body">
@@ -112,6 +141,18 @@ $$
 ^^}$$
 ^^origin.editTable = function(config){$$
 
+^^}$$
+
+
+
+^^function genKit(config, model){
+ if(config.kit == "list"){	
+  list({model: model})
+ }else if(config.kit == "mono"){
+  mono({model: model, format: config.format})
+ }
+}$$
+^^function genFormat(config){$$
 ^^}$$
 
 
