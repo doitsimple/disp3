@@ -252,12 +252,12 @@ function addGenFileList(genFileList, t, contentkey, p, newenvkey, stemp){
 	if(!genFileList[rt]) genFileList[rt] = {};
 	if(!genFileList[rt][contentkey])
 		genFileList[rt][contentkey] = [];
-	genFileList[rt][contentkey].push(p);
+
+	libArray.pushIfNotExists(genFileList[rt][contentkey], p);
 	if(newenvkey)
 		genFileList[rt].env = newenvkey;
 	if(stemp)
 		genFileList[rt].tmpl = stemp;
-
 }
 function getEnv(env, globalenv, envkey){
 	var envlist;

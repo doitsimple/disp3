@@ -1,14 +1,14 @@
 ^^origin.displayJson = function(config){$$
 ^^}$$
-^^origin.displayList = function(config){$$
+^^origin.list = function(config){$$
 
 ^^}$$
-^^origin.displayTable = function(config){$$
+^^origin.table = function(config){$$
 	$scope["^^=config.name$$"] = new displayTable($scope, {
 		api: "^^=config.api$$"
 	});
 	$scope["^^=config.name$$"].refresh();
-$scope.xxx=1;
+$scope.xxx = 1;
 $scope.aaa=["A","ab", "cb"];
 $scope.test.querys=[{name:"A"},{name:"B"}];
  ^^if(!local.hasDisplayTable){local.hasDisplayTable = 1;$$
