@@ -20,8 +20,10 @@ $$
 ^^
     break;} case "number":{
     break;} case "string":default: {
+    var defaultStr = "";
+    if(format.default) defaultStr = "default=" + format.default;
 $$
-: {{^^=model$$}}
+: <div ng-model="^^=model$$" contenteditable ^^=defaultStr$$></div>
 ^^  break;}
    }
  }
@@ -80,13 +82,13 @@ $$
 			<div class="form-group">
 					<div class="input-group" style="padding: 5px 10px;">
 						<input type="text" class="form-control" id="exampleInputAmount" placeholder="Amount">
-						<div class="input-group-addon" contenteditable ng-model="xxx" ng-model-options="{ getterSetter: true }" autocomplete="aaa"></div>			
+						<div class="input-group-addon" contenteditable ng-model="xxx" autocomplete="aaa" default="aaax"></div>			
 						<input type="text" class="form-control" id="exampleInputAmount" placeholder="Amount">
 					</div>
 					<div class="input-group">
 						<input type="text" class="form-control" id="exampleInputAmount" placeholder="Amount">
-						<div class="input-group-addon" contenteditable ng-model="xxx" autocomplete="aaa"></div>			
-						<input type="text" class="form-control" id="exampleInputAmount" placeholder="Amount">
+						<div class="input-group-addon" contenteditable ng-model="xxxx" autocomplete="aaa" default="aaax"></div>
+						<input type="text" class="form-control" contenteditable autocomplete="aaa" id="exampleInputAmount" placeholder="Amount" default="xxx" ng-model="xxxx">
 					</div>
 				</div>
 		</div>

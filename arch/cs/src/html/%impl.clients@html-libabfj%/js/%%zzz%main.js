@@ -63,7 +63,6 @@ function displayTable($scope, config){
 		self.sort = json;
 	}
 	self.refresh = function(){
-			console.log("re");
 		req.postJson("/api/" + self.api, {
 			where: self.where || {},
 			op: {
@@ -72,7 +71,6 @@ function displayTable($scope, config){
 				$limit: self.perPage
 			}
 		}, function(err, data){
-			console.log(err);
 			console.log(data);
 /*
 		var data = {

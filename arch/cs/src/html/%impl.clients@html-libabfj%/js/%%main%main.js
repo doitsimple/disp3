@@ -1,4 +1,5 @@
 var rootApp = angular.module('rootApp', ^^=JSON.stringify(local.angularDeps) || '[]'$$);
+
 rootApp.directive('autocomplete', function($parse) {
   return {
     require: 'ngModel',
@@ -6,12 +7,15 @@ rootApp.directive('autocomplete', function($parse) {
     var setSelection = $parse(attrs.ngModel).assign;
     scope.$watch(attrs.autocomplete, function(value) {
       element.autocomplete({				
-        source: value
+        source: value,
+				delay: 0,
+				minLength: 0
       });
     });
 		}
 	};
 });
+
 rootApp.directive('contenteditable', function() {
   return {
     require: 'ngModel',
@@ -20,11 +24,16 @@ rootApp.directive('contenteditable', function() {
       element.bind('blur', function() {
         scope.$apply(function() {
           ctrl.$setViewValue(element.html());
+					ctrl.$render();
         });
       });
       // model -> view
       ctrl.$render = function() {
-        element.html(ctrl.$viewValue);
+				if(attrs.default && 
+					 (ctrl.$viewValue == "" || ctrl.$viewValue == undefined))
+					element.html(attrs.default);
+				else
+					element.html(ctrl.$viewValue);
       };
       // load init value from DOM
 			ctrl.$render();
