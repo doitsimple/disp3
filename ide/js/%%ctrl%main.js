@@ -1,4 +1,5 @@
 rootApp.controller("mainController", function($scope, $rootScope, req){
+^^origin.format()$$
 	var page = {};
 	$scope.go = go;
 	go("start");

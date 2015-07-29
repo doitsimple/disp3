@@ -1,4 +1,7 @@
 {
-		"arch": "cs",
-		"target": "."
+	"arch": "base",
+	"target": ".",
+	"x": {
+			"type": "xxx"
+	}
 }

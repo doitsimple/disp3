@@ -6,277 +6,238 @@ var libObject = require("../lib/js/object");
 var libFile = require("../lib/nodejs/file");
 var tmpl = require("./tmpl");
 var log = require("./log");
-var regex =  /%([^%@]+)?(?:@([^%@]+))?(?:%([a-zA-Z0-9_-]+)?(?:@([^%@]+))?)?(?:%([^%]+))?%/;
-module.exports.regex = regex;
-function walk(dir, tdir, env, genFileList){
-	if(!fs.existsSync(dir)){
-		log.e(dir + " is not exist");
-		return false;
+var regex = /%(~?)([^%@]+)?(?:@([^%@]+))?(?:%([a-zA-Z0-9_-]+)?(?:@([^%@]+))?)?(?:%([^%]+))?%/;
+module.exports = {
+	regex: regex,
+	walk: walk,
+	readFileList: readFileList
+}
+function readFileList(){
+	var self = this;
+	for(var navpath in self.navpaths){
+		// then iterate file		
+		if(walk.call(self, {
+			name: "",
+			dir: "",
+			basedir: navpath,
+			tname: "",
+			tdir: "",
+			env: self.global, 
+			envkey: ""
+		})) return 1;
 	}
-	if(!tdir){
-		log.e("no target dir");
-		return false;
+	return 0;
+}
+function walk(params){
+/* 
+/home/zyp/xx/yy/file
+ basedir: /home/zyp/xx
+ dir: /yy/
+ name: file
+ tname:
+ tdir:
+ env: {}
+ envkey: env from global
+*/
+	var self = this;
+	if(typeof params.env != "object")
+		params.env = {name: params.env};
+	if(checkName(params.name)) return 0;
+
+// get all name info
+	var nameinfo = matchName.call(self, params);
+	if(nameinfo.ignore)
+		return 0;
+
+	if(nameinfo.mv){
+		params.tname = path.basename(nameinfo.mv);
+		params.tdir = path.dirname(nameinfo.mv) + "/";
 	}
-	if(!env){
-		log.e("no env");
-		return false;
+	if(isGenFile.call(self, params)){
+		log.v("skip "+ nameinfo.fullpath);
+		return 0;
 	}
-	if(!genFileList){
-		log.e("no generate file list for output");
-		return false;
-	}
-	if(fs.existsSync(dir + "/.filelist.json"))
-		if(!env.filelist){
-			env.filelist = libFile.readJSON(dir + "/.filelist.json");			
-		}else{
-			log.e("multiple .filelist.json in workspace: " + dir + "/.filelist.json");
-			return false;
-		}
-	
-
-	// then iterate file
-	return _walk(dir, tdir, env, genFileList, "", env);
-};
-
-function _walk(dir, tdir, env, genFileList, penvkey, globalenv){
-	//	dir=path.resolve(dir);
-	dir=path.relative(".", dir);
-	tdir = path.relative(globalenv.project.target, tdir);
-	if(!dir) dir=".";
-	if(!tdir) tdir=".";
-
-	if(!penvkey) penvkey = "";
-
-
-	var fsconfigs = globalenv.project.fsconfigs;
-	if(fsconfigs){
-		var fsconfig;
-		if(fsconfigs[dir]){
-			fsconfig = fsconfigs[dir];
-			if(fsconfig.ignore)
-				return true;
-			if(fsconfig.mv){
-				env.global = globalenv;
-				tdir = path.resolve(tmpl.render(fsconfig.mv, env));
+	if(nameinfo.isdir){
+		if(nameinfo.src)
+			log.v("src with dir to be implemented");		
+		readDispJson.call(self, params);
+		var subnames = fs.readdirSync(nameinfo.fullpath);
+		for(var i=0; i<subnames.length; i++){
+			var subname = subnames[i];
+			if(nameinfo.multi){
+				for(var key in nameinfo.env){
+					if(nameinfo.selector &&
+						 !matchEnv(nameinfo.key[key], nameinfo.selector))
+						continue;
+					var tmpname = nameinfo.name.replace("/%\S+%/", key);
+					if(walk.call(self, {
+						name: subname,
+						dir: params.dir?params.dir + "/" + nameinfo.name:nameinfo.name,
+						basedir: params.basedir,
+						tname: subname,
+						tdir: params.tdir?params.tdir + "/" + tmpname:tmpname,
+						env: nameinfo.env[key],
+						envkey: nameinfo.envkey
+					})) return 1;
+				}
+			}else{
+				if(walk.call(self, {
+					name: subname,
+					dir: params.dir?params.dir + "/" + nameinfo.name:nameinfo.name,
+					basedir: params.basedir,
+					tname: subname,
+					tdir: params.tdir?params.tdir + "/" + nameinfo.name:nameinfo.name,
+					env: nameinfo.env,
+					envkey: nameinfo.envkey
+				})) return 1;
 			}
 		}
-		else if(fsconfigs[path.basename(dir)]){
-			fsconfig = fsconfigs[path.basename(dir)];
-			if(fsconfig.ignoreall){
-				return true;
-			}
-			if(fsconfig.mvall){
-				env.global = globalenv;
-				tdir = path.relative("." + path.dirname(tdir) + "/" + tmpl.render(fsconfig.mv, env));
-			}
-		}
+	}else{
+		walkFile.call(self, params, nameinfo);
 	}
-
-
+	return 0;
+}
+function readDispJson(params){
+	var self = this;
+	var dir = params.dir;
 	if(fs.existsSync(dir + "/disp-global.json"))
-		libObject.extend(globalenv, libFile.readJSON(dir + "/disp-global.json"));
+		libObject.extend(self.global, libFile.readJSON(dir + "/disp-global.json"));
 	if(fs.existsSync(dir + "/disp-local.json"))
-		libObject.extend(env, libFile.readJSON(dir + "/disp-local.json"));
+		libObject.extend(params.env, libFile.readJSON(dir + "/disp-local.json"));
 	if(fs.existsSync(dir + "/disp.json")){
 		var dispJson = libFile.readJSON(dir + "/disp.json");
 		if(dispJson.tmpl){
 			for(var tmplKey in dispJson.tmpl){
-				dispJson.tmpl[tmplKey] = path.resolve(dir + "/" + dispJson.tmpl[tmplKey]);
-
+				dispJson.tmpl[tmplKey] = 
+					path.resolve(dir + "/" + dispJson.tmpl[tmplKey]);
 			}
 		}
-		libObject.extend(env, dispJson);
-		
+		libObject.extend(params.env, dispJson);		
 	}
-	/*
-	 if(fs.existsSync(dir + "/disp.func")){
-	 tmpl.render({file: dir + "/disp.func"}, env);
-	 }
-	 */
-	
-	var files = fs.readdirSync(dir);
-
-	for(var i=0; i<files.length; i++){
-		var f = files[i];
-		//ignore hidden file or editor backup files
-		if(f == "." || f==".filelist.json" || f.match(/~$/) || f[0] == '#' || f.match(/^disp/)
-			){
-				continue;
-			}
-
-		var p = path.relative(".", dir + '/' + f);
-		var t, rt, newenvkey;
-
-/////////////directory start///////////
-		//check if is directory, _walk
-		var	stat = fs.lstatSync(p);
-		if(stat.isDirectory() && !stat.isSymbolicLink()){
-			if((ms = f.match(regex))){
-				// dir with %% name
-				var envkey = ms[1];
-				var matchStr = ms[2];
-
-				var contentkey = ms[3];
-				var stemp = ms[4];
-				var sdir = ms[5];
-				if(envkey && envkey[0] == "~") penvkey = "";
-				var envlist = getEnv(env, globalenv, envkey);
-				if(!contentkey) contentkey = "main";
-				if(typeof(envlist) != "object"){
-					t = tdir + '/' + f.replace(/%\S+%/, envlist);
-					if(!_walk(p, t, env, genFileList, penvkey, globalenv)){
-						log.e("walk " + p + " failed");
-						return false;
-					}
-				}else{
-					var enums;
-					if(envlist.from){
-						enums = envlist;
-						envlist = libObject.getByKey(globalenv, enums.from);
-					}
-					for(var name in envlist){
-						if(enums && libArray.indexOf(enums, name)==-1)
-							continue;
-						if(matchStr && !matchEnv(envlist[name], matchStr))
-							continue;
-						
-						t = tdir + '/' + f.replace(/%\S+%/, name);
-						if(enums) newenvkey = enums.from + "." + name;
-						else newenvkey = penvkey + "." + envkey + "." + name;
-						if(!_walk(p, t, envlist[name], genFileList, newenvkey, globalenv)){
-							log.e("walk " + p + " failed");
-							return false;
-						}
-					}
-				}
-			}else{
-				// normal dir
-				t = tdir + "/" + f;
-				if(!_walk(p, t, env, genFileList, penvkey, globalenv)){
-          log.e("walk " + p + " failed");
-          return false;
-        }
-			}
-			continue;
-		}
-/////////////directory end///////////
-
-		// check if the file is the generated file
-		if(isGenFile(env.filelist, p)){
-			log.v("skip "+ p);
-			continue;
-		}
-		// check if the file should be ignored (folder already checked before)
-		var ffsconfigs = globalenv.project.fsconfigs;
-		if(ffsconfigs && ffsconfigs[p]){
-			var ffsconfig = ffsconfigs[p];
-			if(ffsconfig.ignore){
-				continue;
-			}
-		}
-
-		// match filename
-//////////////file start/////////////////
-		var ms;
-		if((ms = f.match(regex))){
-			var envkey = ms[1];
-			var matchStr = ms[2];
-			var contentkey = ms[3];
-			var stemp = ms[4];
-
-			var sdir = ms[5];
-			if(envkey && envkey[0] == "~") penvkey = "";
-			var envlist = getEnv(env, globalenv, envkey);
-			if(!contentkey) contentkey = "main";
-
-			if(sdir){
-				var mss = sdir.split(/[-,]/);
-				for(var k=0; k<mss.length; k++){
-					var srcDir = path.resolve(__dirname + "/../lib/" + mss[k]);
-					if(fs.existsSync(srcDir)){
-						libFile.forEachFile(srcDir, function(f2){
-							if(!f2.match(/~$/) && f2[0] != '#' ){
-								t = tdir + "/" + f2;
-								p = path.resolve(srcDir + "/" + f2);
-								addGenFileList(genFileList, t, contentkey, p, penvkey, stemp);
-							}
+}
+function walkFile(params, nameinfo){
+	var self = this;
+	if(nameinfo.src){
+		var mss = nameinfo.src.split(/[-,]/);
+		for(var k=0; k<mss.length; k++){
+			var srcDir = path.relative(".", __dirname + "/../lib/" + mss[k]);
+			if(fs.existsSync(srcDir)){
+				libFile.forEachFile(srcDir, function(f2){
+					if(!f2.match(/~$/) && f2[0] != '#'){
+						addGenFileList.call(self, {
+							name: f2,
+							dir: srcDir + f2,
+							tname: f2,
+							tdir: params.tdir,
+							envkey: nameinfo.envkey,
+							contentkey: nameinfo.contentkey,
+							tmpl: nameinfo.tmpl
 						});
 					}
-				}
-				continue;
+				});
 			}
-
-			if(typeof envlist != "object"){
-				var name = envlist;
-				t = tdir + '/' + f.replace(/%\S+%/, name);
-				addGenFileList(genFileList, t, contentkey, p, penvkey, stemp);
-			}else{
-				var enums;
-				if(envlist.from){
-					enums = envlist;
-					envlist = libObject.getByKey(globalenv, enums.from);
-				}
-				for(var name in envlist){
-					if(enums && libArray.indexOf(enums, name)==-1)
-						continue;
-					if(matchStr && !matchEnv(envlist[name], matchStr))
-						continue;
-					t = tdir + '/' + f.replace(/%\S+%/, name);
-					if(enums)
-						newenvkey = enums.from + "." + name;
-					else
-						newenvkey = penvkey + "." + envkey+ "." + name;
-					addGenFileList(genFileList, t, contentkey, p, newenvkey, stemp);
-				}
-			}
-		}else if(dir != tdir){
-			t = tdir + '/' + f;
-			rt = path.relative(".", t);
-			if(!genFileList[rt]){
-				if(stat.isSymbolicLink())
-					genFileList[rt] = {srclink: p};
-				else
-					genFileList[rt] = {src: p};
-			}
-		}else{
-			rt = path.relative(".", p);
-			if(!genFileList[rt])
-				genFileList[rt] = {self: 1};
 		}
-//////////////file end/////////////////
-	};
-	return true;
-}
-function addGenFileList(genFileList, t, contentkey, p, newenvkey, stemp){
-	var rt=path.relative(".", t);
-	if(!genFileList[rt]) genFileList[rt] = {};
-	if(!genFileList[rt][contentkey])
-		genFileList[rt][contentkey] = [];
-
-	libArray.pushIfNotExists(genFileList[rt][contentkey], p);
-	if(newenvkey)
-		genFileList[rt].env = newenvkey;
-	if(stemp)
-		genFileList[rt].tmpl = stemp;
-}
-function getEnv(env, globalenv, envkey){
-	var envlist;
-	if(envkey){
-		if(envkey[0] == "~")
-			envlist = libObject.getByKey(globalenv, envkey.substr(1));
-		else
-			envlist = libObject.getByKey(env, envkey);
+		return 0;
 	}
-	if(!envlist) envlist = "";
-	return envlist;
+	if(nameinfo.ismatch){
+		addGenFileList.call(self, {
+			name: params.name,
+			dir: params.dir,
+			tname: nameinfo.name,
+			tdir: params.tdir,
+			envkey: nameinfo.envkey,
+			contentkey: nameinfo.contentkey,
+			tmpl: nameinfo.tmpl			
+		});
+	}else if(params.dir != params.tdir){
+		var rt = params.tdir + params.tname;
+		if(!self.filelist[rt]){
+			if(nameinfo.islink)
+				self.filelist[rt] = {srclink: params.dir + params.name};
+			else
+				self.filelist[rt] = {src: params.dir + params.name};
+		}
+	}else{
+		var rt = params.dir + params.name;
+		if(!self.filelist[rt])
+			self.filelist[rt] = {self: 1};
+	}
 }
-function isGenFile(list, file){
-	if(!list) return null;
-	var rpath = path.relative(".", file);
-	if(list[file] && list[file].main)
+function isGenFile(params){
+	var self = this;
+	var t = params.tdir + params.tname;
+	if(self.prevFilelist[t] && self.prevFilelist[t].main)
 		return true;
 	else
 		return false;
+}
+function matchName(params){
+	var self = this;
+	var json = {};
+	var fullpath = params.basedir +"/"+ params.dir+ "/"+params.name;
+	json.fullpath = fullpath;
+	var	stat = fs.lstatSync(fullpath);
+	if(stat.isDirectory()) json.isdir = true;
+	if(stat.isSymbolicLink()) json.islink = true;
+	var ms;
+	if((ms = params.name.match(regex))){
+		// dir with %% name
+		json.ismatch = true;
+		json.isglobal = ms[1];
+		json.envkey = ms[2] || "";
+		json.selector = ms[3];
+		json.contentkey = ms[4] || "main";
+		json.tmpl = ms[5]; 
+		json.src = ms[6]; 
+		if(json.envkey){
+			var val;
+			if(json.isglobal)
+				val = libObject.getByKey(self.global, json.envkey);
+			else{
+				val = libObject.getByKey(params.env, json.envkey);
+				json.envkey = params.envkey + "." + json.envkey;
+			}
+			if(typeof val != "object"){
+				json.name = params.name.replace(/%\S+%/, val);
+			}
+			else{
+				json.env = val;
+				json.multi = true;
+			}
+		}else{
+			json.name = params.name.replace(/%\S+%/, "");
+		}
+	}
+	if(!json.env)
+		json.env = params.env;
+	if(!json.envkey)
+		json.envkey = params.envkey;
+	if(!json.name)
+		json.name = params.name;
+
+	var fsconfig = self.fsconfigs[params.name];
+	if(fsconfig)
+		libObject.append1(json, fsconfig);
+	return json;
+}
+function checkName(f){
+	if(f == "." || f==".filelist.json" || f.match(/~$/) || f[0] == '#' || f.match(/^disp/)){
+		return 1;
+	}
+	return 0;
+}
+function addGenFileList(params){
+	var self = this;
+	var rt = params.tdir + params.tname;
+	if(!self.filelist[rt]) self.filelist[rt] = {};
+	if(!self.filelist[rt][params.contentkey])
+		self.filelist[rt][params.contentkey] = [];
+	libArray.pushIfNotExists(self.filelist[rt][params.contentkey], 
+													 params.dir + params.name);
+	if(params.envkey)
+		self.filelist[rt].env = params.envkey;
+	if(params.tmpl)
+		self.filelist[rt].tmpl = params.tmpl;
 }
 function matchEnv(localenv, str, i){
 
@@ -340,4 +301,3 @@ function matchEnv(localenv, str, i){
 	return matchEnv(localenv, str, i);
 }
 
-module.exports.walk = walk;

@@ -19,5 +19,5 @@ function i(str){
 }
 function v(str){
 	if(level >= 3)
-		console.log(str);
+		console.log("\t"+str);
 }

@@ -1,12 +1,4 @@
 {
-		"kit": "mono",
-		"default": {
-				"deps": {
-						"base": 1
-				},
-				"navspaces": ["impl.clients.*","impl.databases.*","impl.servers.*", "impl.scripts.*","impl.modules.*"],
-				"db": "mongo"
-		},
-		"format": {
-		}
+	"navspaces": ["impl.clients.*","impl.databases.*","impl.servers.*", "impl.scripts.*","impl.modules.*"],
+	"db": "mongo"
 }

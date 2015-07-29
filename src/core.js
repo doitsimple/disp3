@@ -4,22 +4,71 @@ var libString = require("../lib/js/string");
 var libArray = require("../lib/js/array");
 var libObject = require("../lib/js/object");
 var libFile = require("../lib/nodejs/file");
+
 var format = require("./format");
+var nav = require("./nav");
 var walk = require("./walk");
 var tmpl = require("./tmpl");
+var gen = require("./gen");
+var post = require("./post");
 var log = require("./log");
 
-module.exports.run = run;
-/*
-
-*/
-function run(projectDir, rootDir, task){
-
-	var cache = format.readAndCheckConfig(projectDir, rootDir);
-	if(!cache){
-    log.e("read json file failed");
-		return 0;
+module.exports = Disp;
+function Disp(){
+	var config, errorFn;
+	switch(arguments.length){
+		case 0:
+		config = {}, errorFn = function(err){ console.error(err); return 1;};
+		break;
+		case 1:
+		config = {}, errorFn = arguments[0];
+		break;
+		case 2:
+		config = arguments[0], errorFn = arguments[1];
+		break;
+		default:
+		console.error("Disp with wrong args");
 	}
+	var self = this;
+	//the dir contains your project and project.json
+	self.projectDir = config.projectDir || path.resolve(".");
+	//the dir contains disp librarys
+	self.rootDir = config.rootDir || path.resolve(__dirname + "/..");
+	//select the task;
+	self.task = config.task || "main";
+	
+	self.global = {};
+	self.formats = {};
+	self.archs = {};
+	self.genfiles = {};
+	self.navpaths = {};
+	self.prevFilelist = {};
+	self.filelist = {};
+	var dead = false;
+	self.error = function(){
+		dead = true;
+		errorFn.apply(self, arguments);
+		return 1;
+	};
+	var steps = {
+		"readConfigs": format.readConfigs, //generate global
+		"getNavPaths": nav.getNavPaths, //get navpaths
+		"readFileList": walk.readFileList, //read all file list
+		"extendConfigs": format.extendConfigs, //extend global,
+		"genFiles": gen.genFiles, //generate all files,
+		"postRun": post.run //execute script 
+	}
+	for(var step in steps){
+		if(dead) break;
+		log.i(step);
+		steps[step].apply(self);	
+	}
+}
+
+/*
+*/
+function run(){
+	var self = this;
 	var configCache = cache.config;
 	configCache.format = cache.format;
 	configCache.env = {};
@@ -93,25 +142,7 @@ function getNavPaths(config){
 				addPath(paths, archSrc + "/" + type + "-" + mod);
 		}
 	}
-/*
-	var scriptFile = path.resolve(archRoot + "/load.js");
-	if(!fs.existsSync(scriptFile)){
-		log.i("no script file " + scriptFile);
-		log.i("use " + archRoot);
-		paths = [];
-		if(fs.existsSync(archSrc))
-			paths.push(archSrc);
-	}else{
-		config.env.archSrcDir = archSrc;
-		var res = require(scriptFile)(config);
-		if(res)
-			paths = res;
-		else{
-			log.e("get path error: " + scriptFile);
-			return 0;
-		}
-	}
-*/
+
 	if(config.project.navpaths && config.project.navpaths.length)
 		config.project.navpaths.forEach(function(navpath){
 			addPath(paths, navpath);

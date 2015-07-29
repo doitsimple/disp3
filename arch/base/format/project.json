@@ -1,42 +1,38 @@
 {
-    "kit": "mono",
-    "format": {
-				"deps": {
-						"type": "list"
-				},
-				"arch": {
-						"type": "string",
-						"default": "base"
-				},
-        "target": {
-						"type": "string",
-						"default": "."
-				},
-				"navpaths": {
-						"type": "array"
-				},
-				"navspaces": {
-						"type": "array"
-				},
-        "fsconfigs": {
-            "kit": "list",
-            "default": {
-                ".git": {
-                    "ignore": true
-                },
-                "node_modules": {
-                    "ignore": true
-                },
-                "dispmod": {
-                    "ignore": true
-                },
-								"bower_components": {
-										"ignore": true
-								},
-								"x": {
-										"ignore": true
-								}
-            }
-        }
+	"deps": {
+		"$list": {"$type": "boolean"}
+	},
+	"arch": "base",
+  "target": ".",
+	"navpaths": {
+		"$type": "string",
+		"$multi": 1
+	},
+	"navspaces": {
+		"$type": "string",
+		"$multi": 1,
+		"$default": ["*.*.*"]
+	},
+  "fsconfigs": {
+    "$list":  {
+			"ignore": {"$type": "boolean"}
+		},
+		"$default": {
+      ".git": {
+        "ignore": true
+      },
+      "node_modules": {
+        "ignore": true
+      },
+      "dispmod": {
+        "ignore": true
+      },
+			"bower_components": {
+				"ignore": true
+			},
+			"x": {
+				"ignore": true
+			}
     }
+  }
 }
