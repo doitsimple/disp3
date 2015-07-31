@@ -16,25 +16,25 @@
   },
   "servers": {
 		"$list": {
-      "type": "nodejs"
-		},
-    "ip": {"$type": "string"},
-    "port": {"$type": "number"},
-    "protocol": "http",
-		"static": {
-			"$type": "string"
-		},
-		"log": {"$type":"number"},
-		"withApis": {
-			"$multi": true,
-			"$type": "string",
-			"$from": "proto.apis"
-		},
-		"withDatabases": {
-			"$multi": true,
-			"$type": "string",
-			"$from": "impl.databases"
-    }
+      "type": "nodejs",			
+			"ip": {"$type": "string"},
+			"port": {"$type": "number"},
+			"protocol": "http",
+			"static": {
+				"$type": "string"
+			},
+			"log": {"$type":"number"},
+			"withApis": {
+				"$multi": true,
+				"$type": "string",
+				"$from": "proto.apis"
+			},
+			"withDatabases": {
+				"$multi": true,
+				"$type": "string",
+				"$from": "impl.databases"
+			}
+		}
 	},
   "clients": {
 		"$list": {

@@ -31,12 +31,23 @@ function readFileList(){
 }
 function walk(params){
 	var self = this;
-	if(checkName(params.name)) return 0;
 
+	if(params.dir && params.dir != "."){
+		params.fullpath = params.basedir +"/"+ params.dir+ "/"+params.name;
+		params.dirpath = params.basedir +"/"+ params.dir;
+	}
+	else if(params.name){
+		params.fullpath = params.basedir+ "/"+params.name;
+		params.dirpath = params.basedir;
+	}
+	else{
+		params.fullpath = params.basedir;
+		params.dirpath = params.basedir;
+	}
+	if(readDispJson.call(self, params)) return 1;
+	if(checkName(params.name)) return 0;
 // get all name info
 	if(matchName.call(self, params)) return 1;
-
-
 
 	if(params.ignore)
 		return 0;
@@ -52,7 +63,6 @@ function walk(params){
 	if(params.isdir){
 		if(params.src)
 			log.v("src with dir to be implemented");		
-		if(readDispJson.call(self, params)) return 1;
 		var subnames = fs.readdirSync(params.fullpath);
 		for(var i=0; i<subnames.length; i++){
 			var subname = subnames[i];
@@ -73,6 +83,7 @@ function walk(params){
 					})) return 1;
 				}
 			}else{
+
 				if(walk.call(self, {
 					name: subname,
 					dir: params.dir?params.dir + "/" + params.name:params.name,
@@ -90,33 +101,31 @@ function walk(params){
 	}
 	return 0;
 }
-var dispCache = {};
+
 function readDispJson(params){
 	var self = this;
-	var dir = params.fullpath;
-	if(dispCache[dir]) return 0;
-	var env;
+	var dir = params.dirpath;
+
 	if(fs.existsSync(dir + "/disp-global.json")){
-		if(extendDispJson.call(self, params, self.global, 
+		if(extendDispJson.call(self, params, self.global,
 													 libFile.readJSON(dir + "/disp-global.json")))
 			return 1;
 	}
 	if(fs.existsSync(dir + "/disp-local.json")){
-		if(extendDispJson.call(self, params, params.env, 
+		if(extendDispJson.call(self, params, params.env,
 													 libFile.readJSON(dir + "/disp-local.json")))
 			return 1;
 	}
 	if(fs.existsSync(dir + "/disp.json")){
-		if(extendDispJson.call(self, params, params.env, 
+		if(extendDispJson.call(self, params, params.env,
 													 libFile.readJSON(dir + "/disp.json")))
 			return 1;
 	}
-	dispCache[dir] =1;
 	return 0;
 }
 function extendDispJson(params, env, dispJson){
 	var self = this;
-	var dir = params.fullpath;
+	var dir = params.dirpath;
 	if(!dispJson) return self.error("no disp json");
 	if(dispJson.tmpls){
 		for(var tmplKey in dispJson.tmpls){
@@ -125,12 +134,7 @@ function extendDispJson(params, env, dispJson){
 			self.global.tmpls[tmplKey] = p;
 		}
 	}
-	if(params.multi){
-		for(var key in params.env)
-			libObject.extend(params.env[key], dispJson);
-	}
-	else
-		libObject.extend(params.env, dispJson);
+	libObject.extend(params.env, dispJson);
 }
 function walkFile(params){
 	var self = this;
@@ -203,12 +207,6 @@ function isGenFile(params){
 }
 function matchName(params){
 	var self = this;
-	if(params.dir && params.dir != ".")
-		params.fullpath = params.basedir +"/"+ params.dir+ "/"+params.name;
-	else if(params.name)
-		params.fullpath = params.basedir+ "/"+params.name;
-	else
-		params.fullpath = params.basedir;
 	params.relativepath = path.relative(".", params.fullpath) || ".";
 	var	stat = fs.lstatSync(params.fullpath);
 	if(stat.isDirectory()) params.isdir = true;

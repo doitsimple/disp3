@@ -11,6 +11,7 @@ rootApp.config(['$routeProvider',
     $routeProvider.
 ^^
 for(var i in withUis){
+	if(i=="from") continue;
 	var name = withUis[i];
 	var ui = global.proto.uis[name];
  var route;
@@ -59,6 +60,7 @@ rootApp.run(function ($rootScope, auth) {
 
 ^^
 for(var i in withUis){
+	if(i=="from") continue;
 	var name = withUis[i];
 	var ui = global.proto.uis[name];
  var controller = ui.hasOwnProperty("controller")?ui.controller:name;
@@ -69,6 +71,7 @@ rootApp.controller("^^=methods.dash2uc(controller)$$", function($scope, $rootSco
 ^^=local[ui.name]$$
 ^^
  for(var j in ui.withApis){
+	if(j=="from") continue;
   var api = global.proto.apis[ui.withApis[j]];
   origin.api(api);
  };
