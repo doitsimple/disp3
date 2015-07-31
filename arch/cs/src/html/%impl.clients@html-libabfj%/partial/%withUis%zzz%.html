@@ -4,30 +4,101 @@
 ^^}$$
 
 
-^^origin.format = format;
-function format(config){
- var model = config.model, format=config.format;
- console.log(format);
- if(typeof format == "string")
-  format = {type: format};
- if(format.kit)
-  genKit(format, model);
- else{
-   switch(format.type){
-    case "array":{
+^^origin.format = function(config){
+$$
+<div class="json">
+<ul class="list-group">
+^^format(config.model, config.format, "parent")$$
+</ul>
+</div>
+^^
+};
+function addIndent(level){
+ for(var l=0; l<level; l ++){
+$$
+<span class="indent"></span>
+^^
+ }
+}
+function format(model, formatJson, pkey, level){
+ var parent = model.replace(/(\.[^\.\[\]]+)$|(\[[^\.\[\]]+\])$/, "");
+ if(!level) level = 0;
+ if(typeof formatJson != "object"){
+    formatJson = {
+      $type: typeof formatJson,
+      $default: formatJson
+    }
+ }
+
+ if(formatJson.$type){
+	formatSub(model, pkey, formatJson.$type, formatJson, level)
+  return;
+ }
+
+ if(formatJson.$list){
+$$
+<div ng-hide="^^=parent$$.$collapse">
+<li class="list-group-item">
+^^addIndent(level)$$
+<span class="icon glyphicon glyphicon-minus" ng-click="^^=model$$.$collapse=!^^=model$$.$collapse"></span>
+<div style="display:inline-block;">^^=pkey$$</div>
+</li>
+<div ng-repeat="(key, val) in ^^=model$$" ng-hide="^^=model$$.$collapse">
+^^
+		format(model+"[key]", formatJson.$list, "{{key}}", level + 1);
+$$
+</div>
+</div>
+^^
+  return;
+ }
+ var ii=0;
+ for(var key in formatJson){
+  if(key[0] == "$") continue;
+  ii ++;
+ }
+$$
+<li class="list-group-item" ng-hide="^^=parent$$.$collapse">
+^^addIndent(level)$$
+<span class="icon glyphicon glyphicon-minus" ng-click="^^=model$$.$collapse=!^^=model$$.$collapse"></span>
+<div style="display:inline-block;">^^=pkey$$</div>
+</li>
+^^
+ for(var key in formatJson){
+  if(key[0] == "$") continue;
+  var f = formatJson[key];
+  if(f.$multi){
+
+  }else{
+	 formatSub(model+"['"+key + "']", key, f.$type, f, level + 1)
+  }
+ }
+}
 $$
 
-^^
-    break;} case "number":{
-    break;} case "string":default: {
-    var defaultStr = "";
-    if(format.default) defaultStr = "default=" + format.default;
+^^function formatSub(model, key, type, f, level){
+ var parent = model.replace(/(\.[^\.\[\]]+)$|(\[[^\.\[\]]+\])$/, "");
+ var defaultStr = "";
+
+ if(f.$default) defaultStr='default="'+f.$default + '"';
 $$
-<div ng-model="^^=model$$" contenteditable ^^=defaultStr$$></div>
-^^  break;}
-   }
+^^
+ if(type == "number" || type == "string" || type == "boolean"){
+$$
+
+<li class="list-group-item" ng-hide="^^=parent$$.$collapse">
+^^addIndent(level)$$
+<span class="icon glyphicon glyphicon-wrench"></span>
+<div style="display:inline-block;font-weight:700;margin-right:1em;">^^=key$$</div>
+<div style="display:inline-block;min-width:3em;" ng-model="^^=model$$" contenteditable ^^=defaultStr$$></div>
+</li>
+^^
+ }else{
+format(model, f, key, level)
  }
-}$$
+}
+$$
+
 
 ^^origin.mono = mono;
 function mono(config){$$

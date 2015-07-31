@@ -155,6 +155,8 @@ var router = express.Router();
 	var midwaresStr = "";
 	for(var j in api.midwares){
 		var midware= api.midwares[j];
+		if(typeof midware == "string")
+			midware = {type: midware}
 		switch (midware.type){
 			case "auth":
 				if(!midware.scope)

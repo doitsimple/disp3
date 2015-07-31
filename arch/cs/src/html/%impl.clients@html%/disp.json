@@ -5,7 +5,7 @@
 	"js": {
 		"js/main.js": 1
 	},
-	"tmpl": {
+	"tmpls": {
 		"html": "disp.tpl.html",
 		"basic": "disp.basic.html"
 	}

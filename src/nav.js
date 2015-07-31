@@ -45,10 +45,9 @@ function getNavPaths(){
 			project.navpaths.forEach(function(navpath){
 				addPath.call(self, navpath);
 		});
-		addPath.call(self, ".");
 	}
-	console.log("navpaths!!!");
-	console.log(self.navpaths);
+	addPath.call(self, ".");
+	log.i(self.navpaths);
 }
 function addPath(p){
 	var self = this;

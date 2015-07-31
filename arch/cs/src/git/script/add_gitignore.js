@@ -1,6 +1,6 @@
 var fs = require("fs");
 var libFile = require("./lib/file");
-var json = require("../.filelist.json");
+var json = require("../disp.filelist.json");
 var ig = __dirname + "/../.gitignore";
 var igb= __dirname + "/../.gitignore_bac";
 var path = require("path");
@@ -14,7 +14,7 @@ if(fs.existsSync(igb)){
 	libFile.cpSync(ig, igb);
 }
 for(var file in json){
-  if(json[file].main || json[file].src){
+  if(json[file].main || json[file].src || json[file].srclink){
 		var rf = path.relative(__dirname + "/..", file);
     fs.appendFileSync(ig, rf+"\n");
 		if(fs.existsSync(file))

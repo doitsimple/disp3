@@ -1,0 +1,11 @@
+.json span.indent{
+		margin-left:10px;
+		margin-right:10px
+}
+.json span.icon{
+		width:12px;
+		margin-right:5px
+}
+.treeview .node-disabled{color:silver;cursor:not-allowed}
+.node-treeview12{}
+.node-treeview12:not(.node-disabled):hover{background-color:#F5F5F5;} 

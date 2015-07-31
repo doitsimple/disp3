@@ -10,8 +10,9 @@ rootApp.config(['$routeProvider',
   function($routeProvider) {
     $routeProvider.
 ^^
-$.forEnums(withUis, global, function(ui){
-	var name = ui.name;
+for(var i in withUis){
+	var name = withUis[i];
+	var ui = global.proto.uis[name];
  var route;
  if(ui.isHome) route = "";
  else if(ui.params) {
@@ -24,6 +25,7 @@ $.forEnums(withUis, global, function(ui){
  }
  var template = ui.hasOwnProperty("template")?ui.template:name;
  var controller = ui.hasOwnProperty("controller")?ui.controller:name;
+
 $$
   ^^if(ui.redirect){$$
 			when('/^^=route$$', {
@@ -35,7 +37,7 @@ $$
 				controller: '^^=methods.dash2uc(controller)$$'
 			}).
   ^^}$$
-^^})$$
+^^}$$
 			otherwise({
         redirectTo: '/error'
       });
@@ -56,14 +58,20 @@ rootApp.run(function ($rootScope, auth) {
 
 
 ^^
-methods.forEnums(withUis, global, function(ui){
+for(var i in withUis){
+	var name = withUis[i];
+	var ui = global.proto.uis[name];
+ var controller = ui.hasOwnProperty("controller")?ui.controller:name;
+
+
 $$
-rootApp.controller("^^=methods.dash2uc(ui.name)$$", function($scope, $rootScope, $routeParams, $sce, auth, req){
+rootApp.controller("^^=methods.dash2uc(controller)$$", function($scope, $rootScope, $routeParams, $sce, auth, req){
 ^^=local[ui.name]$$
 ^^
- methods.forEnums(ui.withApis, global, function(api){
+ for(var j in ui.withApis){
+  var api = global.proto.apis[ui.withApis[j]];
   origin.api(api);
- });
+ };
  for(var key in ui.elements){
   var el = ui.elements[key];
   if(origin[el.type])
@@ -72,7 +80,7 @@ rootApp.controller("^^=methods.dash2uc(ui.name)$$", function($scope, $rootScope,
 $$
 
 })
-^^});$$
+^^};$$
 rootApp.directive('video', function() {
   return {
     restrict: 'E',

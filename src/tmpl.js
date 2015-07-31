@@ -92,6 +92,7 @@ function render(config, data){
 		try{
 			eval(evalstr);
 		}catch(e){
+			console.log(evalstr);
 			log.e(config);
 			log.e(e.stack);
 			eval(evalstr);

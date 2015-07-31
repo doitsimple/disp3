@@ -5,8 +5,8 @@ rootApp.config(['$routeProvider',
   function($routeProvider) {
     $routeProvider.
 ^^
-$.forEnums(withUis, global, function(ui){
-	var name = ui.name;
+for(var i in withUis){
+  var ui = global.proto.uis[withUis[i]];
  var route;
  if(ui.isHome) route = "";
  else if(ui.params) {
@@ -30,7 +30,7 @@ $$
 				controller: '^^=methods.dash2uc(controller)$$Controller'
 			}).
   ^^}$$
-^^})$$
+^^}$$
 			otherwise({
         redirectTo: '/error'
       });
@@ -51,14 +51,17 @@ rootApp.run(function ($rootScope, auth) {
 
 
 ^^
-methods.forEnums(withUis, global, function(ui){
+for(var i in withUis){
+  var name = withUis[i];
+  var ui = global.proto.uis[name];
 $$
 rootApp.controller("^^=methods.dash2uc(ui.name)$$Controller", function($scope, $rootScope, $routeParams, $sce, auth, req){
 ^^=local[ui.name]$$
 ^^
- methods.forEnums(ui.withApis, global, function(api){
+ for(var i in ui.withApis){
+	var api= global.proto.apis[ui.withApis[i]];
   origin.api(api);
- });
+ };
  for(var key in ui.elements){
   var el = ui.elements[key];
   if(origin[el.type])
@@ -67,7 +70,7 @@ rootApp.controller("^^=methods.dash2uc(ui.name)$$Controller", function($scope, $
 $$
 
 })
-^^});$$
+^^};$$
 
 rootApp.factory('auth', function($http, $cookieStore, $rootScope){
   var methods = {};

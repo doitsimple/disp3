@@ -10,11 +10,11 @@ var node = process.argv[0], //nodejs binary
 		dispCmd = process.argv[1], //this file
 		task = process.argv[2];
 
-log.setLevel(3);
+log.setLevel(2);
 
 var config = {};
 if(process.env.rootDir) config.rootDir = path.resolve(process.env.rootDir);
-
+config.task = task || "main";
 new Disp(config, function(err, result){
 	if(err){
 		log.e(err);

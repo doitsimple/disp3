@@ -29,9 +29,9 @@ function readConfigs(){
 	//base arch is load by default
 	if(!self.formats["base"])
 		if(readConfigsSub.call(self, "base")) return 1;
-
 // read global
 	for(var label in self.formats){
+		log.v("label: " + label);
 		if(!self.global[label]){
 			if(fs.existsSync(self.projectDir + "/" + label + ".json")) 
 				self.global[label] = libFile.readJSON(self.projectDir + "/" + label + ".json");
@@ -41,10 +41,12 @@ function readConfigs(){
 	}
 	mountJSON(self.global);
 	mountString(self.global);
+	self.global.tmpls = self.tmpls;
+	self.global.froms = self.froms;
+	self.global.formats = self.formats;
 
 //format global
 	for(var label in self.formats){
-		log.v("format " + label + ".json");
 		if(format.call(self, label, self.global, self.formats[label])) return 1;	
 	}
 
@@ -57,8 +59,8 @@ function readConfigs(){
     libObject.extend(self.global, libFile.readJSON(self.task + ".json"));
 
 //format target path
-  self.global.project.target = path.relative(".", self.global.project.target);
-  if(self.global.project.target == "") self.global.project.target = ".";
+  projectJson.target = path.relative(".", projectJson.target);
+  if(projectJson.target == "") projectJson.target = ".";
 
 
 //add internal fsconfigs
@@ -68,19 +70,16 @@ function readConfigs(){
 		libObject.setIfEmpty(projectJson.fsconfigs, label + ".json", 
 												 {ignore: true}); 		
 	}
+  if(self.task != "main")
+		libObject.setIfEmpty(projectJson.fsconfigs, self.task + ".json", 
+												 {ignore: true});
 
-	if(self.global.project.target != "."){
-		var target = path.resolve(self.global.project.target);
-		libObject.setIfEmpty(self.global.project.fsconfigs, target, {ignore: true});
+	if(projectJson.target != "."){
+		var target = path.relative(".", projectJson.target);
+		libObject.setIfEmpty(projectJson.fsconfigs, target, {ignore: true});
 	}
 
-	self.fsconfigs = self.global.project.fsconfigs || {};
-	console.log("global!!!!");
-	console.log(self.global);
-	console.log("formats!!!!");
-	console.log(self.formats);
-	console.log("archs!!!!");
-	console.log(self.archs);
+	self.fsconfigs = projectJson.fsconfigs || {};
 	return 0;
 }
 function extendConfigs(){
@@ -118,14 +117,11 @@ function readConfigsSub(arch){
 function checkConfig(arch, label){
 	var self = this;
 	var archDir = self.rootDir + "/arch/" + arch;	
-	log.v("read " + arch + " format: " + label + ".json");
 	var formatProjectJson = libFile.readJSON(archDir+ "/format/" + label +".json");
 
 	if(formatProjectJson){
 		if(!self.formats[label]) self.formats[label] = formatProjectJson;
 		else libObject.append(self.formats[label], formatProjectJson);
-//		log.v("format " + label + ".json");
-//		if(format.call(self, self.global[label], formatProjectJson)) return 1;
 	}
 }
 function getLabels(arch){
@@ -152,6 +148,7 @@ function mountJSON(config, dir){
       e = itConfig[key];
     else
       e = itConfig[key][i];
+
     if(e[0] == "@" && e[1] == "@"){
       var jpath = path.resolve(dir + "/" +e.substr(2));
       var json = libFile.readJSON(jpath);
@@ -192,22 +189,23 @@ function format(key, parent, formatJson){
 			$default: formatJson
 		}
 	}
-
+	if(typeof parent != "object")
+		return self.error(parent + " is not object");
 	// assume both json and formatJson are ensured not null
 	if(formatJson.$required && !parent.hasOwnProperty(key)) 
-		return self.error(key + " required");
-	if(!parent[key]){
+		return self.error(key + " required" + "\n" + JSON.stringify(formatJson));
+	if(!parent.hasOwnProperty(key)){
 		if(formatJson.$multi)
 			parent[key] = [];
 		else if(!formatJson.$type)
 			parent[key] = {};		
 	}
-
 	if(formatJson.$type){
 // leaf
 		var f = formatJson;
-		if(f.$default)
-			if(!parent[key]) parent[key] = f.$default;
+		if(f.$default){
+			if(!parent.hasOwnProperty(key)) parent[key] = f.$default;
+		}
 		if(f.$multi){
 			if(f.$default) if(!parent[key].length) parent[key] = f.$default;
 			if(!libObject.isArray(parent[key])) return self.error("not array " +  key + ":" + parent[key]);
@@ -216,9 +214,13 @@ function format(key, parent, formatJson){
 				if(formatSub.call(self, key, vals[i], f)) return 1;
 			}
 		}else{
+			if(f.$eq && !parent.hasOwnProperty(key)) 
+				parent[key] = parent[f.$eq];
 			if(formatSub.call(self, key, parent[key], f)) return 1;
 		}
-	}
+		return 0;
+	}	
+
 	if(formatJson.$list){
 		if(formatJson.$multi) return self.error("$multi and $list should not used together");
 		if(formatJson.$default){
@@ -227,12 +229,14 @@ function format(key, parent, formatJson){
 			}
 		}
 		for(var key2 in parent[key]){
+			if(key2[0] == "$" || key2 == "name") continue;
 			if(format.call(self, key2, parent[key], formatJson.$list))	return 1;
 		}
 		return 0;
 	}
+	parent[key].name = key;
 	for(var key2 in formatJson){
-		if(key2[0] == "$") continue;
+		if(key2[0] == "$" || key2 == "name") continue;
 		var f = formatJson[key2];
 		if(format.call(self, key2, parent[key], f)) return 1;
 	}
@@ -241,10 +245,11 @@ function format(key, parent, formatJson){
 }
 function formatSub(key, val, f){
 	var self = this;
+	if(val == undefined && !f.$required) return 0;
 	switch(f.$type){
 	case "number":
 		//number
-		if(typeof val != type) return self.error("wrong " + type +" format " + key + ":" + val);
+		if(typeof val != "number") return self.error("wrong number format " + key + ":" + val);
 		if(f.$gt && val <= f.$gt) return self.error(key + ":" + val + " not gt " + f.$gt);
 		if(f.$gte && val < f.$gte) return self.error(key + ":" + val + " not gte " + f.$gte);
 		if(f.$lt && val >= f.$lt) return self.error(key + ":" + val + " not lt " + f.$lt);
@@ -255,11 +260,16 @@ function formatSub(key, val, f){
 		break;
 	case "string": 
 		//string
-		if(typeof val != "string") return self.error("wrong string format " + key + ":" + val);
+		if(typeof val != "string") return self.error("wrong string format " + key + ":" + val + "\n"+JSON.stringify(f));
 		if(f.$regex && !val.match(f.$regex)) return self.error(key + ":" + val + " not match " + f.$regex);
 		if(f.$from){
 			var ljson = libObject.getByKey(self.global, f.$from);
-			if(!(val in ljson)) return self.error(val + " is not in " + Object.keys(ljson));	
+			if(!(val in ljson)) return self.error(val + " is not in " + Object.keys(ljson));
+			if(!self.froms[key])
+				self.froms[key] = f.$from;
+			else if(self.froms[key] != f.$from)
+				return self.error(key + " is bind to " +self.froms[key], 
+													", so "+f.$from + " is not allowed");
 		}
 		break;
 	default:

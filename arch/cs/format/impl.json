@@ -1,92 +1,55 @@
 {
-  "kit": "mono",
-  "format": {
-    "databases": {
-      "kit": "list",
-      "format": {
-        "type": {
-          "type": "enum",
-          "sets": [
-            "mongo",
-            "mysql",
-						"redis"
-          ],
-					"default": "mongo"
-        },
-        "host": "string",
-        "port": "number",
-        "username": "string",
-        "password": "string",
-        "database": {
-					"type": "string",
-					"default": "test"
-				},
-				"withSchemas": {
-					"type": "enums",
-					"from": "proto.schemas"
-				}
-      }
-    },
-    "servers": {
-      "kit": "list",
-      "format": {
-        "type": {
-          "type": "enum",
-          "sets": [
-            "expressjs",
-            "nodejs",
-						"none"
-          ],
-					"default": "nodejs"
-        },
-        "ip": "string",
-        "port": "number",
-        "protocol": {
-					"type": "enums",
-					"sets": ["http", "https"],
-					"default": "http"
-				},
-				"static": {
-					"type": "string"
-				},
-				"log": "number",
-				"withApis": {
-					"type": "enums",
-					"from": "proto.apis",
-					"check": {
-						"in": {
-							"auth": "impl.server.withAuths"
-						}
-					}
-				},
-				"withDatabases": {
-					"type": "enums",
-					"from": "impl.databases"
-				}
-      }
-    },
-    "clients": {
-      "kit": "list",
-      "format": {
-        "type": {
-          "type": "enum",
-          "sets": [
-						"html",
-            "android",
-            "ios",
-						"none"
-          ],
-					"default": "html"
-        },
-				"withUis": {
-					"type": "enums",
-					"from": "proto.uis"
-				},
-				"withServers": {
-					"type": "enums",
-					"from": "impl.servers"
-				}
-      }
+  "databases": {
+		"$list": {
+			"type": "mongo",
+			"host": {"$type":"string"},
+			"port": {"$type":"number"},
+			"username": {"$type":"string"},
+			"password": {"$type":"string"},
+			"database": "test",
+			"withSchemas": {
+				"$multi": true,
+				"$type": "string",
+				"$from": "proto.schemas"
+			}
+		}
+  },
+  "servers": {
+		"$list": {
+      "type": "nodejs"
+		},
+    "ip": {"$type": "string"},
+    "port": {"$type": "number"},
+    "protocol": "http",
+		"static": {
+			"$type": "string"
+		},
+		"log": {"$type":"number"},
+		"withApis": {
+			"$multi": true,
+			"$type": "string",
+			"$from": "proto.apis"
+		},
+		"withDatabases": {
+			"$multi": true,
+			"$type": "string",
+			"$from": "impl.databases"
+    }
+	},
+  "clients": {
+		"$list": {
+			"type": "html",
+			"withUis": {
+				"$multi": true,
+				"$type": "string",
+				"$from": "proto.uis"
+			},
+			"withServers": {
+				"$multi": true,
+				"$type": "string",
+				"$from": "impl.servers"
+			}
     }
   }
 }
+

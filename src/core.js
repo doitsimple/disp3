@@ -18,7 +18,7 @@ function Disp(){
 	var config, errorFn;
 	switch(arguments.length){
 		case 0:
-		config = {}, errorFn = function(err){ console.error(err); return 1;};
+		config = {}, errorFn = function(err){ log.e(err); return 1;};
 		break;
 		case 1:
 		config = {}, errorFn = arguments[0];
@@ -27,7 +27,7 @@ function Disp(){
 		config = arguments[0], errorFn = arguments[1];
 		break;
 		default:
-		console.error("Disp with wrong args");
+		log.e("Disp with wrong args");
 	}
 	var self = this;
 	//the dir contains your project and project.json
@@ -39,8 +39,10 @@ function Disp(){
 	
 	self.global = {};
 	self.formats = {};
+	self.froms = {};
+	self.tmpls = {};
+
 	self.archs = {};
-	self.genfiles = {};
 	self.navpaths = {};
 	self.prevFilelist = {};
 	self.filelist = {};

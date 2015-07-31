@@ -1,6 +1,11 @@
 ^^origin.displayJson = function(config){$$
 ^^}$$
-^^origin.list = function(config){$$
+^^origin.format = function(config){$$
+
+$scope.toggle = function(model){
+	if(!model.$sub) model.$sub = {};
+	model.$sub.$collapse = !model.$sub.$collapse;
+}
 
 ^^}$$
 ^^origin.table = function(config){$$

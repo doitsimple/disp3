@@ -1,70 +1,46 @@
 {
-    "kit": "mono",
-    "format": {
-        "schemas": {
-            "kit": "list",
-            "format": {
-                "fields": {
-                    "kit": "list",
-                    "format": {
-                        "type": "enum",
-												"sets": ["string", "int", "date"],
-												"default": "string"
-                    }
-                }
-            }
-        },
-        "apis": {
-						"kit": "list",
-						"format": {
-								"route": {
-										"type": "string",
-										"eq": "name"
-								},
-								"midwares": {
-										"kit": "array",
-										"format": {
-												"type": {
-														"type": "enum",
-														"sets": [
-																"auth",
-																"multipart",
-																"controller"
-														]
-												}
-										}
-								},
-								"controllers": {
-										"kit": "array"
-								},
-								"params": {
-										"kit": "list",
-										"format": {
-												"text": "string"
-										}
-								}
-						}
-				},
-        "uis": {
-						"kit": "list",
-						"format": {
-								"title": "string",
-								"params": "array",
-								"elements": {
-										"kit": "list",
-										"format": {
-												"type": "string"
-										}
-								},
-								"withApis": {
-										"type": "enums",
-										"from": "proto.apis",
-										"default": []
-								}
-						}
-				},
-				"auths": {
-						"kit": "list"
-				}
+  "schemas": {
+		"$list":{
+			"fields": {
+				"$list": {
+          "type": "string"
+        }
+      }
     }
+  },
+  "apis": {
+		"$list": {
+			"route": {
+				"$type": "string",
+				"$eq": "name"
+			},
+			"midwares": {
+				"$type": "string",
+				"$multi": true
+			},
+			"controllers": {
+				"$multi": true
+			},
+			"params": {
+				"$list": {
+					"text": {"$type": "string"}
+				}
+			}
+		}
+	},
+  "uis": {
+		"$list": {
+			"title": {"$type": "string"},
+			"elements": {
+				"$list": {
+					"type": {"$type": "string"}
+				}
+			},
+			"withApis": {
+				"$multi": true,
+				"$type": "string",
+				"$from": "proto.apis"
+			}
+    }
+	}
 }
