@@ -46,6 +46,7 @@ function Disp(){
 	self.navpaths = {};
 	self.prevFilelist = {};
 	self.filelist = {};
+	self.global.bin = process.argv[1];
 	var dead = false;
 	self.error = function(){
 		dead = true;

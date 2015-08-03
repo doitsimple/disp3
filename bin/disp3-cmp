@@ -1,0 +1,26 @@
+#!/usr/bin/env node
+var fs = require("fs");
+var dir1 = process.argv[2];
+var dir2 = process.argv[3];
+var json1 = JSON.parse(fs.readFileSync(dir1+"/disp.filelist.json"));
+var json2 = JSON.parse(fs.readFileSync(dir2+"/.filelist.json"));
+var ignore = {
+	"impl.json":1,
+	"project.json":1,
+	"proto.json":1
+}
+for(var file in json2){
+  if(!json1[file]){
+		if(!ignore[file]){
+			console.error(file);
+			process.exit();
+		}
+  }
+	if(fs.lstatSync(dir1+"/"+file).isSymbolicLink())
+		continue;
+	if(fs.readFileSync(dir1+"/"+file).toString() != 
+		 fs.readFileSync(dir2+"/"+file).toString()){
+		console.log(file);
+	}
+}
+console.log("success");

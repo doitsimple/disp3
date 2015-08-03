@@ -12,10 +12,12 @@ module.exports = {
 }
 function readConfigs(){
 	var self = this;
+
 // begin with project.json
 	log.v("read project.json");
 	if(!fs.existsSync(self.projectDir + "/project.json")) return self.error("no prject.json");
 	var projectJson = libFile.readJSON(self.projectDir + "/project.json");
+
 	self.global.project = projectJson;
 
 	if(!projectJson.arch) projectJson.arch = "base";
@@ -46,9 +48,9 @@ function readConfigs(){
 	self.global.formats = self.formats;
 
 //format global
-	for(var label in self.formats){
-		if(format.call(self, label, self.global, self.formats[label])) return 1;	
-	}
+//	for(var label in self.formats){		
+	if(format.call(self, "global", self, self.formats)) return 1;	
+//	}
 
 //read previous file list
 	if(fs.existsSync(self.projectDir + "/disp.filelist.json"))
@@ -88,7 +90,8 @@ function extendConfigs(){
 //extend global again (because walk may overwrite global)
   if(self.task != "main")
     libObject.extend(self.global, libFile.readJSON(self.task + ".json"));
-
+//format twice
+	if(format.call(self, "global", self, self.formats)) return 1;	
 	return 0;
 }
 function readConfigsSub(arch){

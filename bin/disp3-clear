@@ -1,0 +1,9 @@
+#!/usr/bin/env node
+var fs = require("fs");
+var json = JSON.parse(fs.readFileSync("./disp.filelist.json"));
+for(var file in json){
+  if(!json[file].self){
+		fs.unlinkSync(file);
+  }
+}
+console.log("success");

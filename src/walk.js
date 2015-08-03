@@ -193,8 +193,12 @@ function walkFile(params){
 				self.filelist[rt] = {src: params.fullpath};
 		}
 	}else{
-		if(!self.filelist[rt])
-			self.filelist[rt] = {self: 1};
+		if(!self.filelist[rt]){
+			if(params.islink)
+				self.filelist[rt] = {selflink: 1};
+			else
+				self.filelist[rt] = {self: 1};
+		}
 	}
 }
 function isGenFile(params){
