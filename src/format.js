@@ -86,12 +86,13 @@ function readConfigs(){
 }
 function extendConfigs(){
 	var self = this;
-
+	log.i(self.navpaths);
 //extend global again (because walk may overwrite global)
   if(self.task != "main")
     libObject.extend(self.global, libFile.readJSON(self.task + ".json"));
 //format twice
 	if(format.call(self, "global", self, self.formats)) return 1;	
+	fs.writeFileSync(self.global.project.target + "/disp.global.json", JSON.stringify(self.global, undefined, 2));
 	return 0;
 }
 function readConfigsSub(arch){

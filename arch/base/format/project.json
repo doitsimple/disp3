@@ -24,10 +24,10 @@
       "node_modules": {
         "ignore": true
       },
-      "dispmod": {
-        "ignore": true
-      },
 			"bower_components": {
+				"ignore": true
+			},
+			"kits": {
 				"ignore": true
 			},
 			"x": {

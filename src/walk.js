@@ -5,14 +5,16 @@ var libArray = require("../lib/js/array");
 var libObject = require("../lib/js/object");
 var libFile = require("../lib/nodejs/file");
 var tmpl = require("./tmpl");
+var utils = require("./utils");
 var log = require("./log");
 var regex = /%(~?)([^%@]+)?(?:@([^%@]+))?(?:%([a-zA-Z0-9_-]+)?(?:@([^%@]+))?)?(?:%([^%]+))?%/;
 module.exports = {
 	regex: regex,
 	walk: walk,
-	readFileList: readFileList
+	readFileList: readFileList,
+	readDispJsons: readDispJsons
 }
-function readFileList(){
+function readDispJsons(){
 	var self = this;
 	for(var navpath in self.navpaths){
 		// then iterate file		
@@ -26,14 +28,29 @@ function readFileList(){
 			envkey: ""
 		})) return 1;
 	}
+	return 0;
+}
+function readFileList(){
+	var self = this;
+	for(var navpath in self.navpaths){
+		// then iterate file		
+		if(walk.call(self, {
+			name: "",
+			dir: "",
+			basedir: navpath,
+			tname: "",
+			tdir: "",
+			env: self.global, 
+			envkey: ""
+		}, 1)) return 1;
+	}
 	log.v("success");
 	return 0;
 }
-function walk(params){
+function walk(params, addgenflag){
 	var self = this;
-
 	if(params.dir && params.dir != "."){
-		params.fullpath = params.basedir +"/"+ params.dir+ "/"+params.name;
+		params.fullpath = params.basedir +"/"+ params.dir+"/"+params.name;
 		params.dirpath = params.basedir +"/"+ params.dir;
 	}
 	else if(params.name){
@@ -44,11 +61,12 @@ function walk(params){
 		params.fullpath = params.basedir;
 		params.dirpath = params.basedir;
 	}
-	if(readDispJson.call(self, params)) return 1;
+	params.relativepath = path.relative(".", params.fullpath);
+	if(!addgenflag)
+		if(readDispJson.call(self, params)) return 1;
 	if(checkName(params.name)) return 0;
 // get all name info
 	if(matchName.call(self, params)) return 1;
-
 	if(params.ignore)
 		return 0;
 
@@ -64,6 +82,11 @@ function walk(params){
 		if(params.src)
 			log.v("src with dir to be implemented");		
 		var subnames = fs.readdirSync(params.fullpath);
+/*
+		if(self.addFiles[params.relativepath]){
+			subnames = subnames.concat(self.addFiles[params.relativepath]);
+		}
+*/
 		for(var i=0; i<subnames.length; i++){
 			var subname = subnames[i];
 			if(params.multi){
@@ -80,10 +103,9 @@ function walk(params){
 						tdir: params.tdir?params.tdir + "/" + tmpname:tmpname,
 						env: params.env[key],
 						envkey: params.envkey?params.envkey + "." + key:key
-					})) return 1;
+					}, addgenflag)) return 1;
 				}
 			}else{
-
 				if(walk.call(self, {
 					name: subname,
 					dir: params.dir?params.dir + "/" + params.name:params.name,
@@ -92,12 +114,12 @@ function walk(params){
 					tdir: params.tdir?params.tdir + "/" + params.tname:params.tname,
 					env: params.env,
 					envkey: params.envkey
-				})) return 1;
+				}, addgenflag)) return 1;
 			}
 		}
 	}else{
-		if(walkFile.call(self, params)) return 1;
-
+		if(addgenflag)
+			if(walkFile.call(self, params)) return 1;
 	}
 	return 0;
 }
@@ -134,7 +156,7 @@ function extendDispJson(params, env, dispJson){
 			self.global.tmpls[tmplKey] = p;
 		}
 	}
-	libObject.extend(params.env, dispJson);
+	utils.extend(params.env, dispJson);
 }
 function walkFile(params){
 	var self = this;
@@ -203,7 +225,7 @@ function walkFile(params){
 }
 function isGenFile(params){
 	var self = this;
-	var rpath = path.relative(".", params.fullpath);
+	var rpath = params.relativepath;
 	if(self.prevFilelist[rpath] && self.prevFilelist[rpath].main)
 		return true;
 	else
@@ -211,7 +233,7 @@ function isGenFile(params){
 }
 function matchName(params){
 	var self = this;
-	params.relativepath = path.relative(".", params.fullpath) || ".";
+
 	var	stat = fs.lstatSync(params.fullpath);
 	if(stat.isDirectory()) params.isdir = true;
 	if(stat.isSymbolicLink()) params.islink = true;

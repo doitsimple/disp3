@@ -56,15 +56,18 @@ function Disp(){
 	var steps = {
 		"readConfigs": format.readConfigs, //generate global
 		"getNavPaths": nav.getNavPaths, //get navpaths
-		"readFileList": walk.readFileList, //read all file list
+		"readDispJsons": walk.readDispJsons, //read all disp.json
+		"getNavPaths2": nav.getNavPaths, //get navpaths again
 		"extendConfigs": format.extendConfigs, //extend global,
+		"readFileList": walk.readFileList, //read all file list
 		"genFiles": gen.genFiles, //generate all files,
 		"postRun": post.run //execute script 
 	}
 	for(var step in steps){
 		if(dead) break;
 		log.i(step);
-		steps[step].apply(self);	
+		if(!steps[step].apply(self))
+			log.i("->success");
 	}
 }
 

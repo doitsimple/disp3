@@ -11,6 +11,7 @@ module.exports = {
 
 function getNavPaths(){
 	var self = this;
+	self.navpaths = {};
 	var archs = Object.keys(self.archs).reverse();
 	var project = self.global.project;
 	for(var i in archs){
@@ -46,8 +47,11 @@ function getNavPaths(){
 				addPath.call(self, navpath);
 		});
 	}
+	var dirlist = libFile.readdirNotFileSync(self.projectDir + "/kits");
+	for(var i in dirlist){
+		addPath.call(self, self.projectDir + "/kits/" + dirlist[i]);
+	}
 	addPath.call(self, ".");
-	log.i(self.navpaths);
 }
 function addPath(p){
 	var self = this;
