@@ -92,6 +92,8 @@ function extendConfigs(){
     libObject.extend(self.global, libFile.readJSON(self.task + ".json"));
 //format twice
 	if(format.call(self, "global", self, self.formats)) return 1;	
+	if(!fs.existsSync(self.global.project.target))
+		libFile.mkdirpSync(self.global.project.target);
 	fs.writeFileSync(self.global.project.target + "/disp.global.json", JSON.stringify(self.global, undefined, 2));
 	return 0;
 }
@@ -185,7 +187,7 @@ function mountString(config){
       itConfig[key][i] = e;
   });
 }
-function format(key, parent, formatJson){
+function format(key1, parent, formatJson){
 	var self = this;
 	if(typeof formatJson != "object"){
 		formatJson = {
@@ -196,31 +198,31 @@ function format(key, parent, formatJson){
 	if(typeof parent != "object")
 		return self.error(parent + " is not object");
 	// assume both json and formatJson are ensured not null
-	if(formatJson.$required && !parent.hasOwnProperty(key)) 
-		return self.error(key + " required" + "\n" + JSON.stringify(formatJson));
-	if(!parent.hasOwnProperty(key)){
+	if(formatJson.$required && !parent.hasOwnProperty(key1)) 
+		return self.error(key1 + " required" + "\n" + JSON.stringify(formatJson));
+	if(!parent.hasOwnProperty(key1)){
 		if(formatJson.$multi)
-			parent[key] = [];
+			parent[key1] = [];
 		else if(!formatJson.$type)
-			parent[key] = {};		
+			parent[key1] = {};		
 	}
 	if(formatJson.$type){
 // leaf
 		var f = formatJson;
 		if(f.$default){
-			if(!parent.hasOwnProperty(key)) parent[key] = f.$default;
+			if(!parent.hasOwnProperty(key1)) parent[key1] = f.$default;
 		}
 		if(f.$multi){
-			if(f.$default) if(!parent[key].length) parent[key] = f.$default;
-			if(!libObject.isArray(parent[key])) return self.error("not array " +  key + ":" + parent[key]);
-			var vals = parent[key];
+			if(f.$default) if(!parent[key1].length) parent[key1] = f.$default;
+			if(!libObject.isArray(parent[key1])) return self.error("not array " +  key1 + ":" + parent[key1]);
+			var vals = parent[key1];
 			for(var i=0; i<vals.length; i++){
-				if(formatSub.call(self, key, vals[i], f)) return 1;
+				if(formatSub.call(self, key1, vals[i], f)) return 1;
 			}
 		}else{
-			if(f.$eq && !parent.hasOwnProperty(key)) 
-				parent[key] = parent[f.$eq];
-			if(formatSub.call(self, key, parent[key], f)) return 1;
+			if(f.$eq && !parent.hasOwnProperty(key1)) 
+				parent[key1] = parent[f.$eq];
+			if(formatSub.call(self, key1, parent[key1], f)) return 1;
 		}
 		return 0;
 	}	
@@ -229,20 +231,20 @@ function format(key, parent, formatJson){
 		if(formatJson.$multi) return self.error("$multi and $list should not used together");
 		if(formatJson.$default){
 			for(var key2 in formatJson.$default){
-				if(!parent[key][key2]) parent[key][key2] = formatJson.$default[key2];
+				if(!parent[key1][key2]) parent[key1][key2] = formatJson.$default[key2];
 			}
 		}
-		for(var key2 in parent[key]){
+		for(var key2 in parent[key1]){
 			if(key2[0] == "$" || key2 == "name") continue;
-			if(format.call(self, key2, parent[key], formatJson.$list))	return 1;
+			if(format.call(self, key2, parent[key1], formatJson.$list))	return 1;
 		}
 		return 0;
 	}
-	parent[key].name = key;
+	parent[key1].name = key1;
 	for(var key2 in formatJson){
 		if(key2[0] == "$" || key2 == "name") continue;
 		var f = formatJson[key2];
-		if(format.call(self, key2, parent[key], f)) return 1;
+		if(format.call(self, key2, parent[key1], f)) return 1;
 	}
 
 	return 0;

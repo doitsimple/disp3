@@ -7,20 +7,20 @@ rootApp.config(['$routeProvider',
 ^^
 for(var i in withUis){
 	if(i == "from") continue;
-	var name = withUis[i];
-  var ui = global.proto.uis[name];
+	var name1 = withUis[i];
+  var ui = global.proto.uis[name1];
  var route;
  if(ui.isHome) route = "";
  else if(ui.params) {
-	 route = name;
+	 route = name1;
 	 ui.params.forEach(function(p){
 		 route+="/:" + p;
 	 });
  }else{
 	 route = name;
  }
- var template = ui.hasOwnProperty("template")?ui.template:name;
- var controller = ui.hasOwnProperty("controller")?ui.controller:name;
+ var template = ui.hasOwnProperty("template")?ui.template:name1;
+ var controller = ui.hasOwnProperty("controller")?ui.controller:name1;
 $$
   ^^if(ui.redirect){$$
 			when('/^^=route$$', {
@@ -55,8 +55,8 @@ rootApp.run(function ($rootScope, auth) {
 ^^
 for(var i in withUis){
 	if(i == "from") continue;
-  var name = withUis[i];
-  var ui = global.proto.uis[name];
+  var name1 = withUis[i];
+  var ui = global.proto.uis[name1];
 $$
 rootApp.controller("^^=methods.dash2uc(ui.name)$$Controller", function($scope, $rootScope, $routeParams, $sce, auth, req){
 ^^=local[ui.name]$$
@@ -78,7 +78,7 @@ $$
 
 rootApp.factory('auth', function($http, $cookieStore, $rootScope){
   var methods = {};
-  var idstr = "^^=name$$";
+  var idstr = "^^=local.name$$";
   var persist = ["token", "userid"];
   persist.forEach(function(p){
     methods["get" + p] = function(){
