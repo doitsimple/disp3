@@ -136,8 +136,7 @@ function getNavPaths(config){
 						mods[type].push(arr[j].mods[k]);
 					}
 			}
-		}
-	
+		}	
 	for(var i in types){
 		var type = types[i];
 		if(fs.existsSync(archSrc + "/" + type))
@@ -148,7 +147,6 @@ function getNavPaths(config){
 				addPath(paths, archSrc + "/" + type + "-" + mod);
 		}
 	}
-
 	if(config.project.navpaths && config.project.navpaths.length)
 		config.project.navpaths.forEach(function(navpath){
 			addPath(paths, navpath);

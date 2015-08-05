@@ -19,7 +19,7 @@ function readConfigs(){
 	var projectJson = libFile.readJSON(self.projectDir + "/project.json");
 
 	self.global.project = projectJson;
-
+	self.project = projectJson;
 	if(!projectJson.arch) projectJson.arch = "base";
 	var archDir = self.rootDir + "/arch/" + projectJson.arch;
 	if(!fs.existsSync(archDir))

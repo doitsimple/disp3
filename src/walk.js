@@ -207,7 +207,7 @@ function walkFile(params){
 			contentkey: params.contentkey,
 			tmpl: params.tmpl		
 		});
-	}else if(params.dir != params.tdir){
+	}else if(params.dir != params.tdir || path.relative(params.basedir, ".") ){
 		if(!self.filelist[rt]){
 			if(params.islink)
 				self.filelist[rt] = {srclink: params.fullpath};

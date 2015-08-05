@@ -13,6 +13,10 @@
 		"$multi": 1,
 		"$default": ["*.*.*"]
 	},
+	"posts": {
+		"$type": "string",
+		"$multi": 1
+	},
   "fsconfigs": {
     "$list":  {
 			"ignore": {"$type": "boolean"}
