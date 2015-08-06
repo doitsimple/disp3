@@ -23,6 +23,10 @@
 			"static": {
 				"$type": "string"
 			},
+			"authflags": {
+				"$type": "string",
+				"$multi": true
+			},
 			"log": {"$type":"number"},
 			"withApis": {
 				"$multi": true,

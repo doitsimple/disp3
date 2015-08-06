@@ -33,7 +33,11 @@
 			"title": {"$type": "string"},
 			"elements": {
 				"$list": {
-					"type": {"$type": "string"}
+					"type": {"$type": "string"},
+					"withSchema": {
+						"$type": "string",
+						"$from": "proto.schemas"
+					}
 				}
 			},
 			"withApis": {

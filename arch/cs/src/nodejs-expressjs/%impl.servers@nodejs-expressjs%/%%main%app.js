@@ -142,8 +142,8 @@ sendJson(res, ^^=JSON.stringify(ctrl.sendJson)$$);
 ^^}$$
 ////////////////////////////////////////////
 
-
-var auth = require("./auth");
+var auth = require("./auth").midware;
+var auths = require("./auth").midwares;
 var router = express.Router();
 ^^for(var i=0; i<withApis.length; i++){ 
 	var api = global.proto.apis[withApis[i]];
@@ -155,16 +155,7 @@ var router = express.Router();
 	var midwaresStr = "";
 	for(var j in api.midwares){
 		var midware= api.midwares[j];
-		if(typeof midware == "string")
-			midware = {type: midware}
-		switch (midware.type){
-			case "auth":
-				if(!midware.scope)
-					midwaresStr += "auth.midware, ";
-				else
-					midwaresStr += "auth.midwares[" + midware.scope +"], ";
-			break;
-		}
+		midwaresStr += midware + ", ";
 	}
 	
 	switch(api.type){

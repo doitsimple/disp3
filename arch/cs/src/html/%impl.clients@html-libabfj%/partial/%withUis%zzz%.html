@@ -183,14 +183,28 @@ $$
 </div>
 
 <table class="table table-striped table-bordered" style="vertical-align:middle;">
+^^
+if(config.withSchema){
+ $.append(config.fields, global.proto.schemas[config.withSchema].fields);
+}
+$$
  ^^for(var name in config.fields){var col = config.fields[name];$$
-  <th><a style="padding: 0 5px;" ng-click="^^=config.name$$.changeSort('^^=name$$')"><i class="fa" ng-class="{'fa-sort-asc':^^=config.name$$.sort.^^=name$$ === 1,'fa-sort-desc': ^^=config.name$$.sort.^^=name$$ === -1,'fa-sort':!^^=config.name$$.sort.^^=name$$}"></i></a>^^=col.text||name$$</th>
+  <th><a style="padding: 0 5px;" ng-click="^^=config.name$$.changeSort('^^=name$$')"><i class="fa" ng-class="{'fa-sort-asc':^^=config.name$$.sort.^^=name$$ === 1,'fa-sort-desc': ^^=config.name$$.sort.^^=name$$ === -1,'fa-sort':!^^=config.name$$.sort.^^=name$$}"></i></a>^^=col.text||name$$<br/>^^=name$$</th>
  ^^}$$
   </thead>
   <tbody>
     <tr ng-repeat="row in ^^=config.name$$.data">
  ^^for(var name in config.fields){var col = config.fields[name];$$
- 			<td>{{row.^^=name$$}}</td>
+ 			<td>
+  ^^if(col.ondemand){$$
+		<span class="glyphicon glyphicon-option-horizontal"></span>
+  ^^}else if(col.type == "date"){$$
+ 			{{row.^^=name$$|date:'yyyyMMdd'}}
+	^^}else if(col.type == "datetime"){$$
+ 			{{row.^^=name$$|date:'yyMMdd HH:mm'}}
+  ^^}else{$$
+ 			{{row.^^=name$$}}
+  ^^}$$</td>
  ^^}$$
 		</tr>
 	</tbody>

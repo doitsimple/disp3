@@ -11,21 +11,7 @@ function extend(config, config2){
 		}
 //		itConfig2[key] = itConfig[key];
 		itConfig[key].forEach(function(v){
-			if(typeof v == "object"){
-				if(v.name){
-					var get = 0;
-					for(var key2 in itConfig2[key]){
-						if(itConfig2[key][key2].name == v.name)
-							get = 1;
-					}
-					if(!get)
-						itConfig2[key].push(v);
-				}else{
-					itConfig2[key].push(v);
-				}
-			}else{
-				libArray.pushIfNotExists(itConfig2[key], v);
-			}
+			libArray.pushIfNotExists(itConfig2[key], v);
 		});
 	});
 }

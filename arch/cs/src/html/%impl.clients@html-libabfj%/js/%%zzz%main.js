@@ -16,7 +16,6 @@ $scope.toggle = function(model){
 $scope.xxx = 1;
 $scope.aaa=["A","ab", "cb"];
 $scope.test.querys=[{name:"A"},{name:"B"}];
- ^^if(!local.hasDisplayTable){local.hasDisplayTable = 1;$$
 function displayTable($scope, config){
 	if(!config.api){console.error("no api"); return}
 	this.$scope = $scope;
@@ -89,5 +88,4 @@ function displayTable($scope, config){
 		});
 	}
 }
- ^^}$$
 ^^}$$

@@ -17,7 +17,7 @@ for(var i in withUis){
 		 route+="/:" + p;
 	 });
  }else{
-	 route = name;
+	 route = name1;
  }
  var template = ui.hasOwnProperty("template")?ui.template:name1;
  var controller = ui.hasOwnProperty("controller")?ui.controller:name1;
@@ -79,7 +79,7 @@ $$
 rootApp.factory('auth', function($http, $cookieStore, $rootScope){
   var methods = {};
   var idstr = "^^=local.name$$";
-  var persist = ["token", "userid"];
+  var persist = ["token", "user"];
   persist.forEach(function(p){
     methods["get" + p] = function(){
       var str;
@@ -91,6 +91,7 @@ rootApp.factory('auth', function($http, $cookieStore, $rootScope){
       return str;
     };
     methods["set" + p] = function(str){
+			if(!str) str = "";
       $cookieStore.put(p+idstr, str.toString());
     };
   });
@@ -113,6 +114,8 @@ rootApp.factory('auth', function($http, $cookieStore, $rootScope){
   return methods;
 });
 rootApp.controller("navbar", function($scope, $rootScope, auth, req){
+	if(!$rootScope.user) $rootScope.user = auth.getuser();
+	console.log($rootScope.user);
   $rootScope.$watchCollection("user", function(){
     if($rootScope.user){
       $scope.welcome = "欢迎，" + $rootScope.user.username;
@@ -121,7 +124,7 @@ rootApp.controller("navbar", function($scope, $rootScope, auth, req){
     }
   });
   $scope.signout = auth.signout;
-  ["admin", "censor","stat","op"].forEach(function(tag){
+	^^=JSON.stringify(global.impl.servers[withServer].authflags)$$.forEach(function(tag){
     $scope["is" + tag] = function(){
       if(!$rootScope.user) return false;
       return $rootScope.user[tag];
