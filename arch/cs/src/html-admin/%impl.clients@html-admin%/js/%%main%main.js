@@ -127,7 +127,7 @@ rootApp.controller("navbar", function($scope, $rootScope, auth, req){
 	^^=JSON.stringify(global.impl.servers[withServer].authflags)$$.forEach(function(tag){
     $scope["is" + tag] = function(){
       if(!$rootScope.user) return false;
-      return $rootScope.user[tag];
+      return tag == "all" || $rootScope.user[tag];
     }
   });
 });

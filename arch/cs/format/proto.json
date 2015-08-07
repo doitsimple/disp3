@@ -3,7 +3,7 @@
 		"$list":{
 			"fields": {
 				"$list": {
-          "type": "string"
+          "type": {"$type":"string"}
         }
       }
     }
@@ -37,6 +37,10 @@
 					"withSchema": {
 						"$type": "string",
 						"$from": "proto.schemas"
+					},
+					"fields": {
+						"$list": {
+						}
 					}
 				}
 			},

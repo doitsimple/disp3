@@ -15,7 +15,7 @@ $scope.toggle = function(model){
 	$scope["^^=config.name$$"].refresh();
 $scope.xxx = 1;
 $scope.aaa=["A","ab", "cb"];
-$scope.test.querys=[{name:"A"},{name:"B"}];
+//$scope.test.querys=[{name:"A"},{name:"B"}];
 function displayTable($scope, config){
 	if(!config.api){console.error("no api"); return}
 	this.$scope = $scope;
@@ -76,12 +76,6 @@ function displayTable($scope, config){
 			}
 		}, function(err, data){
 			console.log(data);
-/*
-		var data = {
-			data: [{aaa:"12222222222 222222 2222jkhjf1h2rui 21hf1221f21uh rfu21hufh12uhf21hf1fuh2uihfi1hfi12hfi1h2f1221",bbb:"23423423333333 3333333333333 33333333333333333"},{aaa:1,bbb:2},{aaa:1,bbb:2},{aaa:1,bbb:3}],
-			count: 10
-		}
-*/
 			self.data = data.data;
 			self.count = data.count;
 			self.totalPage = Math.ceil(data.count / self.perPage);		

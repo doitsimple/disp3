@@ -99,21 +99,6 @@ format(model, f, key, level)
 }
 $$
 
-
-^^origin.mono = mono;
-function mono(config){$$
-<ul class="list-group">
- ^^for(var key in config.format){$$
-  <li class="list-group-item">^^=key$$
-  ^^format({
-		 model: config.model+"."+key,
-     format: config.format[key]
-		});$$
-	</li>
- ^^}$$
-</ul>
-^^}$$
-
 ^^origin.list = list;
 function list(config){
 var itemStr = "item";
@@ -133,40 +118,40 @@ $$
 
 ^^origin.table = function(config){$$
 <div class="panel panel-primary">
-<div class="panel-heading">^^=config.title || config.name$$</div>
+<div class="panel-heading">^^=config.text || config.name$$</div>
 <div class="panel-body">
-<div class="col-sm-8">
-<div class="col-sm-12" style="border:1px solid #428bca;border-radius:4px;margin:12px;padding:5px;">
-	<div class="row">
-		<div class="col-sm-8">
-			<div class="btn-group" role="group">
-				<a type="button" class="btn btn-default" ng-repeat="query in ^^=config.name$$.querys">{{query.name}}</a>
-			</div>
-		</div>
-		<div class="col-sm-4 text-right">
-			<div class="btn-group" role="group">
-				<button type="button" class="btn btn-default" ng-click="edit=!edit"><i class="fa fa-plus"></i></button>
-<!--				<button type="button" class="btn btn-default"><i class="fa fa-play"></i></button>-->
-			</div>
-		</div>
-		<div class="col-sm-6" ng-show="edit" style="padding: 10px;">
-			<div class="form-group">
-					<div class="input-group" style="padding: 5px 10px;">
-						<input type="text" class="form-control" id="exampleInputAmount" placeholder="Amount">
-						<div class="input-group-addon" contenteditable ng-model="xxx" autocomplete="aaa" default="aaax"></div>			
-						<input type="text" class="form-control" id="exampleInputAmount" placeholder="Amount">
-					</div>
-					<div class="input-group">
-						<input type="text" class="form-control" id="exampleInputAmount" placeholder="Amount">
-						<div class="input-group-addon" contenteditable ng-model="xxxx" autocomplete="aaa" default="aaax"></div>
-						<input type="text" class="form-control" contenteditable autocomplete="aaa" id="exampleInputAmount" placeholder="Amount" default="xxx" ng-model="xxxx">
+<!--
+	<div class="col-sm-8">
+		<div class="col-sm-12" style="border:1px solid #428bca;border-radius:4px;margin:12px;padding:5px;">
+			<div class="row">
+				<div class="col-sm-8">
+					<div class="btn-group" role="group">
+						<a type="button" class="btn btn-default" ng-repeat="query in ^^=config.name$$.querys">{{query.name}}</a>
 					</div>
 				</div>
-		</div>
-</div>
-
+				<div class="col-sm-4 text-right">
+					<div class="btn-group" role="group">
+						<button type="button" class="btn btn-default" ng-click="edit=!edit"><i class="fa fa-plus"></i></button>
+					</div>
+				</div>
+				<div class="col-sm-6" ng-show="edit" style="padding: 10px;">
+					<div class="form-group">
+						<div class="input-group" style="padding: 5px 10px;">
+							<input type="text" class="form-control" id="exampleInputAmount" placeholder="Amount">
+							<div class="input-group-addon" contenteditable ng-model="xxx" autocomplete="aaa" default="aaax"></div>			
+							<input type="text" class="form-control" id="exampleInputAmount" placeholder="Amount">
+						</div>
+						<div class="input-group">
+							<input type="text" class="form-control" id="exampleInputAmount" placeholder="Amount">
+							<div class="input-group-addon" contenteditable ng-model="xxxx" autocomplete="aaa" default="aaax"></div>
+							<input type="text" class="form-control" contenteditable autocomplete="aaa" id="exampleInputAmount" placeholder="Amount" default="xxx" ng-model="xxxx">
+						</div>
+					</div>
+				</div>
+			</div>
 	</div>
 </div>
+-->
 <br/>
 <div class="col-sm-5">
 	<div class="form-inline" style="verical-align:middle;padding:0.2em 0;">
@@ -197,14 +182,10 @@ $$
  ^^for(var name in config.fields){var col = config.fields[name];$$
  			<td>
   ^^if(col.ondemand){$$
-		<span class="glyphicon glyphicon-option-horizontal"></span>
-  ^^}else if(col.type == "date"){$$
- 			{{row.^^=name$$|date:'yyyyMMdd'}}
-	^^}else if(col.type == "datetime"){$$
- 			{{row.^^=name$$|date:'yyMMdd HH:mm'}}
-  ^^}else{$$
- 			{{row.^^=name$$}}
-  ^^}$$</td>
+		<span class="glyphicon glyphicon-option-horizontal" ng-click=""></span>
+  ^^}else{
+		bytype(col.type)
+  }$$</td>
  ^^}$$
 		</tr>
 	</tbody>
@@ -215,6 +196,17 @@ $$
 </div>
 </div>
 </div>
+
+ ^^function bytype(type){$$
+	^^if(type == "date"){$$
+ 			{{row.^^=name$$|date:'yyyyMMdd'}}
+	^^}else if(type == "datetime"){$$
+ 			{{row.^^=name$$|date:'yyMMdd HH:mm'}}
+  ^^}else{$$
+ 			{{row.^^=name$$}}
+  ^^}$$
+ ^^}$$
+
  ^^function pagenator(config){$$
 <ul class="pagination" style="margin:2px 0;">
   <li><a ng-click="^^=config.name$$.gotoFirst()" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
@@ -222,6 +214,7 @@ $$
   <li><a ng-click="^^=config.name$$.gotoLast()" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
 </ul>
  ^^}$$
+
 ^^}$$
 ^^origin.summaryTable = function(config){$$
 
