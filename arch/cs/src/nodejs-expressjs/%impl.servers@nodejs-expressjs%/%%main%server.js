@@ -11,6 +11,7 @@ var server = ^^=protocol$$.createServer(app);
 
 
 db.connect(function(){
+^^=addon$$
 server.listen(^^=port$$, function(){
 	console.log('Express server listening on port: ^^=port$$, pid: '+process.pid);	
 	if(!fs.existsSync("pid"))

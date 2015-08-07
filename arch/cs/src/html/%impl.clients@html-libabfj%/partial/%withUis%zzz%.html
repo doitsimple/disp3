@@ -182,7 +182,8 @@ $$
  ^^for(var name in config.fields){var col = config.fields[name];$$
  			<td>
   ^^if(col.ondemand){$$
-		<span class="glyphicon glyphicon-option-horizontal" ng-click=""></span>
+	<span class="glyphicon glyphicon-option-horizontal" ng-click="^^=config.name$$.showrow^^=name$$=true" ng-hide="^^=config.name$$.showrow^^=name$$"></span>
+	<div ng-click="^^=config.name$$.showrow^^=name$$=false" ng-show="^^=config.name$$.showrow^^=name$$">^^bytype(col.type)$$</div>
   ^^}else{
 		bytype(col.type)
   }$$</td>

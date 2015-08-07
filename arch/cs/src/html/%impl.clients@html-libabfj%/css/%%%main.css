@@ -1,3 +1,6 @@
+[ng-click] {
+cursor: pointer
+}
 .json span.indent{
 		margin-left:10px;
 		margin-right:10px
