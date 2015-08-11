@@ -69,11 +69,12 @@ function walk(params, addgenflag){
 	if(matchName.call(self, params)) return 1;
 	if(params.ignore)
 		return 0;
-
+/*
 	if(params.mv){
 		params.tname = path.basename(params.mv);
 		params.tdir = path.dirname(params.mv);
 	}
+*/
 	if(isGenFile.call(self, params)){
 		log.v("skip "+ params.fullpath);
 		return 0;
@@ -199,6 +200,7 @@ function walkFile(params){
 	}
 
 	var rt = params.tdir?params.tdir + "/" + params.tname:params.tname;
+
 	if(params.ismatch){
 		addGenFileList.call(self, {
 			fullpath: params.fullpath,
@@ -210,16 +212,32 @@ function walkFile(params){
 	}else if(params.dir != params.tdir || path.relative(params.basedir, ".") ){
 		if(!self.filelist[rt]){
 			if(params.islink)
-				self.filelist[rt] = {srclink: params.fullpath};
+				addGenFileList.call(self, {
+					fullpath: params.fullpath,
+					tfullpath: rt,
+					static: {srclink: params.fullpath}
+				});
 			else
-				self.filelist[rt] = {src: params.fullpath};
+				addGenFileList.call(self, {
+          fullpath: params.fullpath,
+          tfullpath: rt,
+          static: {src: params.fullpath}
+        });
 		}
 	}else{
 		if(!self.filelist[rt]){
 			if(params.islink)
-				self.filelist[rt] = {selflink: 1};
+				addGenFileList.call(self, {
+          fullpath: params.fullpath,
+          tfullpath: rt,
+					static: {selflink: 1}
+				});
 			else
-				self.filelist[rt] = {self: 1};
+				addGenFileList.call(self, {
+          fullpath: params.fullpath,
+          tfullpath: rt,
+          static: {self: 1}
+        });
 		}
 	}
 }
@@ -233,7 +251,6 @@ function isGenFile(params){
 }
 function matchName(params){
 	var self = this;
-
 	var	stat = fs.lstatSync(params.fullpath);
 	if(stat.isDirectory()) params.isdir = true;
 	if(stat.isSymbolicLink()) params.islink = true;
@@ -245,8 +262,8 @@ function matchName(params){
 		var envkey = ms[2] || "";
 		params.selector = ms[3];
 		params.contentkey = ms[4] || "main";
-		params.tmpl = ms[5]; 
-		params.src = ms[6]; 
+		params.tmpl = ms[5];
+		params.src = ms[6];
 		if(envkey){
 			var val;
 			if(params.isglobal){
@@ -300,12 +317,25 @@ function checkName(f){
 }
 function addGenFileList(params){
 	var self = this;
-	var rt = params.tfullpath;
+	var fsconfig = self.fsconfigs[params.tfullpath];
+	var rt;
+	if(fsconfig && fsconfig.mv)
+		rt = fsconfig.mv;
+	else
+		rt = params.tfullpath;
 	if(!self.filelist[rt]) self.filelist[rt] = {};
-	if(!self.filelist[rt][params.contentkey])
-		self.filelist[rt][params.contentkey] = [];
-	libArray.pushIfNotExists(self.filelist[rt][params.contentkey], 
-													 params.fullpath);
+	if(params.static){
+		for(var key in params.static){
+			self.filelist[rt][key] = params.static[key];
+		}
+		return;
+	}
+	if(params.contentkey){
+		if(!self.filelist[rt][params.contentkey])
+			self.filelist[rt][params.contentkey] = [];
+		libArray.pushIfNotExists(self.filelist[rt][params.contentkey], 
+														 params.fullpath);
+	}
 	if(params.envkey)
 		self.filelist[rt].env = params.envkey;
 	if(params.tmpl)

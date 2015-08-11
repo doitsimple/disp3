@@ -1,0 +1,49 @@
+#!/usr/bin/env node
+var fs = require("fs");
+var path = require("path");
+var utils = require("../src/utils");
+var libObject = require("../lib/js/object");
+var globalEnv = utils.readGlobal(".");
+if(!globalEnv){
+	console.log("must run in dir already runned with disp3");
+	process.exit(1);
+}
+var arch = globalEnv.project.arch || "base";
+var kitdir = path.resolve(__dirname + "/../arch/" + arch + "/kit");
+var kit = process.argv[2];
+var cmd = process.argv[3];
+var name = process.argv[4];
+
+if(!fs.existsSync("kits/" + kit)){
+	console.log("kits/" + kit + " must exists");
+	process.exit(1);
+}
+
+var dfile = "kits/" + kit + "/disp.json";
+var jsfile = kitdir + "/" + cmd + ".js";
+if(!fs.existsSync(jsfile)){
+	console.log(cmd + " not exist in " + kitdir);
+	process.exit(1);
+}
+var json;
+if(fs.existsSync(dfile)){
+	json = JSON.parse(fs.readFileSync(dfile).toString());
+}else{
+	json = {};
+}
+utils.selectRoles(globalEnv, function(roles){
+	var addRole = function(rolekey, jsonx){
+		var role = roles[rolekey];
+		console.log(rolekey);
+		var subjson = libObject.extendWithKey(json, roles[rolekey]);
+		utils.extend(subjson, jsonx);
+	}
+
+	require(jsfile)(name, globalEnv, addRole, function(err){
+		if(!err)
+			fs.writeFileSync(dfile, JSON.stringify(json, undefined, 2));
+	});
+});
+
+
+

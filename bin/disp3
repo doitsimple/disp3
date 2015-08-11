@@ -12,6 +12,7 @@ var node = process.argv[0], //nodejs binary
 
 log.setLevel(2);
 
+
 var config = {};
 if(process.env.rootDir) config.rootDir = path.resolve(process.env.rootDir);
 config.task = task || "main";

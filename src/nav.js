@@ -45,11 +45,13 @@ function getNavPaths(){
 		if(project.navpaths && project.navpaths.length)
 			project.navpaths.forEach(function(navpath){
 				addPath.call(self, navpath);
-		});
+			});
 	}
-	var dirlist = libFile.readdirNotFileSync(self.projectDir + "/kits");
-	for(var i in dirlist){
-		addPath.call(self, self.projectDir + "/kits/" + dirlist[i]);
+	if(fs.existsSync(self.projectDir + "/kits")){
+		var dirlist = libFile.readdirNotFileSync(self.projectDir + "/kits");
+		for(var i in dirlist){
+			addPath.call(self, self.projectDir + "/kits/" + dirlist[i]);
+		}
 	}
 	addPath.call(self, ".");
 }

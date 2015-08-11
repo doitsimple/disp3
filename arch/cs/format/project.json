@@ -1,4 +1,11 @@
 {
 	"navspaces": ["impl.clients.*","impl.databases.*","impl.servers.*", "impl.scripts.*","impl.modules.*"],
-	"db": "mongo"
+	"db": "mongo",
+	"roles": {
+		"$default": {
+			"uis": ["proto.uis"],
+			"apis": ["proto.apis"],
+			"schemas": ["proto.schemas"]
+		}
+	}
 }

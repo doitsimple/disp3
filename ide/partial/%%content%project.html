@@ -1,0 +1,52 @@
+<div class="row">
+	<div class="col-sm-4">
+		^^origin.format({
+		model: "global.project",
+		format: {
+    "deps": {
+    "$list": {"$type": "boolean"}
+    },
+    "arch": {
+    "$type": "string",
+    "$default": "base"
+    },
+		"target": {
+    "$default": ".",
+    "$type": "string"
+    },
+    "navpaths": {
+    "$type": "string",
+    "$multi": 1,
+		"$default": ["aa", "bbb"]
+    },
+    "navspaces": {
+    "$type": "string",
+    "$multi": 1
+    },
+		"fsconfigs": {
+    "$list":  {
+    "ignore": {"$type": "boolean"}
+    },
+    "$default": {
+    ".git": {
+    "ignore": true
+    },
+    "node_modules": {
+    "ignore": true
+    },
+    "dispmod": {
+    "ignore": true
+    },
+    "bower_components": {
+    "ignore": true
+    },
+    "x": {
+    "ignore": true
+    }
+    }
+		}
+		}
+		});
+		$$
+	</div>
+</div>

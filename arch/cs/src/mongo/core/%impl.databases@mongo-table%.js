@@ -3,10 +3,21 @@ var MongoClient = require('mongodb').MongoClient;
 var log = require("./log");
 
 var db;
-var modelCache = {};
+var filters = {};
+var init = {};
+/*^^for(var si=0; si<withSchemas.length;si++){var schema = global.proto.apis[withSchemas[si]];$$*/
+init["^^=name$$"] = function(){
+	
+}
+filter["^^=name$$"] = function(doc, fn){
+ fn(doc);
+}
+/*^^}$$*/
+
 module.exports = function(dbnameMap, genModelFuncList, connectFuncs){
 	/*^^for(var si=0; si<withSchemas.length;si++){$$*/
 	dbnameMap["^^=withSchemas[si]$$"] = "^^=name$$";
+		
 	/*^^}$$*/
 	genModelFuncList["^^=name$$"] = getModel;
 	genModelFuncList["mongo"] = getModel;
@@ -32,9 +43,10 @@ function connect(env, cb){
 };
 module.exports.getModel = getModel;
 function getModel(cname){
-	var model = {};
+	var model = function(){};
 	var origin = db.collection(cname);
 	model.origin = origin;
+	model.name = cname;
 	/*
 	 criteria: 
 	 $or,$and,$nor: [exp]

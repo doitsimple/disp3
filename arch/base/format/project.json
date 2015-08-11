@@ -17,6 +17,12 @@
 		"$type": "string",
 		"$multi": 1
 	},
+	"roles": {
+		"$list": {
+			"$type": "string",
+			"$multi": true
+		}
+	},
   "fsconfigs": {
     "$list":  {
 			"ignore": {"$type": "boolean"}
