@@ -22,8 +22,8 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-^^if(static){$$
-app.use(express.static(__dirname + '/^^=static$$'));
+^^for(var key in statics){$$
+app.use("^^=key$$", express.static(__dirname + '/^^=statics[key]$$'));
 ^^}$$
 
 

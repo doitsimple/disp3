@@ -1,4 +1,5 @@
-module.exports = function(name, env, addRole, fn){
+module.exports = function(params, env, addRole, fn){
+	var name = params.name;
 	var uijson = {};
 	uijson[name] = {
     "text": "",

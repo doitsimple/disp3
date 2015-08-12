@@ -18,6 +18,7 @@ function run(){
 			cwd: self.project.target
 		}, cb);
 	}, function(){
+		log.i("async finished");
 	});
 	return 0;
 }

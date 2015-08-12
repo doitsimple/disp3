@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+var fs = require("fs");
+var path = require("path");
+var utils = require("../src/utils");
+var libString = require("../lib/js/string");
+var libArray = require("../lib/js/array");
+var libObject = require("../lib/js/object");
+var libFile = require("../lib/nodejs/file");
+var libSync = require("../lib/js/sync");
+var cp = require("child_process");
+var log = require("../src/log");
+if(!fs.existsSync("disp.kit.json")){
+	console.log("no disp.kit.json");
+	process.exit(1);
+}
+var dispKitCmd = __dirname + "/disp3-kit";
+var	runnedKit = libFile.readJSON("disp.kit.json");
+libSync.eachSeries(Object.keys(runnedKit), function(key, cb){
+	cp.exec(dispKitCmd + " " + key + " " + runnedKit[key], cb);
+}, function(){
+	console.log("-->success");
+});
+
+
+

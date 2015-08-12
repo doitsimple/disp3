@@ -20,8 +20,10 @@
 			"ip": {"$type": "string"},
 			"port": {"$type": "number"},
 			"protocol": "http",
-			"static": {
-				"$type": "string"
+			"statics": {
+				"$list": {
+					"$type": "string"
+				}
 			},
 			"authflags": {
 				"$type": "string",

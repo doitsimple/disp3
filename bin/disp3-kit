@@ -2,7 +2,16 @@
 var fs = require("fs");
 var path = require("path");
 var utils = require("../src/utils");
+var libString = require("../lib/js/string");
+var libArray = require("../lib/js/array");
 var libObject = require("../lib/js/object");
+var libFile = require("../lib/nodejs/file");
+var log = require("../src/log");
+var methods = {};
+libObject.extend1(methods, libString);
+libObject.extend1(methods, libArray);
+libObject.extend1(methods, libObject);
+libObject.extend1(methods, libFile);
 var globalEnv = utils.readGlobal(".");
 if(!globalEnv){
 	console.log("must run in dir already runned with disp3");
@@ -11,8 +20,23 @@ if(!globalEnv){
 var arch = globalEnv.project.arch || "base";
 var kitdir = path.resolve(__dirname + "/../arch/" + arch + "/kit");
 var kit = process.argv[2];
+var runnedKit;
+if(fs.existsSync("disp.kit.json")){
+	runnedKit = libFile.readJSON("disp.kit.json");
+}else{
+	runnedKit = {};
+}
 var cmd = process.argv[3];
-var name = process.argv[4];
+var params = {};
+params.name = process.argv[4];
+if(!params.name) {
+	console.log("Usage: disp3-kit [kit] [cmd] [name] [text]? [arguments]?");
+	process.exit(1);
+}
+params.text = process.argv[5] || "";
+params.arg1 = process.argv[6] || "";
+params.arg2 = process.argv[7] || "";
+params.arg3 = process.argv[8] || "";
 
 if(!fs.existsSync("kits/" + kit)){
 	console.log("kits/" + kit + " must exists");
@@ -31,6 +55,7 @@ if(fs.existsSync(dfile)){
 }else{
 	json = {};
 }
+
 utils.selectRoles(globalEnv, function(roles){
 	var addRole = function(rolekey, jsonx){
 		var role = roles[rolekey];
@@ -38,10 +63,13 @@ utils.selectRoles(globalEnv, function(roles){
 		var subjson = libObject.extendWithKey(json, roles[rolekey]);
 		utils.extend(subjson, jsonx);
 	}
-
-	require(jsfile)(name, globalEnv, addRole, function(err){
-		if(!err)
+	globalEnv.$ = methods;
+	require(jsfile)(params, globalEnv, addRole, function(err){
+		if(!err){
 			fs.writeFileSync(dfile, JSON.stringify(json, undefined, 2));
+			runnedKit[kit+" "+ cmd+ " " +params.name] = params.text + " "+ params.arg1 + " " + params.arg2 + " " + params.arg3;
+			fs.writeFileSync("disp.kit.json", JSON.stringify(runnedKit));
+		}
 	});
 });
 
