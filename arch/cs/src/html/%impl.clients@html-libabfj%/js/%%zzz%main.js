@@ -30,7 +30,10 @@ function displayTable($scope, config){
 	$scope.$watch(function(){
 		return self.perPage;
 	}, function(oldv, newv){
-		if(oldv && oldv!=newv) self.refresh();
+		if(oldv && oldv!=newv) {
+			self.currPage = 1;
+			self.refresh();
+		}
 	});
 	$scope.$watchCollection(function(){
 		return self.sort;
@@ -78,7 +81,7 @@ function displayTable($scope, config){
 			console.log(data);
 			self.data = data.data;
 			self.count = data.count;
-			self.totalPage = Math.ceil(data.count / self.perPage);		
+			self.totalPage = Math.ceil(data.count / self.perPage);
 		});
 	}
 }
