@@ -61,14 +61,14 @@ utils.selectRoles(globalEnv, function(roles){
 		var role = roles[rolekey];
 		console.log(rolekey);
 		var subjson = libObject.extendWithKey(json, roles[rolekey]);
-		utils.extend(subjson, jsonx);
+		utils.append(subjson, jsonx);
 	}
 	globalEnv.$ = methods;
 	require(jsfile)(params, globalEnv, addRole, function(err){
 		if(!err){
 			fs.writeFileSync(dfile, JSON.stringify(json, undefined, 2));
 			runnedKit[kit+" "+ cmd+ " " +params.name] = params.text + " "+ params.arg1 + " " + params.arg2 + " " + params.arg3;
-			fs.writeFileSync("disp.kit.json", JSON.stringify(runnedKit));
+			fs.writeFileSync("disp.kit.json", JSON.stringify(runnedKit, undefined, 2));
 		}
 	});
 });
