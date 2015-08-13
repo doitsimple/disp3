@@ -4,7 +4,14 @@
 			"fields": {
 				"$list": {
           "type": {"$type":"string"}
-        }
+        },
+				"$default": {
+					"_id": {
+            "text": "ID",
+            "ondemand": true,
+						"primary": true
+          }
+				}
       }
     }
   },

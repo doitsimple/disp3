@@ -3,13 +3,12 @@ var MongoClient = require('mongodb').MongoClient;
 var log = require("./log");
 
 var db;
-var filters = {};
+var filter = {};
 var init = {};
-/*^^for(var si=0; si<withSchemas.length;si++){var schema = global.proto.apis[withSchemas[si]];$$*/
-init["^^=name$$"] = function(){
-	
+/*^^for(var si=0; si<withSchemas.length;si++){var schema = global.proto.schemas[withSchemas[si]];$$*/
+init["^^=schema.name$$"] = function(db){
 }
-filter["^^=name$$"] = function(doc, fn){
+filter["^^=schema.name$$"] = function(doc, fn){
  fn(doc);
 }
 /*^^}$$*/
@@ -17,8 +16,8 @@ filter["^^=name$$"] = function(doc, fn){
 module.exports = function(dbnameMap, genModelFuncList, connectFuncs){
 	/*^^for(var si=0; si<withSchemas.length;si++){$$*/
 	dbnameMap["^^=withSchemas[si]$$"] = "^^=name$$";
-		
 	/*^^}$$*/
+	
 	genModelFuncList["^^=name$$"] = getModel;
 	genModelFuncList["mongo"] = getModel;
 	connectFuncs.push(connect);
@@ -32,9 +31,9 @@ function connect(env, cb){
 		MongoClient.connect(url, function(err, client) {
 			module.exports.client = client;
 			db = client;
-			/*
-
-			 */
+	/*^^for(var si=0; si<withSchemas.length;si++){$$*/
+			init["^^=withSchemas[si]$$"](db);
+	/*^^}$$*/
 			cb(err);
 		});
 	else
@@ -63,6 +62,7 @@ function getModel(cname){
 	model.update = function(criteria, doc, fn){
 //fn: function(err, result)
 //result: {n: 1}
+		delete doc._id;
 		origin.updateOne(criteria, {$set: doc}, function(err, result){
 			var rtn;
 			if(result) rtn = result.result;
@@ -182,8 +182,6 @@ function getModel(cname){
 			if(fn) fn(err, doc.value);
 		});
 	};
-
-
 	/*[{a:1},{a:1},{a:2},{a:3}] distinct a:[1,2,3]*/
 	model.distinct = function(criteria, fn){
 		origin.distinct(criteria, fn);
