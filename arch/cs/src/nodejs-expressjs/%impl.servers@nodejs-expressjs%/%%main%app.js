@@ -55,7 +55,7 @@ app.use(function(req, res, next){
 /////////////////////////////////
 ^^function makeController(api){
 /*make controller*/$$
-^^for(var j=0; j<api.controllers.length; j++){
+^^for(var j in api.controllers){
  var ctrl = api.controllers[j];
  var result= ctrl.result || "result";
 $$

@@ -9,6 +9,7 @@ var init = {};
 init["^^=schema.name$$"] = function(db){
 }
 fdoc["^^=schema.name$$"] = function(doc){	
+	
 }
 /*^^}$$*/
 
@@ -84,6 +85,10 @@ function getModel(cname){
 	model.binsert = function(docs, fn){
 //fn: function(err, result)
 //result: {n: 10}
+		if((fdoc[cname]))
+			docs.forEach(function(doc){
+				fdoc[cname](doc);
+			});
 		origin.insertMany(docs, fn);
 	};
 	model.bupdate = function(criteria, doc, fn){

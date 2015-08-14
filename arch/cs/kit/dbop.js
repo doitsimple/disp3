@@ -67,7 +67,8 @@ module.exports = function(params, env, addRole, fn){
 		"withApis": [
 			"list" + name,
 			"add" + name,
-			"modify" + name
+			"modify" + name,
+			"delete" + name
 		]
 	});
 	fn();
