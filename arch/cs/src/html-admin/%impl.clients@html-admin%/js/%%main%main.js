@@ -10,15 +10,11 @@ for(var i in withUis){
 	var name1 = withUis[i];
   var ui = global.proto.uis[name1];
  var route;
- if(ui.isHome) route = "";
- else if(ui.params) {
-	 route = name1;
-	 ui.params.forEach(function(p){
-		 route+="/:" + p;
-	 });
- }else{
-	 route = name1;
- }
+ if(ui.isHome)
+  route = "";
+ else
+	route = ui.route || name1;
+
  var template = ui.hasOwnProperty("template")?ui.template:name1;
  var controller = ui.hasOwnProperty("controller")?ui.controller:name1;
 $$

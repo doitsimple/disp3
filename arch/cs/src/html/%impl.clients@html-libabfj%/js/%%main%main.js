@@ -15,7 +15,13 @@ rootApp.directive('autocomplete', function($parse) {
 		}
 	};
 });
-
+rootApp.directive('onlastrepeat', function() {
+	return function(scope, element, attrs) {
+		if (scope.$last) setTimeout(function() {
+			scope.$emit('onRepeatLast', element, attrs);
+		}, 1);
+	};
+});
 rootApp.directive('contenteditable', function() {
   return {
     require: 'ngModel',
