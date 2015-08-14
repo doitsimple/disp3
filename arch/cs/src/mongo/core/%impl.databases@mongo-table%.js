@@ -3,13 +3,12 @@ var MongoClient = require('mongodb').MongoClient;
 var log = require("./log");
 
 var db;
-var filter = {};
+var fdoc = {};
 var init = {};
 /*^^for(var si=0; si<withSchemas.length;si++){var schema = global.proto.schemas[withSchemas[si]];$$*/
 init["^^=schema.name$$"] = function(db){
 }
-filter["^^=schema.name$$"] = function(doc, fn){
- fn(doc);
+fdoc["^^=schema.name$$"] = function(doc){	
 }
 /*^^}$$*/
 
@@ -57,6 +56,7 @@ function getModel(cname){
 //fn: function(err, result)
 //result: {insertedId: "abcdedf"}
 		if(!doc) return fn("no doc");
+		if(fdoc[cname]) fdoc[cname](doc);
 		origin.insertOne(doc, fn);
 	};
 	model.update = function(criteria, doc, fn){

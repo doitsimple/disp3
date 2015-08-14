@@ -14,7 +14,8 @@ module.exports = function(params, env, addRole, fn){
       "db": name,
       "where": "{}",
       "send": "result"
-    }]
+    }],
+		"midwares": ["auth"]
 	}
 	apiJson["add"+name] = {
 		"type": "post",
@@ -27,7 +28,8 @@ module.exports = function(params, env, addRole, fn){
 			"doc": "req.body",
       "db": name,
       "send": "result"
-    }]
+    }],
+		"midwares": ["auth"]
 	}
 	apiJson["modify"+name] = {
 		"type": "post",
@@ -42,7 +44,8 @@ module.exports = function(params, env, addRole, fn){
 			"set": "req.body",
       "db": name,
       "send": "result"
-    }]
+    }],
+		"midwares": ["auth"]
 	}
 	apiJson["delete"+name] = {
 		"type": "post",
@@ -56,17 +59,15 @@ module.exports = function(params, env, addRole, fn){
       "db": name,
       "where": "{_id: coreDb.ObjectId(_id)}",
       "send": "result"
-    }]
+    }],
+		"midwares": ["auth"]
 	}
 	addRole("apis", apiJson);
 	addRole("bserver", {
 		"withApis": [
-			"list" + name
-		]
-	});
-	addRole("fserver", {
-		"withApis": [
-			"list" + name
+			"list" + name,
+			"add" + name,
+			"modify" + name
 		]
 	});
 	fn();

@@ -9,7 +9,7 @@
 					"_id": {
             "text": "ID",
             "ondemand": true,
-						"primary": true
+						"type": "primarykey"
           }
 				}
       }

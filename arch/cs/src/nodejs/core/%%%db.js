@@ -13,7 +13,6 @@ for(var key in ^^=db$$){
 		^^if(schema.init && schema.init.length){$$
 			initFuncs.push(function(env, cb){
 				getModel("^^=schema.name$$").select({}, function(err, doc){
-					console.log("done");
 					if(!err && !doc)
 						getModel("^^=schema.name$$").binsert(^^=JSON.stringify(schema.init)$$, cb);
 					else
