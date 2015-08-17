@@ -8,8 +8,18 @@ var init = {};
 /*^^for(var si=0; si<withSchemas.length;si++){var schema = global.proto.schemas[withSchemas[si]];$$*/
 init["^^=schema.name$$"] = function(db){
 }
-fdoc["^^=schema.name$$"] = function(doc){	
-	
+fdoc["^^=schema.name$$"] = function(olddoc, newdoc){
+	var doc = newdoc?newdoc:olddoc;
+ /*^^for(var fieldname in schema.fields){var field = schema.fields[fieldname];$$*/
+	/*^^if(field.hasOwnProperty("default")){$$*/
+	if(!olddoc.hasOwnProperty("^^=field.name$$"))
+		^^if(field.type == "datetime"){var t = parseInt(field.default) || 0;$$
+		doc["^^=field.name$$"] = new Date(new Date().getTime()+^^=t$$);
+    ^^}else{$$
+		doc["^^=field.name$$"] = ^^=JSON.stringify(field.default)$$
+    ^^}$$
+  /*^^}$$*/
+ /*^^}$$*/
 }
 /*^^}$$*/
 
@@ -142,7 +152,12 @@ function getModel(cname){
 		});
 	};
 	model.upsert = function(criteria, doc, fn){
-		origin.updateOne(criteria, {$set: doc}, {upsert:true}, function(err, result){
+		var doc2 = {$set: doc};
+		if((fdoc[cname])){
+			doc2.$setOnInsert = {};
+			fdoc[cname](doc, doc2.$setOnInsert);
+		}
+		origin.updateOne(criteria, doc2, {upsert:true}, function(err, result){
 			var rtn;
 			if(result) rtn = result.result;
 			else rtn = {n: 0};
@@ -164,8 +179,11 @@ function getModel(cname){
 			if(fn) fn(err, rtn);
 		});
 	};
-	model.upsert2 = function(criteria, updateParam, fn){
-		origin.updateOne(criteria, updateParam, {upsert:true}, function(err, result){
+	model.upsert2 = function(criteria, doc, fn){
+		var doc2 = doc;
+		if((fdoc[cname]))
+			doc2.$setOnInsert = fdoc[cname](doc);
+		origin.updateOne(criteria, doc2, {upsert:true}, function(err, result){
 			var rtn;
 			if(result) rtn = result.result;
 			else rtn = {n: 0};

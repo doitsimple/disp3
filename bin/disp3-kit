@@ -42,13 +42,21 @@ if(!fs.existsSync("kits/" + kit)){
 	console.log("kits/" + kit + " must exists");
 	process.exit(1);
 }
-
 var dfile = "kits/" + kit + "/disp.json";
-var jsfile = kitdir + "/" + cmd + ".js";
-if(!fs.existsSync(jsfile)){
-	console.log(cmd + " not exist in " + kitdir);
+
+var jsfile1 = kitdir + "/" + cmd + ".js";
+var jsfile2 = path.resolve("kit/" + cmd + ".js");
+var jsfile;
+if(fs.existsSync(jsfile1))
+	jsfile = jsfile1;
+if(fs.existsSync(jsfile2))
+	jsfile = jsfile2;
+if(!jsfile){
+	console.log(cmd + ".js not exist in " + kitdir + " or .");
 	process.exit(1);
 }
+
+
 var json;
 if(fs.existsSync(dfile)){
 	json = JSON.parse(fs.readFileSync(dfile).toString());

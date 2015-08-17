@@ -40,6 +40,9 @@
 			"kits": {
 				"ignore": true
 			},
+			"kit": {
+				"ignore": true
+			},
 			"x": {
 				"ignore": true
 			}

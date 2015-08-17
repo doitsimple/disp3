@@ -4,7 +4,7 @@ var dbnameMap = {};
 var genModelFuncList = {};
 var connectFuncs = [];
 var initFuncs = [];
-^^for(var db in global.impl.databases){var dbconfig=global.impl.databases[db];$$
+/*^^for(var db in global.impl.databases){var dbconfig=global.impl.databases[db];$$*/
 var ^^=db$$ = require("./^^=db$$")(dbnameMap, genModelFuncList, connectFuncs);
 for(var key in ^^=db$$){
 	module.exports[key] = ^^=db$$[key];
@@ -21,7 +21,7 @@ for(var key in ^^=db$$){
 			});
 		^^}$$
 	^^}$$
-^^}$$
+/*^^}$$*/
 
 module.exports.connect = function (cb){
 	sync.doEachSeries(connectFuncs, function(err){
