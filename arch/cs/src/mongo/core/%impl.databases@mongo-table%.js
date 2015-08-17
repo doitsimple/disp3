@@ -10,16 +10,23 @@ init["^^=schema.name$$"] = function(db){
 }
 fdoc["^^=schema.name$$"] = function(olddoc, newdoc){
 	var doc = newdoc?newdoc:olddoc;
- /*^^for(var fieldname in schema.fields){var field = schema.fields[fieldname];$$*/
+	if(newdoc){
+		for(var key in olddoc){
+			if(key[0] != "$"){
+				newdoc[key] = olddoc[key];
+			}
+		}
+	}	
+	/*^^for(var fieldname in schema.fields){var field = schema.fields[fieldname];$$*/
 	/*^^if(field.hasOwnProperty("default")){$$*/
 	if(!olddoc.hasOwnProperty("^^=field.name$$"))
 		^^if(field.type == "datetime"){var t = parseInt(field.default) || 0;$$
 		doc["^^=field.name$$"] = new Date(new Date().getTime()+^^=t$$);
-    ^^}else{$$
+		^^}else{$$
 		doc["^^=field.name$$"] = ^^=JSON.stringify(field.default)$$
-    ^^}$$
+		^^}$$
   /*^^}$$*/
- /*^^}$$*/
+	/*^^}$$*/
 }
 /*^^}$$*/
 
@@ -41,9 +48,9 @@ function connect(env, cb){
 		MongoClient.connect(url, function(err, client) {
 			module.exports.client = client;
 			db = client;
-	/*^^for(var si=0; si<withSchemas.length;si++){$$*/
+			/*^^for(var si=0; si<withSchemas.length;si++){$$*/
 			init["^^=withSchemas[si]$$"](db);
-	/*^^}$$*/
+			/*^^}$$*/
 			cb(err);
 		});
 	else
@@ -64,15 +71,15 @@ function getModel(cname){
 
 	 */
 	model.insert = function(doc, fn){
-//fn: function(err, result)
-//result: {insertedId: "abcdedf"}
+		//fn: function(err, result)
+		//result: {insertedId: "abcdedf"}
 		if(!doc) return fn("no doc");
 		if(fdoc[cname]) fdoc[cname](doc);
 		origin.insertOne(doc, fn);
 	};
 	model.update = function(criteria, doc, fn){
-//fn: function(err, result)
-//result: {n: 1}
+		//fn: function(err, result)
+		//result: {n: 1}
 		delete doc._id;
 		origin.updateOne(criteria, {$set: doc}, function(err, result){
 			var rtn;
@@ -81,20 +88,28 @@ function getModel(cname){
 			if(fn) fn(err, rtn);
 		});
 	};
+	model.update2 = function(criteria, updateParam, fn){
+		origin.updateOne(criteria, updateParam, function(err, result){
+			var rtn;
+			if(result) rtn = result.result;
+			else rtn = {n: 0};
+			if(fn) fn(err, rtn);
+		});
+	};
 	model.delete = function(criteria, fn){
-//fn: function(err, result)
-//result: {n: 1}
+		//fn: function(err, result)
+		//result: {n: 1}
 		if(!criteria) return fn("no criteria");
 		origin.deleteOne(criteria, fn);
 	};
 	model.select = function(criteria, fn){
-//fn: function(err, result)
-//result: doc
+		//fn: function(err, result)
+		//result: doc
 		origin.findOne(criteria, fn);
 	};
 	model.binsert = function(docs, fn){
-//fn: function(err, result)
-//result: {n: 10}
+		//fn: function(err, result)
+		//result: {n: 10}
 		if((fdoc[cname]))
 			docs.forEach(function(doc){
 				fdoc[cname](doc);
@@ -164,26 +179,13 @@ function getModel(cname){
 			if(fn) fn(err, rtn);
 		});
 	};
-	model.sedate = function(criteria, doc, fn){
-		origin.findAndModify(criteria, [], {$set: doc}, function(err, doc){
-			if(err) return fn(err);
-			if(!doc) return fn(null, doc);
-			if(fn) fn(err, doc.value);
-		});
-	};
-	model.update2 = function(criteria, updateParam, fn){
-		origin.updateOne(criteria, updateParam, function(err, result){
-			var rtn;
-			if(result) rtn = result.result;
-			else rtn = {n: 0};
-			if(fn) fn(err, rtn);
-		});
-	};
-	model.upsert2 = function(criteria, doc, fn){
-		var doc2 = doc;
-		if((fdoc[cname]))
-			doc2.$setOnInsert = fdoc[cname](doc);
-		origin.updateOne(criteria, doc2, {upsert:true}, function(err, result){
+	model.upsert2 = function(criteria, updateParam, fn){
+		var updateParam2 = updateParam;
+		if((fdoc[cname])){
+			updateParam2.$setOnInsert = {};
+			fdoc[cname](updateParam, updateParam2.$setOnInsert);
+		}
+		origin.updateOne(criteria, updateParam2, {upsert:true}, function(err, result){
 			var rtn;
 			if(result) rtn = result.result;
 			else rtn = {n: 0};
@@ -198,8 +200,39 @@ function getModel(cname){
 			if(fn) fn(err, rtn);
 		});
 	};
+	model.sedate = function(criteria, doc, fn){
+		origin.findAndModify(criteria, [], {$set: doc}, function(err, doc){
+			if(err) return fn(err);
+			if(!doc) return fn(null, doc);
+			if(fn) fn(err, doc.value);
+		});
+	};
 	model.sedate2 = function(criteria, updateParam, fn){
 		origin.findAndModify(criteria, [], updateParam, function(err, doc){
+			if(err) return fn(err);
+			if(!doc) return fn(null, doc);
+			if(fn) fn(err, doc.value);
+		});
+	};
+	model.sui = function(criteria, doc, fn){
+		var doc2 = {$set: doc};
+		if((fdoc[cname])){
+			doc2.$setOnInsert = {};
+			fdoc[cname](doc, doc2.$setOnInsert);
+		}
+		origin.findAndModify(criteria, [], doc2, {upsert: true}, function(err, doc){
+			if(err) return fn(err);
+			if(!doc) return fn(null, doc);
+			if(fn) fn(err, doc.value);
+		});
+	};
+	model.sui2 = function(criteria, updateParam, fn){
+		var updateParam2 = updateParam;
+		if((fdoc[cname])){
+			updateParam2.$setOnInsert = {};
+			fdoc[cname](updateParam, updateParam2.$setOnInsert);
+		}
+		origin.findAndModify(criteria, [], updateParam2, {upsert: true}, function(err, doc){
 			if(err) return fn(err);
 			if(!doc) return fn(null, doc);
 			if(fn) fn(err, doc.value);
