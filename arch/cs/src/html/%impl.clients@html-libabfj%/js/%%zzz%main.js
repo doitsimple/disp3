@@ -1,3 +1,7 @@
+^^origin.form = function(config){$$
+ console.log("aaaa");
+^^}$$
+
 ^^ origin.displayJson = function(config) {
 	$$
 		^^
