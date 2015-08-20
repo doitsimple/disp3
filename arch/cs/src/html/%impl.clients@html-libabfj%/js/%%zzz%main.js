@@ -1,12 +1,55 @@
-^^origin.form = function(config){$$
- console.log("aaaa");
+^^ origin.form = function(config) { $$
+	$scope.resetForm = function(){
+		$scope.target = {};
+		$("#form input").val("");
+		$("#form select").val("");
+	}
+	$scope.resetForm();
+	var submitUrl = "/api/^^=config.submit$$";
+	^^ if (config.uploadFile) { $$
+		$scope.submitForm = function() {
+			var d = $scope.target;
+			var formdata = new FormData();
+			$("input[type='file'").each(function(i,dom){
+				var file = $(dom)[0].files[0];
+				if(file) {
+					console.log(i,file);
+					formdata.append($(dom).attr("name") || "file", file);
+				}
+			});
+			for (var key in d) {
+				formdata.append(key, d[key]);
+			}
+			formdata.append("access_token", auth.gettoken());
+			$.ajax({
+				type: 'POST',
+				url: submitUrl,
+				data: formdata,
+				contentType: false,
+				processData: false,
+				success: function(msg){
+					alert(JSON.stringify(msg));
+					$scope.resetForm();
+				},
+				error: function(err) {
+					alert(JSON.stringify(err));
+					$scope.resetForm();
+				}
+			});
+		}
+	^^} else {$$
+		$scope.submitForm = function() {
+			req.postJson(submitUrl, $scope.target, function(err, data) {
+				console.log(err,data);
+				$scope.resetForm();
+			});
+		}
+	^^}$$
 ^^}$$
 
-^^ origin.displayJson = function(config) {
-	$$
-		^^
-}
-$$
+^^ origin.displayJson = function(config) { $$
+
+^^}$$
 	^^ origin.format = function(config) {
 		$$
 
@@ -110,6 +153,7 @@ $$
 				"html": true,
 				"container": 'body'
 			});
+
 			function setContent($dom, html) {
 				$dom.attr("data-content", html);
 			}
@@ -134,7 +178,6 @@ $$
 					setContent($this, table);
 				});
 			});
-		});
-		 ^^
+		}); ^^
 	}
 $$
