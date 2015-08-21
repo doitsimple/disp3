@@ -72,6 +72,9 @@ $$
 libReq.^^=ctrl.method$$("^^=ctrl.url$$", {^^=makeReq(ctrl.data)$$}, function(err, ^^=result$$){ 
 	if(err) return sendErr(res, err);
 
+^^break;case "async": $$
+^^=ctrl.method$$(^^=ctrl.params$$, function(err, ^^=result$$){
+	if(err) return sendErr(res, err);
 ^^break;case "send":case "raw": $$
 
 ^^break;case "db":
@@ -129,6 +132,7 @@ sendJson(res, ^^=JSON.stringify(ctrl.sendJson)$$);
 ^^for(var j=api.controllers.length-1; j>=0; j--){var ctrl = api.controllers[j];$$
  ^^switch(ctrl.type){ 
   case "req":
+  case "async":
   case "db":
  $$
 
