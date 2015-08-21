@@ -1,8 +1,32 @@
 
 ^^origin.form = function(config){$$
-
+<form role="form" class="form-horizontal" id="form">
+  ^^for(var name in config.inputs){
+    var col = config.inputs[name];
+  $$
+   <div class="form-group">
+      <label for="input_^^=name$$">^^=col.text$$</label>
+      ^^if(col.type && col.type =="file"){$$
+        <input id="input_^^=name$$" class="form-control" type="file" name="^^=name$$" ng-model="target.^^=name$$" />
+      ^^}else if(col.type && col.type =="select"){$$
+        <select id="input_^^=name$$" class="form-control" name="^^=name$$" ng-model="target.^^=name$$" >
+           ^^for(var val in col.options){
+           var text = col.options[val];
+           $$
+          <option value="^^=val$$">^^=text$$</option>
+           ^^}$$
+        </select>
+      ^^}else{$$
+        <input id="input_^^=name$$" class="form-control" type="text" name="^^=name$$" ng-model="target.^^=name$$" />
+      ^^}$$
+   </div>
+   ^^}$$
+   <div class="form-group">
+      <button ng-click="resetForm()" class="btn btn-default ">重置</button>
+      <button ng-click="submitForm()" class="btn btn-success">^^=config.submitText || "提交"$$</button>
+   </div>
+</form>
 ^^}$$
-
 
 ^^origin.format = function(config){
 $$
