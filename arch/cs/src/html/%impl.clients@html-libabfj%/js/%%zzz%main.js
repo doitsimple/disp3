@@ -1,33 +1,37 @@
-^^ origin.form = function(config) { $$
-	$scope.resetForm = function(){
+^^ origin.form = function(config) {
+	$$
+	$scope.resetForm = function() {
 		$scope.target = {};
 		$("#form input").val("");
 		$("#form select").val("");
 	}
 	$scope.resetForm();
-	var submitUrl = "/api/^^=config.submit$$";
-	^^ if (config.uploadFile) { $$
+	var submitUrl = "/api/^^=config.submit$$"; ^^
+	if (config.uploadFile) {
+		$$
 		$scope.submitForm = function() {
 			var d = $scope.target;
 			var formdata = new FormData();
-			$("input[type='file'").each(function(i,dom){
+			$("input[type='file'").each(function(i, dom) {
 				var file = $(dom)[0].files[0];
-				if(file) {
-					console.log(i,file);
+				if (file) {
+					console.log(i, file);
 					formdata.append($(dom).attr("name") || "file", file);
 				}
 			});
 			for (var key in d) {
 				formdata.append(key, d[key]);
 			}
-			formdata.append("access_token", auth.gettoken());
 			$.ajax({
 				type: 'POST',
 				url: submitUrl,
 				data: formdata,
+				headers: {
+					Authorization: "Bearer " + auth.gettoken()
+				},
 				contentType: false,
 				processData: false,
-				success: function(msg){
+				success: function(msg) {
 					alert(JSON.stringify(msg));
 					$scope.resetForm();
 				},
@@ -36,20 +40,27 @@
 					$scope.resetForm();
 				}
 			});
-		}
-	^^} else {$$
+		} ^^
+	} else {
+		$$
 		$scope.submitForm = function() {
 			req.postJson(submitUrl, $scope.target, function(err, data) {
-				console.log(err,data);
+				console.log(err, data);
 				$scope.resetForm();
 			});
-		}
-	^^}$$
-^^}$$
+		} ^^
+	}
+	$$
+		^^
+}
+$$
 
-^^ origin.displayJson = function(config) { $$
+	^^ origin.displayJson = function(config) {
+	$$
 
-^^}$$
+		^^
+}
+$$
 	^^ origin.format = function(config) {
 		$$
 
