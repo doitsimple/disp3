@@ -1,5 +1,7 @@
+$$
 ^^ origin.form = function(config) {
 	$$
+
 	$scope.resetForm = function() {
 		$scope.target = {};
 		$("#form input").val("");
@@ -40,7 +42,8 @@
 					$scope.resetForm();
 				}
 			});
-		} ^^
+		}
+		 ^^
 	} else {
 		$$
 		$scope.submitForm = function() {
@@ -48,7 +51,8 @@
 				console.log(err, data);
 				$scope.resetForm();
 			});
-		} ^^
+		}
+		 ^^
 	}
 	$$
 		^^
@@ -57,7 +61,6 @@ $$
 
 	^^ origin.displayJson = function(config) {
 	$$
-
 		^^
 }
 $$
@@ -73,7 +76,10 @@ $$
 	}
 $$
 	^^ origin.table = function(config) {
-		$$
+		if (config.withSchema) {
+			$.append(config.fields, global.proto.schemas[config.withSchema].fields);
+		}$$
+
 		$scope["^^=config.name$$"] = new displayTable($scope, {
 			api: "^^=config.api$$"
 		});
@@ -189,6 +195,104 @@ $$
 					setContent($this, table);
 				});
 			});
-		}); ^^
-	}
-$$
+		});
+		//opt
+		^^if(config.opt && config.withSchema){$$
+			function resetOpt(){
+				$scope.opt_model = {};
+			}
+			function setDataToOptform(row){
+				$scope.opt_model = row;
+			}
+			function toggleOptmodal(){
+				$("#optModal").modal('toggle');
+			}
+			$scope.optAdd = function() {
+				resetOpt();
+				toggleOptmodal();
+				$scope.optUrl = "^^=config.opt.add.api$$" || "add^^=config.withSchema$$";
+			}
+			$scope.optUpdate = function(row) {
+				if (!row._id) return alert("no _id field!");
+				setDataToOptform(row);
+				toggleOptmodal();
+				$scope.optUrl = "^^=config.opt.update.api$$" || "modify^^=config.withSchema$$";
+			}
+			$scope.optDelete = function(row) {
+				if (!row._id) return alert("no _id field!");
+				$scope.optUrl = "^^=config.opt.delete.api$$" || "delete^^=config.withSchema$$";
+				if (confirm("确认删除记录：" + row._id)) {
+					req.postEx("/api/" + $scope.optUrl, {
+						Authorization: "Bearer " + auth.gettoken()
+					}, {
+						"_id": row._id
+					}, function(err, result) {
+						if (err) return alert(JSON.stringify(err));
+						alert(JSON.stringify(result));
+						$scope["^^=config.name$$"].refresh();
+					});
+				}
+			}
+			$scope.resetOptform = function() {
+				console.log("reset: ", $scope.opt_model);
+				resetOpt();
+			}
+			$scope.submitOptform = function() {
+				^^
+				var methods = {};
+				methods[config.opt.add.api] = global.proto.apis[config.opt.add.api];
+				methods[config.opt.update.api] = global.proto.apis[config.opt.add.api];
+				var hasFile = false;
+				for (var field in config.fields) {
+					if (config.fields[field].type == "file") hasFile = true;
+				}
+				if (hasFile) {$$
+					console.log(($scope.opt_model._id ? "update " : "add "), $scope.opt_model);
+					var d = $scope.opt_model;
+					var formdata = new FormData();
+					for (var key in d) {
+						formdata.append(key, d[key]);
+					}
+					$("#optform input[type='file'").each(function(i, dom) {
+						var file = $(dom)[0].files[0];
+						if (file) {
+							console.log(i, file);
+							formdata.append($(dom).attr("name") || "file", file);
+						}
+					});
+					$.ajax({
+						type: 'POST',
+						url: "/api/" + $scope.optUrl,
+						data: formdata,
+						headers: {
+							Authorization: "Bearer " + auth.gettoken()
+						},
+						contentType: false,
+						processData: false,
+						success: function(msg) {
+							alert(JSON.stringify(msg));
+							$scope.closeOptform();
+							$scope["^^=config.name$$"].refresh();
+						},
+						error: function(err) {
+							alert(JSON.stringify(err));
+						}
+					});
+				^^} else {$$
+					req.postEx("/api/" + $scope.optUrl, {
+						Authorization: "Bearer " + auth.gettoken()
+					}, $scope.opt_model, function(err, result) {
+						if (err) return alert(JSON.stringify(err));
+						alert(JSON.stringify(result));
+						$scope.closeOptform();
+						$scope["^^=config.name$$"].refresh();
+					});
+				^^}$$
+			}
+			$scope.closeOptform = function() {
+				resetOpt();
+				toggleOptmodal();
+				console.log("closeOptform");
+			}
+		^^}$$
+	^^}$$
