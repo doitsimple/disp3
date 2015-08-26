@@ -197,7 +197,15 @@ $$
 			});
 		});
 		//opt
-		^^if(config.opt && config.withSchema){$$
+		^^if(config.opt && config.withSchema){
+			var methods = {};
+			// var addApi = config.opt.add.type || config.opt.add.api;
+			// var updateApi = config.opt.update.api || "modify"+config.withSchema;
+			// var deleteApi = config.opt.delete.api || "delete"+config.withSchema;
+			// [addApi,updateApi,deleteApi].forEach(function(i,api){
+			// 	methods[api] = global.proto.apis[api];
+			// });
+			$$
 			function resetOpt(){
 				$scope.opt_model = {};
 			}
@@ -239,9 +247,6 @@ $$
 			}
 			$scope.submitOptform = function() {
 				^^
-				var methods = {};
-				methods[config.opt.add.api] = global.proto.apis[config.opt.add.api];
-				methods[config.opt.update.api] = global.proto.apis[config.opt.add.api];
 				var hasFile = false;
 				for (var field in config.fields) {
 					if (config.fields[field].type == "file") hasFile = true;
