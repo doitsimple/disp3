@@ -188,7 +188,11 @@ $$
 		</select> entries</label>
 	</div>
 </div>
-<div class="col-sm-6 btn-group"><button class="btn btn-default" ng-click="optAdd()">添加数据</button></div>
+<div class="col-sm-6 btn-group">
+^^if(config.opt && config.opt.add){$$
+  <button class="btn btn-default" ng-click="optAdd()">添加数据</button>
+^^}$$
+</div>
 <div class="col-sm-3 text-right">
 	^^pagenator(config)$$
 </div>
@@ -229,6 +233,9 @@ $$
     ^^if(config.opt.delete){$$
       <button class="btn btn-primary" ng-click="optDelete(row)">删除</button>
     ^^}$$
+    ^^for(var name in config.opt){if(name != "add" && name != "update" && name != "delete"){$$
+      <button class="btn btn-primary" >opt</button>
+    ^^}}$$
   </td>
   ^^}$$
 		</tr>

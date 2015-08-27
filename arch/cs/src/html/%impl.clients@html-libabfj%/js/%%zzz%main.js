@@ -144,7 +144,9 @@ $$
 				self.sort = json;
 			}
 			self.refresh = function() {
-				req.postJson("/api/" + self.api, {
+				req.postEx("/api/" + self.api, {
+						Authorization: "Bearer " + auth.gettoken()
+					},{
 					where: self.where || {},
 					op: {
 						$sort: self.sort,
