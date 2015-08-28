@@ -196,7 +196,7 @@ $$
 <div class="col-sm-3 text-right">
 	^^pagenator(config)$$
 </div>
-
+  <div class="col-sm-12" style="overflow-x:auto;">
   <table class="table table-striped table-bordered" style="vertical-align:middle;"><thead>
 ^^
 if(config.withSchema){
@@ -234,13 +234,18 @@ $$
       <button class="btn btn-primary" ng-click="optDelete(row)">删除</button>
     ^^}$$
     ^^for(var name in config.opt){if(name != "add" && name != "update" && name != "delete"){$$
-      <button class="btn btn-primary" >opt</button>
+      <button class="btn btn-primary"
+      ^^for(var attr in config.opt[name].attr){var value = config.opt[name].attr[attr];$$
+        ^^=attr$$="^^=value$$" 
+        ^^}$$
+        >^^= config.opt[name].text || name$$</button>
     ^^}}$$
   </td>
   ^^}$$
 		</tr>
 	</tbody>
 </table>
+  </div>
 <div class="col-sm-5"><div style="padding:0.5em 0;">Showing {{^^=config.name$$.perPage*(^^=config.name$$.currPage-1)+1}} to {{^^=config.name$$.perPage*^^=config.name$$.currPage}} of {{^^=config.name$$.count}} entries</div></div>
 <div class="col-sm-7 text-right">
 	^^pagenator(config)$$

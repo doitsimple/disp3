@@ -1,62 +1,62 @@
 $$
-^^ origin.form = function(config) {
-	$$
+	^^ origin.form = function(config) {
+		$$
 
-	$scope.resetForm = function() {
-		$scope.target = {};
-		$("#form input").val("");
-		$("#form select").val("");
-	}
-	$scope.resetForm();
-	var submitUrl = "/api/^^=config.submit$$"; ^^
-	if (config.uploadFile) {
-		$$
-		$scope.submitForm = function() {
-			var d = $scope.target;
-			var formdata = new FormData();
-			$("input[type='file'").each(function(i, dom) {
-				var file = $(dom)[0].files[0];
-				if (file) {
-					console.log(i, file);
-					formdata.append($(dom).attr("name") || "file", file);
+		$scope.resetForm = function() {
+			$scope.target = {};
+			$("#form input").val("");
+			$("#form select").val("");
+		}
+		$scope.resetForm();
+		var submitUrl = "/api/^^=config.submit$$"; ^^
+		if (config.uploadFile) {
+			$$
+			$scope.submitForm = function() {
+				var d = $scope.target;
+				var formdata = new FormData();
+				$("input[type='file'").each(function(i, dom) {
+					var file = $(dom)[0].files[0];
+					if (file) {
+						console.log(i, file);
+						formdata.append($(dom).attr("name") || "file", file);
+					}
+				});
+				for (var key in d) {
+					formdata.append(key, d[key]);
 				}
-			});
-			for (var key in d) {
-				formdata.append(key, d[key]);
-			}
-			$.ajax({
-				type: 'POST',
-				url: submitUrl,
-				data: formdata,
-				headers: {
+				$.ajax({
+					type: 'POST',
+					url: submitUrl,
+					data: formdata,
+					headers: {
+						Authorization: "Bearer " + auth.gettoken()
+					},
+					contentType: false,
+					processData: false,
+					success: function(msg) {
+						alert(JSON.stringify(msg));
+						$scope.resetForm();
+					},
+					error: function(err) {
+						alert(JSON.stringify(err));
+						$scope.resetForm();
+					}
+				});
+			} ^^
+		} else {
+			$$
+			$scope.submitForm = function() {
+				req.postEx(submitUrl, {
 					Authorization: "Bearer " + auth.gettoken()
-				},
-				contentType: false,
-				processData: false,
-				success: function(msg) {
-					alert(JSON.stringify(msg));
+				}, $scope.target, function(err, data) {
+					console.log(err, data);
 					$scope.resetForm();
-				},
-				error: function(err) {
-					alert(JSON.stringify(err));
-					$scope.resetForm();
-				}
-			});
+				});
+			} ^^
 		}
-		 ^^
-	} else {
 		$$
-		$scope.submitForm = function() {
-			req.postJson(submitUrl, $scope.target, function(err, data) {
-				console.log(err, data);
-				$scope.resetForm();
-			});
-		}
-		 ^^
+			^^
 	}
-	$$
-		^^
-}
 $$
 
 	^^ origin.displayJson = function(config) {
@@ -78,7 +78,8 @@ $$
 	^^ origin.table = function(config) {
 		if (config.withSchema) {
 			$.append(config.fields, global.proto.schemas[config.withSchema].fields);
-		}$$
+		}
+		$$
 
 		$scope["^^=config.name$$"] = new displayTable($scope, {
 			api: "^^=config.api$$"
@@ -143,10 +144,10 @@ $$
 				json[key] = value || -self.sort[key] || -1;
 				self.sort = json;
 			}
-			self.refresh = function() {
+			self.refresh = $scope.refresh = function() {
 				req.postEx("/api/" + self.api, {
-						Authorization: "Bearer " + auth.gettoken()
-					},{
+					Authorization: "Bearer " + auth.gettoken()
+				}, {
 					where: self.where || {},
 					op: {
 						$sort: self.sort,
@@ -199,7 +200,8 @@ $$
 			});
 		});
 		//opt
-		^^if(config.opt && config.withSchema){
+		^^
+		if (config.opt && config.withSchema) {
 			var methods = {};
 			// var addApi = config.opt.add.type || config.opt.add.api;
 			// var updateApi = config.opt.update.api || "modify"+config.withSchema;
@@ -208,13 +210,16 @@ $$
 			// 	methods[api] = global.proto.apis[api];
 			// });
 			$$
-			function resetOpt(){
+
+			function resetOpt() {
 				$scope.opt_model = {};
 			}
-			function setDataToOptform(row){
+
+			function setDataToOptform(row) {
 				$scope.opt_model = row;
 			}
-			function toggleOptmodal(){
+
+			function toggleOptmodal() {
 				$("#optModal").modal('toggle');
 			}
 			$scope.optAdd = function() {
@@ -247,13 +252,13 @@ $$
 				console.log("reset: ", $scope.opt_model);
 				resetOpt();
 			}
-			$scope.submitOptform = function() {
-				^^
+			$scope.submitOptform = function() { ^^
 				var hasFile = false;
 				for (var field in config.fields) {
 					if (config.fields[field].type == "file") hasFile = true;
 				}
-				if (hasFile) {$$
+				if (hasFile) {
+					$$
 					console.log(($scope.opt_model._id ? "update " : "add "), $scope.opt_model);
 					var d = $scope.opt_model;
 					var formdata = new FormData();
@@ -284,8 +289,9 @@ $$
 						error: function(err) {
 							alert(JSON.stringify(err));
 						}
-					});
-				^^} else {$$
+					}); ^^
+				} else {
+					$$
 					req.postEx("/api/" + $scope.optUrl, {
 						Authorization: "Bearer " + auth.gettoken()
 					}, $scope.opt_model, function(err, result) {
@@ -293,13 +299,17 @@ $$
 						alert(JSON.stringify(result));
 						$scope.closeOptform();
 						$scope["^^=config.name$$"].refresh();
-					});
-				^^}$$
+					}); ^^
+				}
+				$$
 			}
 			$scope.closeOptform = function() {
 				resetOpt();
 				toggleOptmodal();
 				console.log("closeOptform");
-			}
-		^^}$$
-	^^}$$
+			} ^^
+		}
+		$$
+			^^
+	}
+$$
