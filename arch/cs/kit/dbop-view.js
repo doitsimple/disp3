@@ -61,12 +61,13 @@ module.exports = function(params, env, addRole, fn) {
 		"withUis": ["opt-" + name],
 		"navbar": {
 			"test": {
-				"text": "默认",
+				"default": "默认",
 				"icon": "refresh",
 				"subs": {
 					"default": {
 						"href": "#/opt-" + name,
-						"text": "默认"
+						"text": "默认1",
+						"icon": "refresh"
 					}
 				}
 			}
