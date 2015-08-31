@@ -96,6 +96,10 @@ function getModel(cname){
 		if((fdoc[cname])){
 			doc2.$setOnInsert = {};
 			fdoc[cname](doc, doc2.$setOnInsert);
+			fdoc[cname](criteria, doc2.$setOnInsert);
+			for(var key in doc2.$inc){
+				delete doc2.$setOnInsert[key];
+			}
 		}
 		origin.updateOne(criteria, doc2, {upsert:true}, function(err, result){
 			var rtn;
@@ -109,6 +113,10 @@ function getModel(cname){
 		if((fdoc[cname])){
 			updateParam2.$setOnInsert = {};
 			fdoc[cname](updateParam, updateParam2.$setOnInsert);
+			fdoc[cname](criteria, updateParam2.$setOnInsert);
+			for(var key in updateParam2.$inc){
+				delete updateParam2.$setOnInsert[key];
+			}
 		}
 		origin.updateOne(criteria, updateParam2, {upsert:true}, function(err, result){
 			var rtn;

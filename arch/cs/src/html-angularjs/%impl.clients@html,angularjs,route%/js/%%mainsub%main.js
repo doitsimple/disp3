@@ -114,7 +114,7 @@ rootApp.directive('fileModel', ['$parse', function ($parse) {
 
 rootApp.factory('auth', function($http, $cookieStore, $rootScope){
 	var methods = {};
-	var idstr = "^^=name$$";
+	var idstr = "potb-website";
 	methods.getToken = function(){
 		var token;
 		try{
