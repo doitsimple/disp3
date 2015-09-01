@@ -60,8 +60,8 @@ module.exports = function(params, env, addRole, fn) {
 	addRole("bclient", {
 		"withUis": ["opt-" + name],
 		"navbar": {
-			"test": {
-				"default": "默认",
+			"default": {
+				"text": "默认",
 				"icon": "refresh",
 				"subs": {
 					"default": {
