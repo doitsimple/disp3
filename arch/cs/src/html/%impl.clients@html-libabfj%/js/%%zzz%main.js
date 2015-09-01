@@ -222,17 +222,22 @@ $$
 			function toggleOptmodal() {
 				$("#optModal").modal('toggle');
 			}
+			^^if(config.opt.add){$$
 			$scope.optAdd = function() {
 				resetOpt();
 				toggleOptmodal();
 				$scope.optUrl = "^^=config.opt.add.api$$" || "add^^=config.withSchema$$";
 			}
+			^^}$$
+			^^if(config.opt.update){$$
 			$scope.optUpdate = function(row) {
 				if (!row._id) return alert("no _id field!");
 				setDataToOptform(row);
 				toggleOptmodal();
 				$scope.optUrl = "^^=config.opt.update.api$$" || "modify^^=config.withSchema$$";
 			}
+			^^}$$
+			^^if(config.opt.delete){$$
 			$scope.optDelete = function(row) {
 				if (!row._id) return alert("no _id field!");
 				$scope.optUrl = "^^=config.opt.delete.api$$" || "delete^^=config.withSchema$$";
@@ -248,6 +253,7 @@ $$
 					});
 				}
 			}
+			^^}$$
 			$scope.resetOptform = function() {
 				console.log("reset: ", $scope.opt_model);
 				resetOpt();
