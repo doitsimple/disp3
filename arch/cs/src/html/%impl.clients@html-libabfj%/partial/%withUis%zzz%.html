@@ -204,8 +204,9 @@ if(config.withSchema){
 }
 $$
  ^^for(var name in config.fields){var col = config.fields[name];$$
+ ^^if(!col.hidden){$$
   <th><a style="padding: 0 5px;" ng-click="^^=config.name$$.changeSort('^^=name$$')"><i class="fa" ng-class="{'fa-sort-asc':^^=config.name$$.sort.^^=name$$ === 1,'fa-sort-desc': ^^=config.name$$.sort.^^=name$$ === -1,'fa-sort':!^^=config.name$$.sort.^^=name$$}"></i></a>^^=col.text||name$$<br/>^^=name$$</th>
- ^^}$$
+ ^^}}$$
  ^^if(config.opt){$$
   <th>opt</th>
   ^^}$$
@@ -213,7 +214,8 @@ $$
   <tbody>
     <tr ng-repeat="row in ^^=config.name$$.data" onlastrepeat>
  ^^for(var name in config.fields){var col = config.fields[name];$$
- 			<td>
+ ^^if(!col.hidden){$$
+ 	<td>
   ^^if(col.ondemand){$$
 	<span class="glyphicon glyphicon-option-horizontal" ng-click="^^=config.name$$.showrow^^=name$$=true" ng-hide="^^=config.name$$.showrow^^=name$$"></span>
 	<div ng-click="^^=config.name$$.showrow^^=name$$=false" ng-show="^^=config.name$$.showrow^^=name$$">^^bytype(col.type)$$</div>
@@ -224,7 +226,7 @@ $$
   ^^}else{
 		bytype(col.type)
   }$$</td>
- ^^}$$
+ ^^}}$$
  ^^if(config.opt){$$
  <td>
     ^^if(config.opt.update){$$
@@ -254,7 +256,6 @@ $$
 </div>
 
  ^^if(config.opt){$$
- <td>
    ^^if(config.opt.update || config.opt.add){$$
     <div class="modal fade" id="optModal" tabindex="-1" role="dialog" aria-labelledby="optLabel" aria-hidden="true">
       <div class="modal-dialog">
@@ -315,7 +316,6 @@ $$
       </div>
     </div>
    ^^}$$
- </td>
  ^^}$$
 
 
@@ -324,9 +324,9 @@ $$
 
  ^^function bytype(type){$$
 	^^if(type == "date"){$$
- 			{{row.^^=name$$|date:'yyyyMMdd'}}
+ 			{{row.^^=name$$|date:'yyyy/MM/dd'}}
 	^^}else if(type == "datetime"){$$
- 			{{row.^^=name$$|date:'yyMMdd HH:mm'}}
+ 			{{row.^^=name$$|date:'yy/MM/dd HH:mm'}}
   ^^}else{$$
  			{{row.^^=name$$}}
   ^^}$$
