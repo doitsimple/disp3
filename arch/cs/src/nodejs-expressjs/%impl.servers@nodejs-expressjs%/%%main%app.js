@@ -67,6 +67,7 @@ var ^^=key$$ = ^^=vars$$;
 ^^}
  }
 $$
+^^if(ctrl.pre){$$^^=ctrl.pre$$;^^}$$
 ^^switch(ctrl.type){ case "req":$$
 
 libReq.^^=ctrl.method$$("^^=ctrl.url$$", {^^=makeReq(ctrl.data)$$}, function(err, ^^=result$$){ 
