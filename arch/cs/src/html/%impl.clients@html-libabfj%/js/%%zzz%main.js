@@ -100,6 +100,10 @@ $$
 			this.perPage = 10; //the number of entries per page
 			this.perScreen = 5; //the number of pages per screen
 			this.api = config.api;
+			^^if(config.query) {$$
+				this.where = ^^=JSON.stringify(config.query.default) || {}$$;
+			^^}$$
+			console.log(this.where);
 			var self = this;
 			self.sort = {};
 			$scope.$watch(function() {
