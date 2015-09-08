@@ -7,7 +7,7 @@ module.exports = function(params, env, addRole, fn) {
 			"_id": {
 				"text": "ID",
 				"type": "ObjectId",
-        "ondemand":true
+				"ondemand": true
 			}
 		}
 	}
@@ -22,6 +22,10 @@ module.exports = function(params, env, addRole, fn) {
 				"type": "table",
 				"api": "bcolect" + name,
 				"withSchema": name,
+				"query": {
+					"default": {}
+				},
+				"fileds":{},
 				"opt": {
 					"add": {},
 					"update": {},
