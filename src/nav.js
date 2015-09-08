@@ -14,15 +14,22 @@ function getNavPaths(){
 	self.navpaths = {};
 	var archs = Object.keys(self.archs).reverse();
 	var project = self.global.project;
+//	var models = [];
 	for(var i in archs){
 		var arch = archs[i];
+		var archJson = self.archs[arch];
+/*
+		if(archJson.models)
+			for(var m in archJson.models)
+				models[m] = archJson.models;
+*/
 		var archSrc = path.resolve(self.rootDir + "/arch/" + arch + "/src");
 		var types = [];
 		var mods = {};
 		if(project.navspaces.length)
 			for(var i in project.navspaces){
 				var navspace = project.navspaces[i];
-				var arr = libObject.getsByKey(self.global, navspace);
+ 				var arr = libObject.getsByKey(self.global, navspace);
 				for(var j in arr){
 					var type = arr[j].type;
 					if(!type) continue;
@@ -33,7 +40,11 @@ function getNavPaths(){
 							mods[type].push(arr[j].mods[k]);
 						}
 				}
-			}	
+			}
+		addPath.call(self, archSrc + "/main");
+		for(var i in project.addons){
+			addPath.call(self, archSrc + "/"+ project.addons[i]);
+		}
 		for(var i in types){
 			var type = types[i];
 			addPath.call(self, archSrc + "/" + type);
