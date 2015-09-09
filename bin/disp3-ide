@@ -17,7 +17,7 @@ if(!fs.existsSync(global.workspace))
 
 http.createServer(function(req, res) {
 	console.log(req.url);
-	//rfc2616
+
 
 	var filePath;
 	if(req.url.match(/^\/read\/(\S+)/)){
@@ -129,6 +129,7 @@ function setLastModified(res, stat){
 	}
 }
 function sendFile(filePath, req, res){
+	//rfc2616
 	fs.stat(filePath, function onstat(err, stat) {
     if (err && err.code === 'ENOENT'
       && !path.extname(path)

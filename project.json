@@ -1,13 +1,14 @@
 {
-		"arch": "cs",
-		"fsconfigs": {
-				"bin": {"ignore": true},
-				"src": {"ignore": true},
-				"lib": {"ignore": true},
-				"arch": {"ignore": true},
-				"example": {"ignore": true},
-				"example2": {"ignore": true},
-				"ide-old": {"ignore": true},
-				"workspace": {"ignore": true}
-		}
+	"arch": "cs",
+	"fsconfigs": {
+		"bin": {"ignore": true},
+		"src": {"ignore": true},
+		"lib": {"ignore": true},
+		"arch": {"ignore": true},
+		"example": {"ignore": true},
+		"example2": {"ignore": true},
+		"ide-old": {"ignore": true},
+		"workspace": {"ignore": true},
+		"testspace": {"ignore": true}
+	}
 }

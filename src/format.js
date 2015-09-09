@@ -15,10 +15,18 @@ function readConfigs(){
 
 // begin with project.json
 	log.v("read project.json");
-	if(!fs.existsSync(self.projectDir + "/project.json")) return self.error("no prject.json");
-	var projectJson = libFile.readJSON(self.projectDir + "/project.json");
+	var projectJson;
+	if(fs.existsSync(self.projectDir + "/project.json")){
+		projectJson = libFile.readJSON(self.projectDir + "/project.json");
+		self.global.project = projectJson;
+	}else if(fs.existsSync(self.projectDir + "/disp.json")){
+		self.global = libFile.readJSON(self.projectDir + "/disp.json");
+		projectJson = self.global.project;
+	}else{
+		return self.error("no disp.json");
+	}
+	
 
-	self.global.project = projectJson;
 	self.project = projectJson;
 	if(!projectJson.arch) projectJson.arch = "base";
 	var archDir = self.rootDir + "/arch/" + projectJson.arch;
@@ -101,12 +109,24 @@ function readConfigsSub(arch){
 	var self = this;
 	var archDir = self.rootDir + "/arch/" + arch;	
 	var projectJson = self.global.project;
-	// check deps and check format
 
+/*add format.json*/
+	var formatJson;
+	if(fs.existsSync(archDir + "/format.json")){
+		formatJson = libFile.readJSON(archDir + "/format.json");
+	}else{
+		formatJson = {};
+	}
+	libObject.append(self.formats, formatJson);
+/*---*/
+
+	// check deps and check format
 	var labels = getLabels.call(self, arch);
 	for(var label in labels){
 		checkConfig.call(self, arch, label);
 	}
+
+
 	var archJson;
 	if(fs.existsSync(archDir + "/arch.json")){
 		archJson = libFile.readJSON(archDir + "/arch.json");
@@ -124,7 +144,6 @@ function checkConfig(arch, label){
 	var self = this;
 	var archDir = self.rootDir + "/arch/" + arch;	
 	var formatProjectJson = libFile.readJSON(archDir+ "/format/" + label +".json");
-
 	if(formatProjectJson){
 		if(!self.formats[label]) self.formats[label] = formatProjectJson;
 		else libObject.append(self.formats[label], formatProjectJson);
@@ -134,9 +153,10 @@ function getLabels(arch){
 	var self = this;
 // find how many json to format for the arch
 	var archDir = self.rootDir + "/arch/" + arch;	
-	var files = fs.readdirSync(archDir + "/format");
 	var ms;
 	var labels = {};
+	if(!fs.existsSync(archDir + "/format")) return labels;
+	var files = fs.readdirSync(archDir + "/format");
 	for(var i=0; i<files.length; i++){
 		var file = files[i];
 		if((ms = file.match(/(\S+)\.json$/))){
