@@ -147,7 +147,7 @@ if(config.withSchema){
 }
 $$
 <div class="panel panel-primary" ng-show="showsearch">
-  <div class="panel-heading">查询^^=config.text || config.name$$</div>
+  <div class="panel-heading" ng-click="showsearch=!showsearch">查询^^=config.text || config.name$$</div>
   <div class="panel-body">
     <form role="form" class="form-horizontal" id="form">
       ^^for(var name in config.fields){
@@ -235,6 +235,11 @@ $$
 ^^if(config.opt && config.opt.add){$$
   <button class="btn btn-default" ng-click="optAdd()">添加数据</button>
 ^^}$$
+^^if(config.toolbar){
+  for(var name in config.toolbar){
+    var ele = config.toolbar[name];
+    if(!ele.tag)ele.tag="button";
+  $$<^^=ele.tag$$^^if(ele.attr){if(!ele.attr.class){$$ class="btn btn-default"^^}for(var attrname in ele.attr){$$^^= attrname$$="^^=ele.attr[attrname]$$"^^}}else{$$ class="btn btn-default"^^}$$>^^=ele.text||name$$</^^=ele.tag$$>^^}}$$
 </div>
 <div class="col-sm-3 text-right">
 	^^pagenator(config)$$
