@@ -8,7 +8,7 @@
       <label for="input_^^=name$$">^^=col.text$$</label>
       ^^if(col.type && col.type =="file"){$$
         <input id="input_^^=name$$" class="form-control" type="file" name="^^=name$$" ng-model="target.^^=name$$" />
-      ^^}else if(col.type && col.type =="select"){$$
+      ^^}else if(col.type && (col.type =="select"||col.enum)){if(!col.options)col.options=col.enum$$
         <select id="input_^^=name$$" class="form-control" name="^^=name$$" ng-model="target.^^=name$$" >
            ^^for(var val in col.options){
            var text = col.options[val];
@@ -154,27 +154,38 @@ $$
         var col = config.fields[name];
       $$
        <div class="form-group">
+          ^^if(col.type && (col.type == "date" || col.type == "datetime")){$$
+            <label for="search_1_^^=name$$" class="col-sm-2 control-label">^^=col.text$$开始</label>
+            <div class="col-sm-4">
+              <input id="search_1_^^=name$$" ng-model="^^=config.name$$.where.^^=name$$.$gte" class="form-control" type="date" placeholder="^^=col.placeholder||"(大于等于此时间)"$$"/> 
+            </div>
+            <label for="search_2_^^=name$$" class="col-sm-2 control-label">^^=col.text$$结束</label>
+            <div class="col-sm-4">
+              <input id="search_2_^^=name$$" ng-model="^^=config.name$$.where.^^=name$$.$lte" class="form-control col-sm-4" type="date" placeholder="^^=col.placeholder||"(小于等于此时间)"$$"/>
+            </div>
+          ^^}else{$$
           <label for="search_^^=name$$" class="col-sm-2 control-label">^^=col.text$$</label>
           <div class="col-sm-10">
-          ^^if(col.type && (col.type == "number" || col.type == "int")){$$
-            <input id="search_^^=name$$" ng-model="^^=config.name$$.where.^^=name$$" class="form-control" type="number" placeholder="^^=col.placeholder$$"/>
-          ^^}else if(col.type && col.type =="select"){$$
-            <select id="search_^^=name$$" class="form-control" ng-model="target.^^=name$$" >
-               ^^for(var val in col.options){
-               var text = col.options[val];
-               $$
-              <option value="^^=val$$">^^=text$$</option>
-               ^^}$$
-            </select>
-          ^^}else{$$
-            <input id="search_^^=name$$" ng-model="^^=config.name$$.where.^^=name$$" class="form-control" type="text" />
-          ^^}$$
+            ^^if(col.type && (col.type == "number" || col.type == "int")){$$
+              <input id="search_^^=name$$" ng-model="^^=config.name$$.where.^^=name$$" class="form-control" type="number" placeholder="^^=col.placeholder||name$$"/>
+            ^^}else if(col.type && col.type =="select" || col.enum){if(!col.options)col.options=col.enum;$$
+              <select id="search_^^=name$$" class="form-control" ng-model="^^=config.name$$.where.^^=name$$" >
+                 ^^for(var val in col.options){
+                 var text = col.options[val];
+                 $$
+                <option value="^^=val$$">^^=text$$</option>
+                 ^^}$$
+              </select>
+            ^^}else{$$
+              <input id="search_^^=name$$" ng-model="^^=config.name$$.where.^^=name$$" class="form-control" type="text" />
+            ^^}$$
           </div>
+          ^^}$$
        </div>
        ^^}$$
        <div class="row">
          <div class="col-sm-6 text-right">
-           <button ng-click="^^=config.name$$.where={}" class="btn btn-default ">重置</button>
+           <button ng-click="^^=config.name$$.where={};refresh();" class="btn btn-default ">重置</button>
          </div>
          <div class="col-sm-6 text-left">
            <button ng-click="refresh()" class="btn btn-success">^^=config.submitText || "提交"$$</button>

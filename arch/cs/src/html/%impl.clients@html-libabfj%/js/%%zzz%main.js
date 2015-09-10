@@ -100,8 +100,20 @@ $$
 			this.perPage = 10; //the number of entries per page
 			this.perScreen = 5; //the number of pages per screen
 			this.api = config.api;
+			this.where = {};
 			^^if(config.query) {$$
 				this.where = ^^=JSON.stringify(config.query.default) || {}$$;
+			^^}$$
+ 			^^if (config.fields) {
+			var datefields = [];
+			for (var i in config.fields) {
+				var t = config.fields[i].type;
+				if (t == "date" || t == "datetime") {
+					datefields.push(i);
+				}
+			}$$
+				this.datefields = ^^=JSON.stringify(datefields) || []$$;
+				console.log(this.datefields);
 			^^}$$
 			console.log(this.where);
 			var self = this;
@@ -149,6 +161,11 @@ $$
 				self.sort = json;
 			}
 			self.refresh = $scope.refresh = function() {
+				for (var i in self.datefields) {
+					var f = self.datefields[i];
+					delete(self.where[f]);
+				}
+				console.log("query:",self.where);
 				req.postEx("/api/" + self.api, {
 					Authorization: "Bearer " + auth.gettoken()
 				}, {
