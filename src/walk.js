@@ -7,7 +7,7 @@ var libFile = require("../lib/nodejs/file");
 var tmpl = require("./tmpl");
 var utils = require("./utils");
 var log = require("./log");
-var regex = /%(~?)([^%@]+)?(?:@([^%@]+))?(?:%([a-zA-Z0-9_-]+)?(?:@([^%@]+))?)?(?:%([^%]+))?%/;
+var regex = /%(~?)([^%@~]+)?(~?)(?:@([^%@~]+))?(?:%([a-zA-Z0-9_-]+)?(?:@([^%@~]+))?)?(?:%([^%]+))?%/;
 module.exports = {
 	regex: regex,
 	walk: walk,
@@ -260,10 +260,11 @@ function matchName(params){
 		params.ismatch = true;
 		params.isglobal = ms[1];
 		var envkey = ms[2] || "";
-		params.selector = ms[3];
-		params.contentkey = ms[4] || "main";
-		params.tmpl = ms[5];
-		params.src = ms[6];
+		params.nullval = ms[3];
+		params.selector = ms[4];
+		params.contentkey = ms[5] || "main";
+		params.tmpl = ms[6];
+		params.src = ms[7];
 		if(envkey){
 			var val;
 			if(params.isglobal){
@@ -278,20 +279,27 @@ function matchName(params){
 				return self.error(envkey + " not exist in env: " + params.fullpath + "\n" + JSON.stringify(params.env));
 
 			if(typeof val != "object"){
-				params.tname = params.name.replace(/%\S+%/, val);
-			}else{
-				var endenvkey = envkey.match(/([^\.]+)$/)[1];
-				if(self.froms[endenvkey]){
-					var newval = {};
-					var from = libObject.getByKey(self.global, self.froms[endenvkey]);
+				if(params.nullval) 
+					params.tname = params.name.replace(/%\S+%/, "");
+				else
+					params.tname = params.name.replace(/%\S+%/, val);
+			}
+			var endenvkey = envkey.match(/([^\.]+)$/)[1];
+			if(self.froms[endenvkey]){
+				var newval = {};
+				var from = libObject.getByKey(self.global, self.froms[endenvkey]);
+				if(typeof val == "object")
 					for(var i in val)
 						newval[val[i]] = from[val[i]];
-					val = newval;
-					if(!params.isglobal)
-						params.envkey = self.froms[endenvkey];
-				}
+				else
+					newval[val] = from[val];
+				val = newval;
+				if(!params.isglobal)
+					params.envkey = self.froms[endenvkey];
+			}
+			if(typeof val == "object"){
 				params.env = val;
-				params.multi = true;
+				params.multi = true;				
 			}
 		}else{
 			params.tname = params.name.replace(/%\S+%/, "");
