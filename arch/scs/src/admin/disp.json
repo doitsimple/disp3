@@ -1,0 +1,95 @@
+{
+	"proto": {
+		"schemas": {
+			"admin": {
+				"fields": {					
+					"email": {
+						"type": "string",
+						"text": "邮箱"
+					},
+					"password": {
+						"encrypt": "bcrypt",
+						"hidden": true
+					},
+					"token": {
+						"type": "string",
+						"hidden": true
+					},
+					"realname": {
+            "text": "真实姓名",
+            "type": "string",
+            "basic": true
+          },
+					"modifytime": {
+						"type": "datetime",
+						"onmodify": true
+					},
+					"createtime": {
+						"type": "datetime", 
+						"default": 0 
+					}
+				}
+			}
+		},
+		"apis": {
+			"admin_signin": {
+				"text": "管理员登陆",
+				"params": {
+					"email": {
+						"type": "string",
+						"text": "邮箱",
+						"required": true
+					},
+					"password": {
+						"type": "string",
+						"text": "密码",
+						"required": true
+					}
+				},
+				"controllers": [
+					{
+						"type": "db",
+						"method": "select",
+						"schema": "admin",
+						"where": "{email: email}",
+						"result": "user",
+						"check": {
+							"!user": "用户名不存在",
+							"!libEncrypt.bcryptcompare(password, user.password)": "密码错误"
+						}						
+					},
+					{
+						"pre": "token = libRandom.hat();",
+						"type": "db",
+						"method": "update",
+						"schema": "admin",
+						"where": "{_id: user._id}",
+						"set": "{token: token}",
+						"send": "{success: true}"
+					}
+				]
+			},
+			"admin_get": {
+				"text": "获取管理员信息",
+				"midwares": ["auth"]
+			}
+		}
+	},
+	"impl": {
+		"databases":{
+			"main": {
+				"withSchemas": [
+					"admin"
+				]
+			}
+		},
+		"servers": {
+			"bserver": {
+				"withApis": [
+					"admin_signin",
+					"admin_get"
+				]
+			}
+		}
+	}
+}
