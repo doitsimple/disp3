@@ -99,7 +99,9 @@ function extendConfigs(){
   if(self.task != "main")
     libObject.extend(self.global, libFile.readJSON(self.task + ".json"));
 //format twice
-	if(format.call(self, "global", self, self.formats)) return 1;	
+	if(format.call(self, "global", self, self.formats)) return 1;
+	mountJSON(self.global);
+	mountString(self.global);
 	if(!fs.existsSync(self.global.project.target))
 		libFile.mkdirpSync(self.global.project.target);
 	fs.writeFileSync(self.global.project.target + "/disp.global.json", JSON.stringify(self.global, undefined, 2));
@@ -176,8 +178,11 @@ function mountJSON(config, dir){
       e = itConfig[key][i];
 
     if(e[0] == "@" && e[1] == "@"){
-      var jpath = path.resolve(dir + "/" +e.substr(2));
+			var arr = e.substr(2).split("@");
+      var jpath = path.resolve(dir + "/" +arr[0]);
       var json = libFile.readJSON(jpath);
+			if(arr[1])
+				json = libObject.getByKey(json, arr[1]);
       mountJSON(json, path.dirname(jpath));
       if(i==undefined)
         itConfig[key] = json;
@@ -201,6 +206,18 @@ function mountString(config){
 				return eval(p1);
 			}
 		});
+		if(key.match(/#([^#]+)#/)){
+			var tmpkey = key.replace(/#([^#]+)#/g, function(match, p1) {
+				if(!p1.match(/\(/)){
+					return libObject.getByKey(config, p1);
+				}else{
+					return eval(p1);
+				}
+			});
+			delete itConfig[key];
+			if(i!=undefined && !itConfig[tmpkey]) itConfig[tmpkey] = [];
+			key = tmpkey;
+		}
     if(i==undefined)
       itConfig[key] = e;
     else

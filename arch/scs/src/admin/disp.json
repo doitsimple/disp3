@@ -2,7 +2,14 @@
 	"proto": {
 		"schemas": {
 			"admin": {
-				"fields": {					
+				"seed": [
+					{
+						"email": "test",
+						"password": "test",
+						"token": "abcedf"
+					}
+				],
+				"fields": {
 					"email": {
 						"type": "string",
 						"text": "邮箱"

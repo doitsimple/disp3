@@ -111,6 +111,12 @@
 						"text": "邀请码",
 						"type": "string"
 					},
+					"modifytime": {
+						"text": "修改时间",
+						"type": "datetime",
+						"default": 0,
+						"setonmodify": true
+					},
 					"createtime": {
 						"text": "注册时间",
 						"type": "datetime", 

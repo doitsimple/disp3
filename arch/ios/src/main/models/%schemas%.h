@@ -6,8 +6,8 @@
 
 @interface ^^=name$$Model : Item
 
-^^fields.forEach(function(f){$$
+^^for(var key in fields){var f = fields[key]$$
 @property (nonatomic , copy) NSString * ^^=f.name$$; //^^=f.text$$
 
-^^})$$
+^^}$$
 @end

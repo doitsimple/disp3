@@ -26,7 +26,22 @@ for(var key in dbs["^^=dbname$$"].schemas["^^=schema.name$$"]){
 	schemas["^^=schema.name$$"][key+"Spec"] = dbs["^^=dbname$$"].schemas["^^=schema.name$$"][key];
 }
 schemas["^^=schema.name$$"].db = "^^=dbname$$";
-
+schemas["^^=schema.name$$"].formatUpdateDoc = function(json){
+  ^^for(var fieldname in schema.fields){var field = schema.fields[fieldname];$$
+   ^^if(!field.setonmodify) continue;$$
+	 ^^if(field.hasOwnProperty("default")){$$
+		if(!json.hasOwnProperty("^^=field.name$$"))
+		^^if(field.type == "datetime"){var t = parseInt(field.default) || 0;$$
+    	json["^^=field.name$$"] = new Date(new Date().getTime()+^^=t$$);
+		^^}else if(field.type == "date"){var t = parseInt(field.default) || 0;$$
+    	json["^^=field.name$$"] = libDate.getSimple(new Date(new Date().getTime()+^^=t$$));
+    ^^}else{$$
+			json["^^=field.name$$"] = ^^=JSON.stringify(field.default)$$;
+    ^^}$$
+	 ^^}$$
+	^^}$$
+	if(schemas["^^=schema.name$$"].formatUpdateDocSpec) schemas["^^=schema.name$$"].formatUpdateDocSpec(json);
+}
 schemas["^^=schema.name$$"].formatDoc = function(json){
   ^^for(var fieldname in schema.fields){var field = schema.fields[fieldname];$$
 	 ^^if(field.type == "string"){$$
@@ -166,13 +181,27 @@ function getModel(schemaname){
 				model.insert(doc, cb);
 			},
 			delete: model.delete,
-			update2: model.update2,
+			update2: function(where, doc, cb){
+				if(schema.formatDoc){
+					schema.formatDoc(doc.$set);
+					schema.formatDoc(where);
+				}
+				if(schema.formatUpdateDoc){
+					schema.formatDoc(doc.$set);
+				}
+				model.update2(where, doc, cb);
+			},
 			upsert2: function(where, doc, cb){
 				if(!doc.$setOnInsert) doc.$setOnInsert = {};
 				if(schema.formatInsertDoc)
 					schema.formatInsertDoc(doc.$setOnInsert);
-				if(schema.formatDoc)
+				if(schema.formatDoc){
+					schema.formatDoc(where);
 					schema.formatDoc(doc.$set);
+				}
+				if(schema.formatUpdateDoc){
+					schema.formatDoc(doc.$set);
+				}
 				for(var key in doc.$inc){
 					delete doc.$setOnInsert[key];
 				}
