@@ -329,7 +329,9 @@ $$
                 <label for="field_^^=name$$" class="col-sm-3 control-label">^^=col.text$$</label>
                  <div class="col-sm-7">
                   ^^if(col.type && col.type =="file"){$$
-                  <input id="field_^^=name$$" class="form-control" type="file" name="^^=name$$" ng-model="opt_model.^^=name$$" />
+                  <input id="field_^^=name$$" class="form-control" type="file" name="^^=name$$" ng-model="opt_model.^^=name$$" placeholder="^^=col.placeholder$$"/>
+                  ^^}else if(col.type && (col.type == "number" || col.type == "int")){$$
+                  <input id="field_^^=name$$" class="form-control" type="number" name="^^=name$$" ng-model="opt_model.^^=name$$" placeholder="^^=col.placeholder$$"/>
                   ^^}else if(col.type && col.type =="boolean"){$$
                   <select id="field_^^=name$$" class="form-control" name="^^=name$$" ng-model="opt_model.^^=name$$" >
                     ^^
@@ -354,7 +356,7 @@ $$
                   ^^}else if(name == "_id"){$$
                   <input id="field_^^=name$$" class="form-control" ^^if(col.disabled===undefined){$$disabled="disabled"^^}else{}$$ name="^^=name$$" ng-model="opt_model.^^=name$$" />
                   ^^}else{$$
-                  <input id="field_^^=name$$" class="form-control" type="text" name="^^=name$$" ng-model="opt_model.^^=name$$" />
+                  <input id="field_^^=name$$" class="form-control" type="text" name="^^=name$$" ng-model="opt_model.^^=name$$" placeholder="^^=col.placeholder$$" />
                   ^^}$$
                 </div>
               </div>
