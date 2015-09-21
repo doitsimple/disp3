@@ -13,9 +13,9 @@ var sendFile = libRes.sendFile;
 var sendJson = libRes.sendJson;
 var db = require("../db");
 ^^=require$$
-var checkpoints = {};
-^^=checkpoints$$
-
+var checkpoints = require("./checkpoints");
+^^=config$$
+^^=method$$
 var app = express();
 app.use(bodyParser.urlencoded({
   extended: true

@@ -11,6 +11,65 @@ var dbnameMap = {};
 var genModelFuncList = {};
 var connectFuncs = [];
 var initFuncs = [];
+function formatString(json, key){
+	if(json.hasOwnProperty(key))
+		if(typeof json[key] == "object"){
+			for(var key2 in json[key]){
+				if(typeof json[key][key2] != "object")
+					json[key][key2] = json[key][key2].toString();
+			}
+		}else{
+			json[key] = json[key].toString();
+		}
+}
+function formatInt(json, key){
+	if(json.hasOwnProperty(key))
+		if(typeof json[key] != "object"){
+			json[key] = parseInt(json[key].toString());
+		}
+}
+function formatFloat(json, key){
+	if(json.hasOwnProperty(key))
+		if(typeof json[key] != "object"){
+			json[key] = parseFloat(json[key].toString());
+		}
+}
+function formatDate(json, key){
+	var val;
+	if(json.hasOwnProperty(key))
+		if(typeof json[key] == "object" && Object.keys(json[key]).length){
+			for(var key2 in json[key]){
+				if(typeof json[key][key2] == "string" && json[key][key2].length == 8){
+				}else{
+					val = libDate.getDate(new Date(json[key][key2]));
+					if(val)
+						json[key][key2] = val;
+					else
+						log.e("formatDate Error "+json[key][key2]);
+				}
+			}
+		}else{
+			if(json[key].length != 8){
+				val = libDate.getDate(new Date(json[key]));
+				if(val)
+					json[key] = val;
+				else
+					log.e("formatDate Error "+json[key]);
+			}
+		}
+}
+function formatDatetime(json, key){
+	if(json.hasOwnProperty(key))
+		if(typeof json[key] == "object" && Object.keys(json[key]).length){
+			for(var key2 in json[key]){		
+				json[key][key2] = new Date(json[key][key2]);
+			}
+		}else{
+			json[key] = new Date(json[key].toString());
+		}
+
+}
+
 ^^var maindbname; 
  for(var dbname in global.impl.databases){
   var db=global.impl.databases[dbname];
@@ -34,7 +93,7 @@ schemas["^^=schema.name$$"].formatUpdateDoc = function(json){
 		^^if(field.type == "datetime"){var t = parseInt(field.default) || 0;$$
     	json["^^=field.name$$"] = new Date(new Date().getTime()+^^=t$$);
 		^^}else if(field.type == "date"){var t = parseInt(field.default) || 0;$$
-    	json["^^=field.name$$"] = libDate.getSimple(new Date(new Date().getTime()+^^=t$$));
+    	json["^^=field.name$$"] = libDate.getDate(new Date(new Date().getTime()+^^=t$$));
     ^^}else{$$
 			json["^^=field.name$$"] = ^^=JSON.stringify(field.default)$$;
     ^^}$$
@@ -44,21 +103,16 @@ schemas["^^=schema.name$$"].formatUpdateDoc = function(json){
 }
 schemas["^^=schema.name$$"].formatDoc = function(json){
   ^^for(var fieldname in schema.fields){var field = schema.fields[fieldname];$$
-	 ^^if(field.type == "string"){$$
-	if(json.hasOwnProperty("^^=field.name$$")) 
-		json["^^=field.name$$"] = json["^^=field.name$$"].toString();
+ 	 ^^if(field.type == "string"){$$
+		formatString(json, "^^=field.name$$");
    ^^}else if(field.type == "int"){$$
-	if(json.hasOwnProperty("^^=field.name$$")) 
-		json["^^=field.name$$"] = parseInt(json["^^=field.name$$"]);
+		formatInt(json, "^^=field.name$$");
    ^^}else if(field.type == "float"){$$
-	if(json.hasOwnProperty("^^=field.name$$")) 
-		json["^^=field.name$$"] = parseFloat(json["^^=field.name$$"]);
+ 		formatFloat(json, "^^=field.name$$");
    ^^}else if(field.type == "date"){$$
-	if(json.hasOwnProperty("^^=field.name$$")) 
-		json["^^=field.name$$"] = libDate.getSimple(new Date(json["^^=field.name$$"]));
+ 		formatDate(json, "^^=field.name$$");
    ^^}else if(field.type == "datetime"){$$
-	if(json.hasOwnProperty("^^=field.name$$"))
-		json["^^=field.name$$"] = new Date(json["^^=field.name$$"]);
+ 		formatDatetime(json, "^^=field.name$$");
 	 ^^}$$
 	 ^^if(field.encrypt){$$
 	if(json.hasOwnProperty("^^=field.name$$"))
@@ -155,6 +209,7 @@ function getModel(schemaname){
 		}
 		var db = dbs[dbname];
 		var model = db.getModel(schemaname);
+		
 		var std = {
 			origin: model.origin,
 			bselect: function(){
@@ -231,6 +286,29 @@ function getModel(schemaname){
 					schema.formatInsertDoc(doc);
 				});
 			model.binsert(docs, cb);
+		};
+		if(model.each) std.each = model.each;
+		if(model.leftjoin) std.leftjoin = model.leftjoin;
+		else if(std.each) std.leftjoin = function(rschema, key, left, right, fn){
+			var rtn = {};
+			if(!left) left = function(doc) {return doc;};
+			if(!right) right = function(doc) {return doc;};
+			std.each(function(err, doc){
+				if(err) return fn(err);
+				if(left(doc))
+					rtn[doc[key]] = doc;
+			}, function(){
+				getModel(rschema).each(function(err, doc){
+					if(err) return fn(err);
+					if(rtn[doc[key]] && right(doc))
+						for(var dkey in doc){
+							if(dkey != key)
+								rtn[doc[key]][dkey] = doc[dkey];
+						}
+				}, function(){
+					fn(null, rtn);
+				});
+			});
 		};
 		if(model.bdelete) std.bdelete = model.bdelete;
 

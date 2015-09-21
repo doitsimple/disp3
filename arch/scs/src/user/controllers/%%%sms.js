@@ -45,13 +45,22 @@ function send(params, fn){
 			return params[p1];
 		});
 		var platform = params.platform || defaultPlatform;
-		require("./"+platform).send(params.phone, msg, function(err){
+		var p;
+		try{
+			p = require("./" + platform);
+			if(!p.send) return fn("not method send in platfrom");
+		}catch(e){
+			return fn("platform " + params.platform + " is not found");
+		}
+		p.send(params.phone, msg, function(err){
 			if(err) return fn(err);
 			db.getModel("record_sms").insert({
 				phone: params.phone,
 				tplid: params.tplid
+			}, function(err){
+				if(err) return fn(err);
+				fn(null, {success: true});
 			});
-			fn(null, {success: true});
 		});
 	});
 }

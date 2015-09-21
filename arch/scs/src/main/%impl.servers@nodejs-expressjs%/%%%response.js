@@ -4,8 +4,13 @@ module.exports.sendErr = function(res, msg, code){
 		if(msg.message) msg = msg.message;
 		else msg = JSON.stringify(msg, undefined);
 	}
-	^^=logger$$
-
+///////
+	var log = "\x1b[1;35m";
+	if(code) log+=code.toString() + "=>";
+	log += msg;
+	log += "\x1b[0m";
+  console.log(log);
+/////////
 	if(code)
 		res.send({
 			error:msg,
@@ -17,12 +22,12 @@ module.exports.sendErr = function(res, msg, code){
 		});
 }
 module.exports.sendJson = function(res, json){
-/*^^if(local.debug){$$*/
+////////////
 	var log = "\x1b[1;32m";
 	log += JSON.stringify(json, undefined);
 	log += "\x1b[0m";
   console.log(log);
-/*^^}$$*/
+////////////
 	res.send(json);
 }
 module.exports.sendFile = sendFile;

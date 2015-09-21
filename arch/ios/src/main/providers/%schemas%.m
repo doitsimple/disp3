@@ -133,7 +133,6 @@ $$
     
     return array;
 }
-
 //查找指定对象
 - (^^=name$$Model *)getById:(NSString *)ID
 {
@@ -174,6 +173,56 @@ $$
 		[muString appendString:[string substringFromIndex:2]];
 		
 		NSString * updateSql = [NSString stringWithFormat:@"%@ WHERE ^^=idFieldName$$ = '%@' ;", muString, ^^=idFieldName$$];
+		@synchronized(self){
+			BOOL res = [_database executeUpdate:updateSql];
+			if (!res) {
+				NSLog(@"error when creating db table");
+			} else {
+				NSLog(@"success to creating db table");
+			}
+		}
+	}
+}
+//查找指定对象
+- (^^=name$$Model *)get:
+{
+    NSString * sql = @"SELECT * FROM ^^=name$$;";
+    FMResultSet * set;
+    @synchronized(self){
+        set = [_database executeQuery:sql, ID];
+    }
+    
+    //如果找不到，返回空
+    if (set.next == NO) {
+        return nil;
+    }
+
+    ^^=name$$Model *item = [[^^=name$$Model alloc] init];
+
+^^for(var key in fields){var f = fields[key];$$
+    item.^^=f.name$$ = [set stringForColumn:@"^^=f.name$$"];
+^^}$$
+    
+    return item;
+}
+- (void)upsertById:(NSString *)^^=idFieldName$$ ^^=name$$Model:(^^=name$$Model *)updateItem
+{
+	^^=name$$Model * item = [self getById:^^=idFieldName$$];
+
+	if (item.^^=idFieldName$$ == NULL) {
+		[self addItem:updateItem];
+	}else{
+		NSMutableString * string  = [[NSMutableString alloc] init];
+		NSMutableString * muString = [[NSMutableString alloc] initWithString:@"UPDATE ^^=name$$ SET "];
+^^for(var key in fields){var f = fields[key];$$
+		if (updateItem.^^=f.name$$ != NULL) {
+				[string appendFormat:@", %@ = '%@'" , @"^^=f.name$$" , updateItem.^^=f.name$$];
+		}
+^^}$$
+        
+		[muString appendString:[string substringFromIndex:2]];
+		
+		NSString * updateSql = [NSString stringWithFormat:@"%@;", muString];
 		@synchronized(self){
 			BOOL res = [_database executeUpdate:updateSql];
 			if (!res) {

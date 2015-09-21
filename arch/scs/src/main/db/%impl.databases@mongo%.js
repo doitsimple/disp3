@@ -78,30 +78,6 @@ function getModel(cname){
 			if(fn) fn(err, rtn);
 		});
 	};
-	model.sui = function(criteria, doc, fn){
-		var doc2 = {$set: doc};
-		if((fdoc[cname])){
-			doc2.$setOnInsert = {};
-			fdoc[cname](doc, doc2.$setOnInsert);
-		}
-		origin.findAndModify(criteria, [], doc2, {upsert: true}, function(err, doc){
-			if(err) return fn(err);
-			if(!doc) return fn(null, doc);
-			if(fn) fn(err, doc.value);
-		});
-	};
-	model.sui2 = function(criteria, updateParam, fn){
-		var updateParam2 = updateParam;
-		if((fdoc[cname])){
-			updateParam2.$setOnInsert = {};
-			fdoc[cname](updateParam, updateParam2.$setOnInsert);
-		}
-		origin.findAndModify(criteria, [], updateParam2, {upsert: true}, function(err, doc){
-			if(err) return fn(err);
-			if(!doc) return fn(null, doc);
-			if(fn) fn(err, doc.value);
-		});
-	};
 	if(schemas[cname] && schemas[cname].autoinc){
 		model.insertori = model.insert;
 		model.binsertori = model.binsert; delete model.binsert; 
@@ -186,6 +162,12 @@ function getModel(cname){
 	model.count = function(criteria, fn){
 		origin.count(criteria, fn);
 	};
+	model.each = function(fn, fnfinal){
+		origin.find().each(function(err, doc){
+			if(!doc) return fnfinal();
+			else fn(err, doc);
+		});
+	};
 	model.bcolect = function(criteria, selectOptions, fn){
 		if(!fn){
 			fn = selectOptions; 
@@ -237,6 +219,30 @@ function getModel(cname){
 			aggr = [{$match: criteria},{$group:groupOptions}];
 		}
 		origin.aggregate(aggr, fn);
+	};
+	model.sui = function(criteria, doc, fn){
+		var doc2 = {$set: doc};
+		if((fdoc[cname])){
+			doc2.$setOnInsert = {};
+			fdoc[cname](doc, doc2.$setOnInsert);
+		}
+		origin.findAndModify(criteria, [], doc2, {upsert: true}, function(err, doc){
+			if(err) return fn(err);
+			if(!doc) return fn(null, doc);
+			if(fn) fn(err, doc.value);
+		});
+	};
+	model.sui2 = function(criteria, updateParam, fn){
+		var updateParam2 = updateParam;
+		if((fdoc[cname])){
+			updateParam2.$setOnInsert = {};
+			fdoc[cname](updateParam, updateParam2.$setOnInsert);
+		}
+		origin.findAndModify(criteria, [], updateParam2, {upsert: true}, function(err, doc){
+			if(err) return fn(err);
+			if(!doc) return fn(null, doc);
+			if(fn) fn(err, doc.value);
+		});
 	};
 	return model;
 }

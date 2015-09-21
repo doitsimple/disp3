@@ -126,6 +126,46 @@
 			}
 		},
 		"apis": {
+			"validate_signup": {
+				"text": "验证注册信息是否有效",
+				"params": {
+					"phone": {
+						"type": "string",
+						"text": "手机号",
+						"required": true
+					},
+					"password": {
+						"type": "string",
+						"text": "密码",
+						"required": true
+					},
+					"invitecode": {
+						"type": "string",
+						"text": "邀请码"
+					}
+				},
+				"controllers": [
+					{
+						"type": "db",
+						"method": "select",
+						"schema": "user",
+						"where": "{phone: phone}",
+						"result": "user",
+						"check": {
+							"user": {
+								"message": "用户名已注册", 
+								"code":1
+							}
+						}
+					},
+					{
+						"type": "async",
+						"method": "Invite.verify",
+						"params": "invitecode",
+						"send": "{success: true}"
+					}	
+				]
+			},
 			"sms_send_signup": {
 				"text": "注册时发送验证码",
 				"params": {
@@ -143,6 +183,15 @@
 							"result && new Date().getTime() - new Date(result.time).getTime() < 60000": "发送短信过于频繁"
 						},
 						"do": "var code = libRandom.genNum(4);"
+					},
+					{
+						"type": "db",
+						"schema": "user",
+						"method": "select",
+						"where": "{phone: phone}",
+						"check": {
+							"result": "该号码已被注册"
+						}
 					},
 					{
 						"type": "async",
@@ -165,7 +214,41 @@
 					"phone": {
 						"required": true
 					}
-				}
+				},
+				"controllers": [
+					{
+						"type": "db",
+						"schema": "smscode",
+						"method": "select",
+						"where": "{phone: phone}",
+						"check": {
+							"result && new Date().getTime() - new Date(result.time).getTime() < 60000": "发送短信过于频繁"
+						},
+						"do": "var code = libRandom.genNum(4);"
+					},
+					{
+						"type": "db",
+						"schema": "user",
+						"method": "select",
+						"where": "{phone: phone}",
+						"check": {
+							"!result": "该号码未被注册"
+						}
+					},
+					{
+						"type": "async",
+						"method": "Sms.send",
+						"params": "{phone: phone, code: code, tplid: 'code'}"
+					},
+					{
+						"type": "db",
+						"schema": "smscode",
+						"method": "upsert",
+						"where": "{phone: phone}",
+						"set": "{code: code, time: new Date()}",
+						"send": "result"
+					}
+				]
 			},
 			"sms_verify": {
 				"text": "校验验证码",
@@ -402,6 +485,7 @@
 		"servers": {
 			"fserver": {
 				"withApis": [
+					"validate_signup",
 					"sms_send_signup",
 					"sms_send_reg",
 					"sms_verify",
