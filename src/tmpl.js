@@ -10,7 +10,19 @@ libObject.extend1(methods, libString);
 libObject.extend1(methods, libArray);
 libObject.extend1(methods, libObject);
 libObject.extend1(methods, libFile);
+var reservedKey = {
+	"$": 1,
+	"name": 1,
+	"env": 1,
+	"src": 1,
+	"srclink": 1,
+	"selflink": 1,
+	"self": 1,
+	"tmpl": 1
+}
 
+
+module.exports.reservedKey = reservedKey;
 var tmplCache = {};
 module.exports.render = render;
 function render(config, data){
@@ -47,6 +59,15 @@ function render(config, data){
 	}
 	data.local = data;
 	data.$ = methods;
+	data.$.getInserted = function(){
+		var json = {};
+		for(var key in data.local){
+			if(reservedKey[key]) continue;
+			if(typeof data.local[key] == "string")
+				json[key] = data.local[key];
+		}
+		return json;
+	}
 	data.p=[];
 
 	var win, wout;

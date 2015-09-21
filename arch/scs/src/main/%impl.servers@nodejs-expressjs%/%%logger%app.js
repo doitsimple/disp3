@@ -11,5 +11,8 @@ app.use(function(req, res, next){
 	log+=req.headers['user-agent'];
 	log+="\x1b[0m";
 	console.log(log);
+^^if(!global.product){$$
+	res.header("Access-Control-Allow-Origin", "*");
+^^}$$
 	next();
 });

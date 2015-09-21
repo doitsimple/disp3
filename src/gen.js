@@ -6,18 +6,11 @@ var libObject = require("../lib/js/object");
 var libFile = require("../lib/nodejs/file");
 var log = require("./log");
 var render = require("./tmpl").render;
+var reservedKey = require("./tmpl").reservedKey;
 module.exports = {
 	genFiles: genFiles
 }
-var reservedKey = {
-	"name": 1,
-	"env": 1,
-	"src": 1,
-	"srclink": 1,
-	"selflink": 1,
-	"self": 1,
-	"tmpl": 1
-}
+
 function genFiles(){
 	var self = this;
 	var fileList = self.filelist;

@@ -1,23 +1,28 @@
 var app= require("./app");
 var ^^=protocol$$ = require('^^=protocol$$');
 var db = require("../db");
+var log =require("../lib/log");
+var sync =require("../lib/sync");
 var fs = require("fs");
 
 process.on('uncaughtException', function(err) {
   //log the error
-  console.error(err.stack);
+  log.e(err.stack);
 });
 var server = ^^=protocol$$.createServer(app);
-
-
+function prelisten(cb){
+	var fnarr = [^^=addon$$];
+	sync.doAll(fnarr, cb);
+}
 db.connect(function(){
-^^=addon$$
-server.listen(^^=port$$, function(){
-	console.log('Express server listening on port: ^^=port$$, pid: '+process.pid);	
-	if(!fs.existsSync("pid"))
-		fs.mkdirSync("pid");
-	fs.writeFileSync("pid/^^=name$$", process.pid);
-});
+	prelisten(function(){
+		server.listen(^^=port$$, function(){
+			log.i('Express server listening on port: ^^=port$$, pid: '+process.pid);
+			if(!fs.existsSync("pid"))
+				fs.mkdirSync("pid");
+			fs.writeFileSync("pid/^^=name$$", process.pid);
+		});
+	});
 });
 
 

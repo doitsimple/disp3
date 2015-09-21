@@ -1,0 +1,5 @@
+{
+	"project":{
+		"posts": ["cron cron/config"]
+	}
+}

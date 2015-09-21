@@ -18,6 +18,7 @@ for(var i=0; i<withApis.length; i++){
 	var paramsStr = makeParamsStr(api);
 	var midwaresStr = makeMidwaresStr(api);
 	var controllerStr = api.controller || api.name;
+	if(!api.method) console.log("no method !!!!");
 $$
 router.route('/^^=api.route$$^^=paramsStr$$')
 		.^^=api.method$$(^^=midwaresStr$$^^=controllerStr$$);
@@ -39,6 +40,9 @@ function ^^=api.name$$(req, res){
   ^^}else if(ctrl.type == "async"){$$
 ^^=ctrl.method$$(^^=ctrl.params$$, function(err, ^^=result$$){
 	if(err) return sendErr(res, err);
+  ^^}else if(ctrl.type == "async2"){$$
+^^=ctrl.method$$(^^=ctrl.params$$, function(err, ^^=result$$){
+	if(err) return sendErr(res, err);
   ^^}else if(ctrl.type == "db"){$$
 ^^makeDbQuery(ctrl)$$
   ^^}$$
@@ -48,9 +52,12 @@ function ^^=api.name$$(req, res){
 	  var check = ctrl.check[key];$$
 	 ^^if(typeof check == "string"){$$
 if(^^=key$$) return sendErr(res, "^^=check$$");
-	 ^^}else{$$
+	 ^^}else if(check.raw){$$
+if(^^=key$$) return sendErr(res, ^^=check.raw$$);
+   ^^}else{$$
 if(^^=key$$) return sendErr(res, "^^=check.message$$", "^^=check.code$$");
-  ^^}}}$$
+   ^^}$$
+  ^^}}$$
 
   ^^if(ctrl.presend){
 	 for(var key in ctrl.presend){

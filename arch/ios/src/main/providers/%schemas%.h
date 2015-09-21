@@ -24,5 +24,8 @@
 - (^^=name$$Model *)getById:(NSString *)^^=idFiledName$$;
 //更新指定数据
 - (void)upsertById:(NSString *)^^=idFiledName$$ ^^=name$$Model:(^^=name$$Model *)updateItem;
-- (void)upsertDicArray:(NSArray *)items;
+//查找指定对象
+- (^^=name$$Model *)get;
+//更新指定数据
+- (void)upsert:^^=name$$Model:(^^=name$$Model *)updateItem;
 @end
