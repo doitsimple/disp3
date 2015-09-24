@@ -1,3 +1,0 @@
-^^for(var key in global.impl.crons){$$
-^^=makeCronStr(global.impl.crons[key]);$$
-^^}$$
