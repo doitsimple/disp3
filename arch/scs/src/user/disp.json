@@ -170,6 +170,7 @@
 				"text": "注册时发送验证码",
 				"params": {
 					"phone": {
+						"type": "string",
 						"required": true
 					}
 				},

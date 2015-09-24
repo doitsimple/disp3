@@ -9,12 +9,13 @@ function setPlatform(platform){
 function setPrefix(p){
 	prefix = p;
 }
-function refreshTpl(){
+function refreshTpl(fn){
 	db.getModel("smstpl").bselect({}, function(err, tpls){
 		for(var i in tpls){
 			cache[tpls[i].tplid] = tpls[i].content;
 		}
 		refreshCache = 0;
+		fn();
 	});
 }
 function getTpl(tplid, fn){

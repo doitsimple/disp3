@@ -169,7 +169,7 @@ module.exports.connect = function (){
 			filter = [arguments[0]];
 		cb = arguments[1];
 	}else{
-		return log.e("wrong args "+arguments.join(",")); 
+		return log.e("wrong args"); 
 	}
 	if(isConnected){
 		log.w("connect twice");
@@ -233,10 +233,14 @@ function getModel(schemaname){
 				if(!doc) return cb("no doc");
 				if(schema.formatInsertDoc)
 					schema.formatInsertDoc(doc);
-				model.insert(doc, cb);
+				model.insert(doc, function(err, result){
+					if(err) cb(err);
+					cb(null, {insertedId: result.insertedId});
+				});
 			},
 			delete: model.delete,
 			update2: function(where, doc, cb){
+				if(!doc.$set) doc.$set = {};
 				if(schema.formatDoc){
 					schema.formatDoc(doc.$set);
 					schema.formatDoc(where);
@@ -247,6 +251,7 @@ function getModel(schemaname){
 				model.update2(where, doc, cb);
 			},
 			upsert2: function(where, doc, cb){
+				if(!doc.$set) doc.$set = {};
 				if(!doc.$setOnInsert) doc.$setOnInsert = {};
 				if(schema.formatInsertDoc)
 					schema.formatInsertDoc(doc.$setOnInsert);

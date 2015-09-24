@@ -35,7 +35,7 @@ function ^^=api.name$$(req, res){
   var ctrl = api.controllers[j];
   var result= ctrl.result || "result";
  $$
-^^=ctrl.pre || ""$$
+^^=ctrl.pre || ""$$;
   ^^if(ctrl.type == "raw"){$$
   ^^}else if(ctrl.type == "async"){$$
 ^^=ctrl.method$$(^^=ctrl.params$$, function(err, ^^=result$$){
@@ -109,8 +109,10 @@ db.getModel("^^=ctrl.schema$$").^^=ctrl.method$$(^^=ctrl.doc$$, function(err, ^^
 	if(err) return sendErr(res, err);
 ^^}$$
 
-^^function checkParams(api){
- for(var key in api.params){var param = api.params[key];$$
+^^function checkParams(api){$$
+	var params = {};
+ ^^for(var key in api.params){var param = api.params[key];$$
+
 ^^if(param.isQuery){$$
 	var ^^=key$$ = req.query["^^=key$$"];
 ^^}else if(param.isMultipartFile){$$
@@ -121,16 +123,20 @@ db.getModel("^^=ctrl.schema$$").^^=ctrl.method$$(^^=ctrl.doc$$, function(err, ^^
 ^^}else{$$
 	var ^^=key$$ = req.params["^^=key$$"];
 ^^}$$
+
  ^^if(param.required){$$
 	if(^^=key$$ == undefined) return sendErr(res, "参数错误：没有^^=key$$");
  ^^}$$
+
  ^^if(param.type == "string"){$$
-	if(^^=key$$) ^^=key$$ = ^^=key$$.toString();
+	if(^^=key$$) ^^=key$$ = params["^^=key$$"] = ^^=key$$.toString();
  ^^}else if(param.type == "float"){$$
 	^^=key$$ = parseFloat(^^=key$$);
  ^^}else if(param.type == "int"){$$
 	^^=key$$ = parseInt(^^=key$$);
+ ^^}else{$$
  ^^}$$
+ params["^^=key$$"] = ^^=key$$;
 ^^}}$$
 
 /*^^function makeMidwaresStr(api){
