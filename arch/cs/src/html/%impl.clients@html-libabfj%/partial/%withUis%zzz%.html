@@ -177,7 +177,7 @@ $$
                  ^^}$$
               </select>
             ^^}else{$$
-              <input id="search_^^=name$$" ng-model="^^=config.name$$.where.^^=name$$" class="form-control" type="text" />
+              <input id="search_^^=name$$" ng-model="^^=config.name$$.where.^^=name$$" class="form-control" type="text" placeholder="^^=col.placeholder$$" />
             ^^}$$
           </div>
           ^^}$$
@@ -354,9 +354,9 @@ $$
                     ^^}$$
                   </select>
                   ^^}else if(name == "_id"){$$
-                  <input id="field_^^=name$$" class="form-control" ^^if(col.disabled===undefined){$$disabled="disabled"^^}else{}$$ name="^^=name$$" ng-model="opt_model.^^=name$$" />
+                  <input id="field_^^=name$$" class="form-control" ^^if(col.disabled===undefined){$$disabled="disabled"^^}else{}$$ name="^^=name$$" ng-model="opt_model.^^=name$$"/>
                   ^^}else{$$
-                  <input id="field_^^=name$$" class="form-control" type="text" name="^^=name$$" ng-model="opt_model.^^=name$$" placeholder="^^=col.placeholder$$" />
+                  <input id="field_^^=name$$" class="form-control" type="text" name="^^=name$$" ng-model="opt_model.^^=name$$" placeholder="^^=col.placeholder$$"/>
                   ^^}$$
                 </div>
               </div>
