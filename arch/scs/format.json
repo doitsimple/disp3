@@ -138,21 +138,7 @@
 		},
 		"crons": {
 			"$list":{
-				"type": "cron",
-				"withUis": {
-					"$multi": true,
-					"$type": "string",
-					"$from": "proto.uis"
-				},
-				"withServer": {
-					"$type": "string",
-					"$from": "impl.servers"
-				},
-				"withServers": {
-					"$multi": true,
-					"$type": "string",
-					"$from": "impl.servers"
-				}
+				"type": "cron"
 			}
 		}
 	}
