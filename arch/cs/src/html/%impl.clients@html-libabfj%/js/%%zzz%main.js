@@ -190,7 +190,7 @@ $$
 					hide: 100
 				},
 				"title": "",
-				"trigger": "hover",
+				"trigger": "click",
 				"html": true,
 				"container": 'body'
 			});
