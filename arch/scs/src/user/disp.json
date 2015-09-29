@@ -379,7 +379,8 @@
 						"type": "async",
 						"method": "Invite.verify",
 						"params": "invitecode",
-						"result": "invite"
+						"result": "invite",
+						"do": "invite.invitecode = libRandom.genNum(11);"
 					},
 					{
 						"type": "db",
