@@ -128,7 +128,7 @@ function walk(params, addgenflag){
 function readDispJson(params){
 	var self = this;
 	var dir = params.dirpath;
-
+	if(!path.relative(".",dir)) return 0;
 	if(fs.existsSync(dir + "/disp-global.json")){
 		if(extendDispJson.call(self, params, self.global,
 													 libFile.readJSON(dir + "/disp-global.json")))

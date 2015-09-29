@@ -129,7 +129,7 @@ db.getModel("^^=ctrl.schema$$").^^=ctrl.method$$(^^=ctrl.doc$$, function(err, ^^
  ^^}$$
 
  ^^if(param.type == "string"){$$
-	if(^^=key$$) ^^=key$$ = params["^^=key$$"] = ^^=key$$.toString();
+	if(^^=key$$) ^^=key$$  = ^^=key$$.toString();
  ^^}else if(param.type == "float"){$$
 	^^=key$$ = parseFloat(^^=key$$);
  ^^}else if(param.type == "int"){$$
