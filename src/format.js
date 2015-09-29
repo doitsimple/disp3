@@ -4,6 +4,7 @@ var libString = require("../lib/js/string");
 var libArray = require("../lib/js/array");
 var libObject = require("../lib/js/object");
 var libFile = require("../lib/nodejs/file");
+var utils =require("./utils");
 var log = require("./log");
 module.exports = {
 	readConfigs: readConfigs,
@@ -66,7 +67,7 @@ function readConfigs(){
 
 //extend global if task is not main
   if(self.task != "main")
-    libObject.extend(self.global, libFile.readJSON(self.task + ".json"));
+    utils.extend(self.global, libFile.readJSON(self.task + ".json"));
 
 //format target path
   projectJson.target = path.relative(".", projectJson.target);
@@ -97,7 +98,7 @@ function extendConfigs(){
 	log.i(self.navpaths);
 //extend global again (because walk may overwrite global)
   if(self.task != "main")
-    libObject.extend(self.global, libFile.readJSON(self.task + ".json"));
+    utils.extend(self.global, libFile.readJSON(self.task + ".json"));
 //format twice
 	if(format.call(self, "global", self, self.formats)) return 1;
 	mountJSON(self.global);

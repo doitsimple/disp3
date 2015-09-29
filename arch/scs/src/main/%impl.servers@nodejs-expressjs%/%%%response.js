@@ -5,6 +5,7 @@ module.exports.sendErr = function(res, msg, code){
 		else msg = JSON.stringify(msg, undefined);
 	}
 ///////
+	console.trace();
 	var log = "\x1b[1;35m";
 	if(code) log+=code.toString() + "=>";
 	log += msg;

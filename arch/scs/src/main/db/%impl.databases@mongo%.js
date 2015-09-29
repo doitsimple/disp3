@@ -13,10 +13,12 @@ schemas["^^=schema.name$$"].formatDoc = function(json){
 	/*^^for(var fieldname in schema.fields){var field = schema.fields[fieldname];$$*/
 	 ^^if(field.type == "ObjectId"){$$
 	if(json.hasOwnProperty("^^=field.name$$")){
-		try{
-			json["^^=field.name$$"] = new mongodb.ObjectId(json["^^=field.name$$"]);
-		}catch(e){
-			log.e(e);
+		if(json["^^=field.name$$"]){
+			try{
+				json["^^=field.name$$"] = new mongodb.ObjectId(json["^^=field.name$$"]);
+			}catch(e){
+				log.e(e);
+			}
 		}
 	  if(!json["^^=field.name$$"])
 			delete json["^^=field.name$$"]
