@@ -4,7 +4,6 @@ module.exports.verify = function(invitecode, fn){
 	check(invitecode, function(err, invite){
 		if(err) return fn(err);
 		invite.invitecode = libRandom.genNum(11);
-		
 		fn(null, invite);
 	});
 }

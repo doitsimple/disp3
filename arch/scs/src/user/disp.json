@@ -48,11 +48,10 @@
 				}
 			},
 			"record_user_signin": {
-				
 			},
 			"invite": {
 			},
-			"channel": {				
+			"channel": {
 			},
 			"session": {
 				"fields": {
@@ -80,7 +79,7 @@
 				}
 			},
 			"user": {
-				"fields": {					
+				"fields": {
 					"phone": {
 						"type": "string",
 						"text": "手机号",
