@@ -3,10 +3,10 @@ var refreshCache = 1;
 var cache = {};
 var defaultPlatform;
 var prefix = "";
-function setPlatform(platform){
+function setPlatform(platform){//pingtai
 	defaultPlatform = platform;
 }
-function setPrefix(p){
+function setPrefix(p){//qianzhi
 	prefix = p;
 }
 function refreshTpl(fn){
@@ -18,13 +18,13 @@ function refreshTpl(fn){
 		fn();
 	});
 }
-function getTpl(tplid, fn){
+function getTpl(tplid, fn){//shuaxin
 	if(refreshCache)
 		refreshTpl(function(){
 			return fn(cache[tplid] || "");
 		});
 	else
-		return fn(cache[tplid] || "");
+	  	return fn(cache[tplid] || "");
 }
 function addTpl(json, fn){
 	if(!json.tplid) return fn("no tplid");
@@ -38,8 +38,8 @@ function addTpl(json, fn){
 		fn();
 	});
 }
-function send(params, fn){	
-	if(!params.tplid) return fn("no tplid");
+function send(params, fn){
+	if(!params.tplid) return fn("no tplid");//-->tplid
 	getTpl(params.tplid, function(tpl){
 		if(!tpl) return fn("tplid error, please add tplid "+params.tplid+ " into schema smstpl");
 		var msg = prefix + tpl.replace(/%([^%]+)%/g, function(str, p1){
@@ -48,16 +48,20 @@ function send(params, fn){
 		var platform = params.platform || defaultPlatform;
 		var p;
 		try{
-			p = require("./" + platform);
-			if(!p.send) return fn("not method send in platfrom");
+			p = require("./" + platform);//--->
+			if(!p.sendsms) return fn("not method send in platfrom");
 		}catch(e){
 			return fn("platform " + params.platform + " is not found");
 		}
-		p.send(params.phone, msg, function(err){
+		p.sendsms(params.phone, msg, function(err,result){
 			if(err) return fn(err);
+			console.log(result);
+			var refid = parseInt(result);
 			db.getModel("record_sms").insert({
 				phone: params.phone,
-				tplid: params.tplid
+				tplid: params.tplid,
+				refid: refid,
+				state: 1
 			}, function(err){
 				if(err) return fn(err);
 				fn(null, {success: true});

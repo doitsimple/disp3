@@ -13,6 +13,12 @@
 					"time": {
 						"type": "datetime",
 						"default": 0
+					},
+					"refid":{
+						"type":"string"
+					},
+					"state":{
+						"type":"string"
 					}
 				}
 			},
