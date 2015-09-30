@@ -1,6 +1,10 @@
 var Session = {};
 var db = require("../db");
-Session.supplementary = function(session, index, content, userid, fn) {
+Session.supplementary = function(param, fn) {
+	var session = param.session;
+	var index = param.index;
+	var content = param.content;
+	var userid = param.userid;
 	session = session.toString();
 	index = parseInt(index);
 	var Userexp = db.getModel('userexp');
