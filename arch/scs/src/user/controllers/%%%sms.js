@@ -3,10 +3,10 @@ var refreshCache = 1;
 var cache = {};
 var defaultPlatform;
 var prefix = "";
-function setPlatform(platform){//pingtai
+function setPlatform(platform){
 	defaultPlatform = platform;
 }
-function setPrefix(p){//qianzhi
+function setPrefix(p){
 	prefix = p;
 }
 function refreshTpl(fn){
@@ -18,7 +18,7 @@ function refreshTpl(fn){
 		fn();
 	});
 }
-function getTpl(tplid, fn){//shuaxin
+function getTpl(tplid, fn){
 	if(refreshCache)
 		refreshTpl(function(){
 			return fn(cache[tplid] || "");
