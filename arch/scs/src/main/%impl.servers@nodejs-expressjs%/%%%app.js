@@ -21,11 +21,11 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(bodyParser.json());
-
+^^=use$$
 ^^for(var key in statics){$$
 app.use("^^=key$$", express.static(__dirname + '/^^=statics[key]$$'));
 ^^}$$
 
 ^^=logger$$
-^^=route$$
+^^=routemain$$
 module.exports = app;
