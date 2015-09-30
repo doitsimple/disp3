@@ -12,16 +12,17 @@ schemas["^^=schema.name$$"].autoinc = "^^=schema.fields._id.autoinc$$";
 schemas["^^=schema.name$$"].formatDoc = function(json){
 	/*^^for(var fieldname in schema.fields){var field = schema.fields[fieldname];$$*/
 	 ^^if(field.type == "ObjectId"){$$
-	if(json.hasOwnProperty("^^=field.name$$")){
+	if(json.hasOwnProperty("^^=field.name$$") && json["^^=field.name$$"] != undefined){
 		if(json["^^=field.name$$"]){
 			try{
 				json["^^=field.name$$"] = new mongodb.ObjectId(json["^^=field.name$$"]);
 			}catch(e){
+				json["^^=field.name$$"] = "";
 				log.e(e);
 			}
+		}else{
+			if(!json["^^=field.name$$"]) json["^^=field.name$$"] = "";
 		}
-	  if(!json["^^=field.name$$"])
-			delete json["^^=field.name$$"]
 	}
    ^^}$$
 	/*^^}$$*/

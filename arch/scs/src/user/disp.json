@@ -48,7 +48,10 @@
 				}
 			},
 			"record_user_signin": {
-
+			},
+			"invite": {
+			},
+			"channel": {
 			},
 			"invite": {},
 			"channel": {},
@@ -338,41 +341,47 @@
 						"text": "邀请码"
 					}
 				},
-				"controllers": [{
-					"type": "db",
-					"method": "select",
-					"schema": "session",
-					"where": "{session: session, device_token: device_token}",
-					"result": "sessionres",
-					"check": {
-						"!sessionres": "非法注册"
-					}
-				}, {
-					"type": "db",
-					"method": "select",
-					"schema": "user",
-					"where": "{phone: phone}",
-					"result": "user",
-					"check": {
-						"user": {
-							"message": "用户名已注册",
-							"code": 1
+				"controllers": [
+					{
+						"type": "db",
+						"method": "select",
+						"schema": "session",
+						"where": "{session: session, device_token: device_token}",
+						"result": "sessionres",
+						"check": {
+							"!sessionres": "非法注册"
 						}
+					},
+					{
+						"type": "db",
+						"method": "select",
+						"schema": "user",
+						"where": "{phone: phone}",
+						"result": "user",
+						"check": {
+							"user": {
+								"message": "用户名已注册",
+								"code":1
+							}
+						}
+					},
+					{
+						"type": "async",
+						"method": "Invite.verify",
+						"params": "invitecode",
+						"result": "invite",
+						"do": "invite.invitecode = libRandom.genNum(11);"
+					},
+					{
+						"type": "db",
+						"method": "insert",
+						"schema": "user",
+						"pre": "invite.phone = phone;invite.password=password;;invite.token=libRandom.hat();",
+						"doc": "invite",
+						"do": "invite._id = result.insertedId; if(checkpoints.signup) checkpoints.signup(invite);",
+						"send": "invite"
 					}
-				}, {
-					"type": "async",
-					"method": "Invite.verify",
-					"params": "invitecode",
-					"result": "invite"
-				}, {
-					"type": "db",
-					"method": "insert",
-					"schema": "user",
-					"pre": "invite.phone = phone;invite.password=password;;invite.token=libRandom.hat();",
-					"doc": "invite",
-					"do": "invite._id = result.insertedId; if(checkpoints.signup) checkpoints.signup(invite);",
-					"send": "invite"
-				}]
+				]
 			},
 			"user_signin": {
 				"text": "用户登陆",

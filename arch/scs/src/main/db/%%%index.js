@@ -12,31 +12,36 @@ var genModelFuncList = {};
 var connectFuncs = [];
 var initFuncs = [];
 function formatString(json, key){
-	if(json.hasOwnProperty(key))
+	if(json.hasOwnProperty(key) && json[key] != undefined)
 		if(typeof json[key] == "object"){
 			for(var key2 in json[key]){
 				if(typeof json[key][key2] != "object")
-					json[key][key2] = json[key][key2].toString();
+					try{						
+						json[key][key2] = json[key][key2].toString();
+					}catch(e){
+						log.i(json[key][key2]);
+						log.e(e);						
+					}
 			}
 		}else{
 			json[key] = json[key].toString();
 		}
 }
 function formatInt(json, key){
-	if(json.hasOwnProperty(key))
+	if(json.hasOwnProperty(key) && json[key] != undefined)
 		if(typeof json[key] != "object"){
 			json[key] = parseInt(json[key].toString());
 		}
 }
 function formatFloat(json, key){
-	if(json.hasOwnProperty(key))
+	if(json.hasOwnProperty(key) && json[key] != undefined)
 		if(typeof json[key] != "object"){
 			json[key] = parseFloat(json[key].toString());
 		}
 }
 function formatDate(json, key){
 	var val;
-	if(json.hasOwnProperty(key))
+	if(json.hasOwnProperty(key) && json[key] != undefined)
 		if(typeof json[key] == "object" && Object.keys(json[key]).length){
 			for(var key2 in json[key]){
 				if(typeof json[key][key2] == "string" && json[key][key2].length == 8){
@@ -59,7 +64,7 @@ function formatDate(json, key){
 		}
 }
 function formatDatetime(json, key){
-	if(json.hasOwnProperty(key))
+	if(json.hasOwnProperty(key) && json[key] != undefined)
 		if(typeof json[key] == "object" && Object.keys(json[key]).length){
 			for(var key2 in json[key]){		
 				json[key][key2] = new Date(json[key][key2]);
