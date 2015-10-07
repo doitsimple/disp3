@@ -12,6 +12,7 @@ libObject.extend1(methods, libObject);
 libObject.extend1(methods, libFile);
 var reservedKey = {
 	"$": 1,
+	"lib": 1,
 	"name": 1,
 	"env": 1,
 	"src": 1,
@@ -25,7 +26,7 @@ var reservedKey = {
 module.exports.reservedKey = reservedKey;
 var tmplCache = {};
 module.exports.render = render;
-function render(config, data){
+function render(config, data, clearflag){
 	if(!data){
 		log.e("render with undefined data");
 		return "";
@@ -123,5 +124,9 @@ function render(config, data){
 	}
 	var rtstr = data.p.join('');
 	delete(data.p);
+	delete(data.$);	
+	if(clearflag){
+		delete(data.local);
+	}
 	return rtstr;
 }

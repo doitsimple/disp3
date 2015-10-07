@@ -106,6 +106,11 @@ function genFiles(){
 			var key = keys[i];
 			if(!env[key]) env[key] = "";
 			if(!reservedKey[key] && !key.match("main") ){
+				if(!libObject.isArray(partConfig[key])) {
+					log.i(partConfig);
+					log.e(key + " is not array");
+					return 1;
+				}
 				partConfig[key].forEach(function(file){
 					env[key] += render({file: file}, env);
 				});

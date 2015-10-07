@@ -9,6 +9,7 @@ module.exports = {
 	readGlobal: readGlobal,
 	selectRoles: selectRoles
 }
+
 function extend(config, config2){
 	if(!config) {config = config2; return; }
 	libObject.iterate2(config2, config, function(key, itConfig, itConfig2){
@@ -55,4 +56,5 @@ function selectRoles(env, fn){
 		fn(roles);
 	});
 }
+
 

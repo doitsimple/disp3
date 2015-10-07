@@ -42,6 +42,8 @@ function Disp(){
 	self.froms = {};
 	self.tmpls = {};
 
+	self.srcs = {};
+
 	self.archs = {};
 	self.navpaths = {};
 	self.prevFilelist = {};
@@ -68,6 +70,10 @@ function Disp(){
 		log.i(step);
 		if(!steps[step].apply(self))
 			log.i("->success");
+		else{
+			log.i("->error");
+			return;
+		}
 	}
 }
 
