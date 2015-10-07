@@ -41,6 +41,7 @@ function Disp(){
 	self.formats = {};
 	self.froms = {};
 	self.tmpls = {};
+	self.libs = {};
 
 	self.srcs = {};
 

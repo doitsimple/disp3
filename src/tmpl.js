@@ -79,23 +79,27 @@ function render(config, data, clearflag){
 		//			replace(/\s*(\^\^[^=]((?!\$\$).)*\$\$)\s*/g, "$1");
 		//replace multiple line [\s but not \n]* [^^] [not =] [not $$]* [$$] [\s*\n] 
 
-		originstr.split("\^\^").forEach(function(sub, i){
+		originstr.split(/[\t ]*\^\^(?!=)|\^\^(?==)/).forEach(function(sub, i){
 			if(i==0){
 				win = "";
 				wout = sub || "";
 			}else{
-				var subs = sub.split("\$\$");
+				var subs;
+				if(sub[0] == '=')
+					subs = sub.split(/\$\$/);
+				else
+					subs = sub.split(/\$\$[ \t]*/);
 				win = subs[0];
 				wout = subs[1] || "";
+				if(!win || win[0] != '=') 
+					if(wout[0] == '\n')
+						wout = wout.substr(1);
 			}
-
 			wout = wout
-				.replace(/\n[\t ]+$/, "\n") //remove \s after last \n
-				.replace(/^[\t ]*\n/, "") // remove \s before/and first \n
-				.replace(/\\([\[\]\{\}a-zA-Z0-9\+'])/g, "\\\\$1")
-				.replace(/\n/g, "\\n")
-				.replace(/'/g, "\\'")
-				.replace(/\\([\"\?\*\/])/g, "\\\\\\$1");
+				.replace(/\\/g, "\\\\")
+				.replace(/([\[\]\{\}'])/g, "\\$1")
+				.replace(/\n/g, "\\n");
+
 
 			if(win && win[0] == '='){
 				var ms;

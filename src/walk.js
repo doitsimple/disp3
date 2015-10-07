@@ -6,13 +6,15 @@ var libObject = require("../lib/js/object");
 var libFile = require("../lib/nodejs/file");
 var tmpl = require("./tmpl");
 var utils = require("./utils");
+var checkName = utils.checkName;
 var log = require("./log");
 var regex = /%(~?)([^%@~]+)?(~?)(?:@([^%@~]+))?(?:%([a-zA-Z0-9_-]+)?(?:@([^%@~]+))?)?(?:%([^%]+))?%/;
 module.exports = {
 	regex: regex,
 	walk: walk,
 	readFileList: readFileList,
-	readDispJsons: readDispJsons
+	readDispJsons: readDispJsons,
+	checkName: checkName
 }
 function readDispJsons(){
 	var self = this;
@@ -94,7 +96,7 @@ function walk(params, addgenflag){
 			for(var k=0; k<mss.length; k++){
 				var srcDir = path.relative(".", __dirname + "/../lib/" + mss[k]);
 				if(fs.existsSync(srcDir)){
-					var list = libFile.readdirNotDirSync(srcDir);
+					var list = libFile.readdirNotDirRecSync(srcDir);
 					for(var i in list){
 						var f2 = list[i];
 						if(checkName(f2)){
@@ -159,10 +161,17 @@ function readDispJson(params){
 	var dir = params.dirpath;
 	if(!path.relative(".",dir)) return 0;
 	if(fs.existsSync(dir + "/disp.render.json")){
-		if(extendDispJson.call(
-			self, params, params.env,
-			JSON.parse(tmpl.render({file: dir + "/disp.render.json"},
-									params.env, true))))
+		var json;
+		try{
+      json = JSON.parse(
+				tmpl.render({
+					file: dir + "/disp.render.json"
+				}, params.env, true));
+		}catch(e){
+			log.e("parse " + dir + "/disp.render.json error");
+			return 1;
+		}
+		if(extendDispJson.call(self, params, params.env, json))
 			return 1;
 	}
 	if(fs.existsSync(dir + "/disp.json")){
@@ -201,7 +210,8 @@ function walkFile(params){
 				tfullpath: rt1,
 				envkey: params.envkey?params.envkey+"."+key:key,
 				contentkey: params.contentkey,
-				tmpl: params.tmpl		
+				tmpl: params.tmpl,
+				lib: params.lib
 			})) return 1;
 		}
 		return 0;
@@ -215,7 +225,8 @@ function walkFile(params){
 			tfullpath: rt,
 			envkey: params.envkey,
 			contentkey: params.contentkey,
-			tmpl: params.tmpl		
+			tmpl: params.tmpl,
+			lib: params.lib
 		})) return 1;
 	}else if(params.dir != params.tdir || path.relative(params.basedir, ".") ){
 		if(!self.filelist[rt]){
@@ -325,13 +336,6 @@ function matchName(params){
 		libObject.append1(params, fsconfig);
 	return 0;
 }
-//return 1 check failed
-function checkName(f){
-	if(f == "." || f.match(/~$/) || f[0] == '#' || f.match(/^disp/)){
-		return 0;
-	}
-	return 1;
-}
 function addGenFileList(params){
 	var self = this;
 	var fsconfig = self.fsconfigs[params.tfullpath];
@@ -341,30 +345,33 @@ function addGenFileList(params){
 	else
 		rt = params.tfullpath;
 	if(!self.filelist[rt]) self.filelist[rt] = {};
+	var fileparams = self.filelist[rt];
 	if(params.static){
 		for(var key in params.static){
-			self.filelist[rt][key] = params.static[key];
+			fileparams[key] = params.static[key];
 		}
 		return 0;
 	}
 	if(params.envkey){
-		if(!self.filelist[rt].env)
-			self.filelist[rt].env = params.envkey;
-		else if(self.filelist[rt].env != params.envkey){
-			log.i(self.filelist[rt]);
+		if(!fileparams.env)
+			fileparams.env = params.envkey;
+		else if(fileparams.env != params.envkey){
+			log.i(fileparams);
 			log.i(params);
 			log.e("the same target filename must have the same envkey");
 			return 1;
 		}
 	}
 	if(params.contentkey){
-		if(!self.filelist[rt][params.contentkey])
-			self.filelist[rt][params.contentkey] = [];
-		libArray.pushIfNotExists(self.filelist[rt][params.contentkey], 
+		if(!fileparams[params.contentkey])
+			fileparams[params.contentkey] = [];
+		libArray.pushIfNotExists(fileparams[params.contentkey], 
 														 params.fullpath);
 	}
 	if(params.tmpl)
-		self.filelist[rt].tmpl = params.tmpl;
+		fileparams.tmpl = params.tmpl;
+	if(params.lib)
+		fileparams.lib = params.lib;
 	return 0;
 }
 function matchEnv(localenv, str, i){

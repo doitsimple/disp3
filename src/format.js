@@ -6,6 +6,7 @@ var libObject = require("../lib/js/object");
 var libFile = require("../lib/nodejs/file");
 var utils =require("./utils");
 var tmpl = require("./tmpl");
+var checkName = require("./utils").checkName;
 var log = require("./log");
 module.exports = {
 	readConfigs: readConfigs,
@@ -138,6 +139,17 @@ function readConfigsSub(arch){
 		archJson = {};
 	}
 	self.archs[arch] = archJson;
+
+	if(fs.existsSync(archDir + "/lib")){
+		var arr = libFile.readdirNotDirSync(archDir + "/lib");
+		for(var i in arr){
+			var fname = arr[i];
+			if(!checkName(fname)) continue;
+			var ms = fname.replace(/\./g, "");
+			self.libs[ms] = archDir + "/lib/" + fname;
+		}
+	}
+
 	if(archJson.deps){
 		for(var dep in archJson.deps){
 			readConfigsSub.call(self, dep);
