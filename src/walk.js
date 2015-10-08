@@ -81,6 +81,7 @@ function walk(params, addgenflag){
 		log.v("skip "+ params.fullpath);
 		return 0;
 	}
+
 	if(params.isdir){
 		if(params.lib){
 			var rt;
@@ -229,34 +230,39 @@ function walkFile(params){
 			lib: params.lib
 		})) return 1;
 	}else if(params.dir != params.tdir || path.relative(params.basedir, ".") ){
+
 		if(!self.filelist[rt]){
-			if(params.islink)
+			if(params.islink){
+
 				if(addGenFileList.call(self, {
 					fullpath: params.fullpath,
 					tfullpath: rt,
 					static: {srclink: params.fullpath}
 				})) return 1;
-			else
+			}else{
+
 				if(addGenFileList.call(self, {
           fullpath: params.fullpath,
           tfullpath: rt,
           static: {src: params.fullpath}
         })) return 1;
+			}
 		}
 	}else{
 		if(!self.filelist[rt]){
-			if(params.islink)
+			if(params.islink){
 				if(addGenFileList.call(self, {
           fullpath: params.fullpath,
           tfullpath: rt,
 					static: {selflink: 1}
 				})) return 1;
-			else
+			}else{
 				if(addGenFileList.call(self, {
           fullpath: params.fullpath,
           tfullpath: rt,
           static: {self: 1}
         })) return 1;
+			}
 		}
 	}
 }
