@@ -1,0 +1,8 @@
+{
+	"cssLibs": {
+    "/vendor/metisMenu/metisMenu.min.css":1
+  },
+  "jsLibs": {
+    "/vendor/metisMenu/metisMenu.min.js": 1
+	}
+}

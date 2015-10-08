@@ -96,6 +96,7 @@ function render(config, data, clearflag){
 						wout = wout.substr(1);
 			}
 			wout = wout
+				.replace(/\\([\$\^])/g, "$1")
 				.replace(/\\/g, "\\\\")
 				.replace(/([\[\]\{\}'])/g, "\\$1")
 				.replace(/\n/g, "\\n");

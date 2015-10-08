@@ -101,12 +101,11 @@ function walk(params, addgenflag){
 					for(var i in list){
 						var f2 = list[i];
 						if(checkName(f2)){
+							var fullpath = path.relative(".", srcDir + "/" + f2);
 							if(addGenFileList.call(self, {
-								fullpath: path.relative(".", srcDir + "/" + f2),
+								fullpath: fullpath,
 								tfullpath: rt + "/" + f2,
-								envkey: params.envkey,
-								contentkey: params.contentkey,
-								tmpl: params.tmpl
+								static: {src: fullpath}
 							})) return 1;
 						}
 					};
