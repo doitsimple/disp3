@@ -1,8 +1,5 @@
-^^before()$$
-^^=main$$
-^^after()$$
 ^^
-function getCss(libs){
+local.getCss = function(libs){
  if(!libs) return;
  for(var src in libs){
   var href = libs[src].href?libs[src].href:src;
@@ -20,7 +17,7 @@ $$
 $$
 
 ^^
-function getJs(libs){
+local.getJs = function(libs){
  if(!libs) return;
  for(var src in libs){
 $$
@@ -31,7 +28,21 @@ $$
 $$
 
 ^^
-function before(){$$
+local.loadJs = function(){
+$$
+<script type="text/javascript" src="/vendor/js/jquery.min.js"></script>
+<!--[if lt IE 9]>
+    <script type="text/javascript" src="/vendor/js/jquery-1.9.1.min.js"></script>
+<![endif]-->
+^^getJs(local.jsLibs);$$
+^^getJs(local.js);$$
+^^=customJs$$
+^^
+}
+$$
+
+^^
+local.before = function(htmlAttr){$$
 <!DOCTYPE html>
 <html^^=htmlAttr$$>
 <head>
@@ -42,35 +53,19 @@ function before(){$$
 ^^=meta$$
 <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!--[if lt IE 9]>
-<script type="text/javascript" src="vendor/js/html5shiv.min.js"></script>
-<script type="text/javascript" src="vendor/js/respond.min.js"></script>
+<script type="text/javascript" src="/vendor/js/html5shiv.min.js"></script>
+<script type="text/javascript" src="/vendor/js/respond.min.js"></script>
 <![endif]-->
 ^^getCss(local.cssLibs);$$
 ^^getCss(local.css);$$
-^^if(local.scriptBefore){$$
-<script type="text/javascript" src="vendor/js/jquery.min.js"></script>
-<!--[if lt IE 9]>
-    <script type="text/javascript" src="vendor/js/jquery-1.9.1.min.js"></script>
-<![endif]-->
-^^getJs(local.jsLibs);$$
-^^getJs(local.js);$$
-^^=customJs$$
-^^}$$
+^^if(local.scriptBefore) loadJs();$$
 ^^=head$$
 </head>
 <body>
 ^^}$$
 
-^^function after(){$$
-^^if(!local.scriptBefore){$$
-<script type="text/javascript" src="vendor/js/jquery.min.js"></script>
-<!--[if lt IE 9]>
-    <script type="text/javascript" src="vendor/js/jquery-1.9.1.min.js"></script>
-<![endif]-->
-^^getJs(local.jsLibs);$$
-^^getJs(local.js);$$
-^^=customJs$$
-^^}$$
+^^local.after = function(){$$
+^^if(!local.scriptBefore) loadJs();$$
 </body>
 </html>
 ^^}$$

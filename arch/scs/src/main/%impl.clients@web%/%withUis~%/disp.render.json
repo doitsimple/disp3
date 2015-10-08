@@ -1,0 +1,10 @@
+{
+	"css": {
+		"main.css": 1,
+		"^^=name$$.css": 1
+	},
+	"js": {
+		"main.js": 1,
+		"^^=name$$.js": 1
+	}
+}
