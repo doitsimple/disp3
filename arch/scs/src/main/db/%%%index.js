@@ -124,7 +124,7 @@ schemas["^^=schema.name$$"].formatDoc = function(json){
     ^^if(!field.encryptParams){$$
 		json["^^=field.name$$"] = libEncrypt["^^=field.encrypt$$"](json["^^=field.name$$"]);
     ^^}else{$$
-		json["^^=field.name$$"] = libEncrypt["^^=field.encrypt$$"](json["^^=field.name$$"], ^^=encryptParams.join(",")$$);
+		json["^^=field.name$$"] = libEncrypt["^^=field.encrypt$$"](json["^^=field.name$$"], ^^=field.encryptParams.join(",")$$);
 	  ^^}$$
 	 ^^}$$
 	^^}$$
