@@ -2,5 +2,5 @@ $(function() {
 $(document).ready(function() {
 ^^=mainready$$
 });
-^^=maincontent$$
 })
+^^=maincontent$$
