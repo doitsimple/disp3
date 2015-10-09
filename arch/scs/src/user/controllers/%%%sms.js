@@ -65,7 +65,8 @@ function send(params, fn) {
 		var newparams = {
 			phone: params.phone,
 			tpl: tpl,
-			voiceflag:params.voiceflag
+			voiceflag:params.voiceflag,
+			code: params.code
 		};
 		newparams.msg = prefix + tpl.content.replace(/%([^%]+)%/g, function(str, p1) {
 			return params[p1];
@@ -83,8 +84,8 @@ function send(params, fn) {
 		}, function(err, doc) {
 			if (err) return fn(err);
 			if (doc) {
-				if (doc.counts < 20) {
-					console.log(newparams);
+				if (doc.counts < 30) {
+					
 					p.sendsms(newparams, function(err, result) {
 						var refid = parseInt(result);
 						var insertObj = {
@@ -129,7 +130,7 @@ function send(params, fn) {
 					});
 				}
 			} else {
-				p.sendsms(params.phone, msg, function(err, result) {
+				p.sendsms(newparams, function(err, result) {
 					var refid = parseInt(result);
 					var insertObj = {
 						phone: params.phone,
