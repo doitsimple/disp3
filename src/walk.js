@@ -81,6 +81,7 @@ function walk(params, addgenflag){
 		log.v("skip "+ params.fullpath);
 		return 0;
 	}
+
 	if(params.isdir){
 		if(params.lib){
 			var rt;
@@ -100,12 +101,11 @@ function walk(params, addgenflag){
 					for(var i in list){
 						var f2 = list[i];
 						if(checkName(f2)){
+							var fullpath = path.relative(".", srcDir + "/" + f2);
 							if(addGenFileList.call(self, {
-								fullpath: path.relative(".", srcDir + "/" + f2),
+								fullpath: fullpath,
 								tfullpath: rt + "/" + f2,
-								envkey: params.envkey,
-								contentkey: params.contentkey,
-								tmpl: params.tmpl
+								static: {src: fullpath}
 							})) return 1;
 						}
 					};
@@ -229,34 +229,39 @@ function walkFile(params){
 			lib: params.lib
 		})) return 1;
 	}else if(params.dir != params.tdir || path.relative(params.basedir, ".") ){
+
 		if(!self.filelist[rt]){
-			if(params.islink)
+			if(params.islink){
+
 				if(addGenFileList.call(self, {
 					fullpath: params.fullpath,
 					tfullpath: rt,
 					static: {srclink: params.fullpath}
 				})) return 1;
-			else
+			}else{
+
 				if(addGenFileList.call(self, {
           fullpath: params.fullpath,
           tfullpath: rt,
           static: {src: params.fullpath}
         })) return 1;
+			}
 		}
 	}else{
 		if(!self.filelist[rt]){
-			if(params.islink)
+			if(params.islink){
 				if(addGenFileList.call(self, {
           fullpath: params.fullpath,
           tfullpath: rt,
 					static: {selflink: 1}
 				})) return 1;
-			else
+			}else{
 				if(addGenFileList.call(self, {
           fullpath: params.fullpath,
           tfullpath: rt,
           static: {self: 1}
         })) return 1;
+			}
 		}
 	}
 }

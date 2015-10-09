@@ -1,5 +1,11 @@
 {
 	"proto": {
+		"uis": {
+			"signin": {
+				"elements": {
+				}
+			}
+		},
 		"schemas": {
 			"admin": {
 				"seed": [
@@ -87,14 +93,6 @@
 			"main": {
 				"withSchemas": [
 					"admin"
-				]
-			}
-		},
-		"servers": {
-			"bserver": {
-				"withApis": [
-					"admin_signin",
-					"admin_get"
 				]
 			}
 		}
