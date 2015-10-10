@@ -26,7 +26,10 @@ router.route('/^^=api.route$$^^=paramsStr$$')
 }$$
 
 app.use('/api', router);
-
+app.get('/quit', function(req, res){
+	res.send('closing..');
+	app.close();
+});
 
 ^^function makeController(api){$$
 function ^^=api.name$$(req, res){
