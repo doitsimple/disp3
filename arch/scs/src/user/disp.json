@@ -454,8 +454,22 @@
 			"user_get_invites": {
 				"text": "获取用户邀请的用户列表"
 			},
-			"user_set_password": {},
-			"user_set_paypassword": {}
+			"user_set_password": {
+				"params": {
+					"code": {
+					},
+					"password":{
+					}
+				},
+				"midwares": ["auth"]
+			},
+			"user_set_paypassword": {
+			},
+			"user_verify_paypassword": {
+				"controllers": [{
+					"send": "{result: 1}"
+				}]
+			}
 		}
 	},
 	"impl": {
@@ -486,7 +500,8 @@
 					"user_get",
 					"user_get_invites",
 					"user_set_password",
-					"user_set_paypassword"
+					"user_set_paypassword",
+					"user_verify_paypassword"
 				]
 			}
 		}
