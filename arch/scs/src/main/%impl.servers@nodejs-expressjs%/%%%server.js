@@ -10,6 +10,9 @@ process.on('uncaughtException', function(err) {
   log.e(err.stack);
 });
 var server = ^^=protocol$$.createServer(app);
+app.close = function(){
+	server.close();
+}
 function prelisten(cb){
 	var fnarr = [^^=addon$$];
 	sync.doAll(fnarr, cb);
