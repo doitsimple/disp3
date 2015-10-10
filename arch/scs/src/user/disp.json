@@ -453,6 +453,7 @@
 					"method": "bselect",
 					"schema": "user",
 					"where": "{invite:req.user.invitecode}",
+					"op": "{$project:{_id:0,realname:1,phone:1} }",
 					"send": "result"
 				}],
 				"midwares": ["auth"]
