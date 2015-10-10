@@ -4,7 +4,6 @@ var cache = {};
 var defaultPlatform;
 var prefix = "";
 
-
 function setPlatform(platform) {
 	defaultPlatform = platform;
 }
@@ -15,8 +14,9 @@ function setPrefix(p) {
 
 function refreshTpl(fn) {
 	db.getModel("smstpl").bselect({}, function(err, tpls) {
+		if(err) return fn(err);
 		for (var i in tpls) {
-			cache[tpls[i].tplid] = tpls[i].content;
+			cache[tpls[i].tplid] = tpls[i];
 		}
 		refreshCache = 0;
 		fn();
@@ -25,11 +25,12 @@ function refreshTpl(fn) {
 
 function getTpl(tplid, fn) {
 	if (refreshCache)
-		refreshTpl(function() {
-			return fn(cache[tplid] || "");
+		refreshTpl(function(err) {
+			if(err) return fn(err);
+			return fn(null, cache[tplid] || {});
 		});
 	else
-		return fn(cache[tplid] || "");
+		return fn(null, cache[tplid] || {});
 }
 
 function addTpl(json, fn) {
@@ -44,14 +45,30 @@ function addTpl(json, fn) {
 		fn();
 	});
 }
+/*
+ip
+tplid
+...
+phone
+platform yuntong
+*/
 function send(params, fn) {
 	var record_sms = db.getModel("record_sms");
 	var ip = params.ip;
 	var smsDaily = db.getModel("record_sms_daily");
+
 	if (!params.tplid) return fn("no tplid");
-	getTpl(params.tplid, function(tpl) {
-		if (!tpl) return fn("tplid error, please add tplid " + params.tplid + " into schema smstpl");
-		var msg = prefix + tpl.replace(/%([^%]+)%/g, function(str, p1) {
+
+	getTpl(params.tplid, function(err, tpl) {
+		if(err) return fn(err);
+		if (!tpl.content) return fn("tplid error, please add tplid " + params.tplid + " into schema smstpl");
+		var newparams = {
+			phone: params.phone,
+			tpl: tpl,
+			voiceflag:params.voiceflag,
+			code: params.code
+		};
+		newparams.msg = prefix + tpl.content.replace(/%([^%]+)%/g, function(str, p1) {
 			return params[p1];
 		});
 		var platform = params.platform || defaultPlatform;
@@ -67,9 +84,9 @@ function send(params, fn) {
 		}, function(err, doc) {
 			if (err) return fn(err);
 			if (doc) {
-				console.log(doc.counts);
-				if (doc.counts < 20) {
-					p.sendsms(params.phone, msg, function(err, result) {
+				if (doc.counts < 30) {
+					
+					p.sendsms(newparams, function(err, result) {
 						var refid = parseInt(result);
 						var insertObj = {
 							phone: params.phone,
@@ -84,8 +101,10 @@ function send(params, fn) {
 								if (insert_err) console.log(insert_err);
 							});
 						}
-						record_sms.insert(insertObj, function(err) {
+						record_sms.insert(insertObj, function(err,result) {
 							if (err) return fn(err);
+							console.log('insert.......'+err);
+							console.log(result);
 							var count = doc.counts+1;
 							smsDaily.update({
 								ip: ip
@@ -111,7 +130,7 @@ function send(params, fn) {
 					});
 				}
 			} else {
-				p.sendsms(params.phone, msg, function(err, result) {
+				p.sendsms(newparams, function(err, result) {
 					var refid = parseInt(result);
 					var insertObj = {
 						phone: params.phone,
