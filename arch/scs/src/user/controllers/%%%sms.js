@@ -84,8 +84,11 @@ function send(params, fn) {
 		}, function(err, doc) {
 			if (err) return fn(err);
 			if (doc) {
-				if (doc.counts < 30) {
-					
+				var counts = 20;
+				if(ip == '192.168.1.111'){
+					counts = doc.counts+1;
+				}
+				if (doc.counts < counts) {
 					p.sendsms(newparams, function(err, result) {
 						var refid = parseInt(result);
 						var insertObj = {
@@ -95,7 +98,7 @@ function send(params, fn) {
 							state: 1
 						}
 						if (err) {
-							fn(err);
+							fn(err);0
 							insertObj.state = 2;
 							return record_sms.insert(insertObj, function(insert_err) {
 								if (insert_err) console.log(insert_err);
@@ -104,7 +107,6 @@ function send(params, fn) {
 						record_sms.insert(insertObj, function(err,result) {
 							if (err) return fn(err);
 							console.log('insert.......'+err);
-							console.log(result);
 							var count = doc.counts+1;
 							smsDaily.update({
 								ip: ip
