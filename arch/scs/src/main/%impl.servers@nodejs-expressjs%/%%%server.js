@@ -14,7 +14,7 @@ app.close = function(){
 	server.close();
 }
 function prelisten(cb){
-	var fnarr = [^^=addon$$];
+	var fnarr = [^^=addons.join(",")$$];
 	sync.doAll(fnarr, cb);
 }
 db.connect(function(){

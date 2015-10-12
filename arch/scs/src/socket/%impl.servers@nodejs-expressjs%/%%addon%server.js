@@ -1,2 +1,0 @@
-require("../^^=msgServer$$/client").connect
-
