@@ -204,12 +204,16 @@ function parseArgs(schema, args){
 	if(args.length == 3){
 		pargs.where = args[0] || {};
 		pargs.options = args[1] || {};
-		if(typeof args[2] != "function") {
-			log.i("callback is not function!"); 
-			log.e(args[2]); 
-			pargs.callback = function(){};
+		if(args[2]){
+			if(typeof args[2] != "function") {
+				log.i("callback is not function!"); 
+				log.e(args[2]); 
+				pargs.callback = function(){};		
+			}else{
+				pargs.callback = args[2];
+			}
 		}else{
-			pargs.callback = args[2];
+			pargs.callback = function(){};
 		}
 	}else if(args.length == 2){
 		pargs.where = args[0] || {};
