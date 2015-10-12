@@ -174,6 +174,21 @@ function readDispJson(params){
 		if(extendDispJson.call(self, params, params.env, json))
 			return 1;
 	}
+	if(fs.existsSync(dir + "/disp.render.global.json")){
+		var json;
+		try{
+      json = JSON.parse(
+				tmpl.render({
+					file: dir + "/disp.render.global.json"
+				}, params.env, true));
+		}catch(e){
+			log.e("parse " + dir + "/disp.render.global.json error");
+			return 1;
+		}
+
+		if(extendDispJson.call(self, params, self.global, json))
+			return 1;
+	}
 	if(fs.existsSync(dir + "/disp.json")){
 		if(extendDispJson.call(
 			self, params, params.env,
@@ -193,7 +208,7 @@ function extendDispJson(params, env, dispJson){
 			self.global.tmpls[tmplKey] = p;
 		}
 	}
-	utils.extend(params.env, dispJson);
+	utils.extend(env, dispJson);
 }
 function walkFile(params){
 	var self = this;

@@ -8,10 +8,12 @@ var libFile = require("../lib/file");
 var libRes = require("./response");
 var log= require("../lib/log");
 var path = require("path");
+var common = require("./common");
 var sendErr = libRes.sendErr;
 var sendFile = libRes.sendFile;
 var sendJson = libRes.sendJson;
 var db = require("../db");
+
 ^^=require$$
 var checkpoints = require("./checkpoints");
 ^^=config$$
