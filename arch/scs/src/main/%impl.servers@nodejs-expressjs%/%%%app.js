@@ -13,7 +13,7 @@ var sendErr = libRes.sendErr;
 var sendFile = libRes.sendFile;
 var sendJson = libRes.sendJson;
 var db = require("../db");
-
+var localAddr = "^^=protocol$$://^^=global.project.ip$$:^^=port$$/api/";
 ^^=require$$
 var checkpoints = require("./checkpoints");
 ^^=config$$

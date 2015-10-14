@@ -1,5 +1,5 @@
 {
 	"project": {
-		"posts": ["node script/add_gitignore.js", "crontab cron/config"]
+		"posts": ["node script/add_gitignore.js"]
 	}
 }
