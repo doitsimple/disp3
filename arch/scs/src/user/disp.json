@@ -14,11 +14,11 @@
 						"type": "datetime",
 						"default": 0
 					},
-					"refid":{
-						"type":"string"
+					"refid": {
+						"type": "string"
 					},
-					"state":{
-						"type":"string"
+					"state": {
+						"type": "string"
 					}
 				}
 			},
@@ -53,12 +53,9 @@
 					}
 				}
 			},
-			"record_user_signin": {
-			},
-			"invite": {
-			},
-			"channel": {
-			},
+			"record_user_signin": {},
+			"invite": {},
+			"channel": {},
 			"invite": {},
 			"channel": {},
 			"session": {
@@ -347,47 +344,42 @@
 						"text": "邀请码"
 					}
 				},
-				"controllers": [
-					{
-						"type": "db",
-						"method": "select",
-						"schema": "session",
-						"where": "{session: session, device_token: device_token}",
-						"result": "sessionres",
-						"check": {
-							"!sessionres": "非法注册"
-						}
-					},
-					{
-						"type": "db",
-						"method": "select",
-						"schema": "user",
-						"where": "{phone: phone}",
-						"result": "user",
-						"check": {
-							"user": {
-								"message": "用户名已注册",
-								"code":1
-							}
-						}
-					},
-					{
-						"type": "async",
-						"method": "Invite.verify",
-						"params": "invitecode",
-						"result": "invite",
-						"do": "invite.invitecode = libRandom.genNum(11);"
-					},
-					{
-						"type": "db",
-						"method": "insert",
-						"schema": "user",
-						"pre": "invite.phone = phone;invite.password=password;;invite.token=libRandom.hat();",
-						"doc": "invite",
-						"do": "invite._id = result.insertedId; if(checkpoints.signup) checkpoints.signup(invite);",
-						"send": "invite"
+				"controllers": [{
+					"type": "db",
+					"method": "select",
+					"schema": "session",
+					"where": "{session: session, device_token: device_token}",
+					"result": "sessionres",
+					"check": {
+						"!sessionres": "非法注册"
 					}
-				]
+				}, {
+					"type": "db",
+					"method": "select",
+					"schema": "user",
+					"where": "{phone: phone}",
+					"result": "user",
+					"check": {
+						"user": {
+							"message": "用户名已注册",
+							"code": 1
+						}
+					}
+				}, {
+					"type": "async",
+					"method": "Invite.verify",
+					"params": "invitecode",
+					"result": "invite",
+					"do": "invite.invitecode = libRandom.genNum(11);"
+				}, {
+					"type": "db",
+					"method": "insert",
+					"schema": "user",
+					"pre": "invite.phone = phone;invite.password=password;;invite.token=libRandom.hat();",
+					"doc": "invite",
+					"do": "invite._id = result.insertedId; if(checkpoints.signup) checkpoints.signup(invite);",
+					"send": "invite"
+				}]
 			},
 			"user_signin": {
 				"text": "用户登陆",
@@ -452,22 +444,107 @@
 				"midwares": ["auth"]
 			},
 			"user_get_invites": {
-				"text": "获取用户邀请的用户列表"
+				"text": "获取用户邀请的用户列表",
+				"controllers": [{
+					"type": "raw",
+					"do": "req.user.password = req.user.password?1:0;req.user.paypassword=req.user.paypassword?1:0;"
+				}, {
+					"type": "db",
+					"method": "bselect",
+					"schema": "user",
+					"where": "{invite:req.user.invitecode}",
+					"op": "{$project:{_id:0,realname:1,phone:1} }",
+					"send": "result"
+				}],
+				"midwares": ["auth"]
 			},
 			"user_set_password": {
+				"text": "修改密码",
 				"params": {
-					"code": {
+					"phone": {
+						"required": true
 					},
-					"password":{
+					"code": {
+						"required": true
+					},
+					"newpassword": {
+						"required": true
 					}
 				},
+				"controllers": [{
+					"type": "db",
+					"method": "select",
+					"schema": "smscode",
+					"where": "{phone: phone, code: code}",
+					"result": "sms",
+					"check": {
+						"!sms": "验证码错误",
+						"new Date(sms.time).getTime() - new Date().getTime() > 60000*5": "验证码过期"
+					}
+				}, {
+					"type": "db",
+					"method": "update",
+					"schema": "user",
+					"where": "{phone:phone}",
+					"set": "{password: newpassword}",
+					"send": "{success: true}"
+				}],
 				"midwares": ["auth"]
 			},
 			"user_set_paypassword": {
+				"text": "设置支付密码",
+				"params": {
+					"phone": {
+						"required": true
+					},
+					"code": {
+						"required": true
+					},
+					"paypassword": {
+						"required": true
+					}
+				},
+				"controllers": [{
+					"type": "db",
+					"method": "select",
+					"schema": "smscode",
+					"where": "{phone: phone, code: code}",
+					"result": "sms",
+					"check": {
+						"!sms": "验证码错误",
+						"new Date(sms.time).getTime() - new Date().getTime() > 60000*5": "验证码过期"
+					}
+				}, {
+					"type": "db",
+					"method": "update",
+					"schema": "user",
+					"where": "{phone:phone}",
+					"set": "{paypassword: paypassword}",
+					"send": "{success: true}"
+				}],
+				"midwares": ["auth"]
 			},
 			"user_verify_paypassword": {
+				"text": "校验支付密码",
+				"params": {
+					"phone": {
+						"required": true
+					},
+					"paypassword": {
+						"required": true
+					}
+				},
 				"controllers": [{
-					"send": "{result: 1}"
+					"type": "db",
+					"method": "select",
+					"schema": "user",
+					"where": "{phone: phone}",
+					"result": "user",
+					"check": {
+						"!user": "未找到此人",
+						"!libEncrypt.bcryptcompare(paypassword, user.paypassword)": "密码错误"
+					},
+					"send": "{success: true}"
 				}]
 			}
 		}
