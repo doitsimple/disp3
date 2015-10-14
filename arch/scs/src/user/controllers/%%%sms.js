@@ -1,6 +1,7 @@
 var db = require("../db");
 var refreshCache = 1;
 var cache = {};
+var log = require("../lib/log");
 var defaultPlatform;
 var prefix = "";
 var libDate = require('../lib/date');
@@ -67,7 +68,6 @@ function send(params, fn) {
 		var newparams = {
 			phone: params.phone,
 			tpl: tpl,
-			voiceflag: params.voiceflag,
 			code: params.code
 		};
 		newparams.msg = prefix + tpl.content.replace(/%([^%]+)%/g, function(str, p1) {
@@ -79,7 +79,8 @@ function send(params, fn) {
 			p = require("./" + platform);
 			if (!p.sendsms) return fn("not method send in platfrom");
 		} catch (e) {
-			return fn("platform " + params.platform + " is not found");
+			log.e(e);
+			return fn("platform " + platform + " is not found");
 		}
 
 		smsDaily.select({ip: ip,date:today}, function(err, doc) {
