@@ -63,7 +63,7 @@
 					"schema": "messages",
 					"where": "{userid: req.user._id, type: 1, status: 1, time: {$lt: time}}",
 					"set": "{status: 2}",
-					"send": "{success: ture}"
+					"send": "{success: true}"
 				}],
 				"midwares": ["auth"]
 			}
