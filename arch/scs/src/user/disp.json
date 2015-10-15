@@ -402,9 +402,7 @@
 				"controllers": [{
 					"type": "async",
 					"method": "codeVerify.verifyPassword",
-					"params": "{phone:phone,password:password,method:'password'}",
-					"result": "result",
-					"do": "if(result.cb !=''){return sendJson(res,result)};"
+					"params": "{phone:phone,password:password,method:'password'}"
 				}, {
 					"type": "db",
 					"method": "update",

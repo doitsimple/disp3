@@ -13,38 +13,24 @@ codeVerify.verify = function(params, fn) {
 		phone: params.phone,
 		code: params.code
 	}, function(err, doc) {
-		var cb = '';
 		if (err) return fn(err);
+		if (!doc) return fn("验证码错误");
+		if (new Date().getTime() - new Date(doc.time).getTime() > 60000 * 15)
+			return fn("验证码过期");
 		limit.check({
 			phone: params.phone,
 			method: 'sms'
-		}, function(err, result) {
-			if (result > 5) {
-				cb = "您验证码已经输错五次啦，不能继续验证了";
-				return fn(null, cb);
-			}
-			if (!doc) {
-				cb = "验证码错误";
-				limit.inc({
-					phone: params.phone,
-					method: 'sms'
-				}, function(err, result) {
-					if(err) return fn(err);
-					fn(null,cb);
-				});
-			} else {
-				if (new Date().getTime() - new Date(doc.time).getTime() > 60000 * 15) {
-					cb = "验证码过期";
-					limit.inc({
-						phone: params.phone,
-						method: 'sms'
-					}, function(err) {
-						if (err) return fn(err);
-						return fn(null, cb);
-					});
-				}
-			}
-			fn(null, cb)
+		}, function(err, count) {
+			if(err) return fn(err);
+			if (count > 5) 
+				return fn("您验证码已经输错五次啦，不能继续验证了");
+			limit.inc({
+				phone: params.phone,
+				method: 'sms'
+			}, function(err, result) {
+				if(err) return fn(err);
+				fn();
+			});
 		});
 	});
 }
@@ -94,4 +80,4 @@ codeVerify.verifyPassword = function(params, fn) {
 
 
 
-module.exports = codeVerify;
+	module.exports = codeVerify;
