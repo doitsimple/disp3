@@ -3,6 +3,7 @@ var db = require("../db");
 var log = require("../lib/log");
 var clients = {};
 var interServerAddrs = ^^=$.stringify(servers)$$ || {};
+
 //用户在线补发离线消息时 data._id 存在
 function sendMsg(params) {
 	if(!params.type) params.type = 1;

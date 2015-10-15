@@ -1,0 +1,89 @@
+{
+	"proto": {
+		"schemas": {
+			"messages": {
+				"seed": [],
+				"fields": {
+					"time": {
+						"type": "datetime",
+						"text": "发送时间",
+						"default": 0
+					},
+					"userid": {
+						"text": "用户ID",
+						"type": "ObjectId"
+					},
+					"status": {
+						"type": "发送状态",
+						"type": "int",
+						"enums": {
+							"1": "未发送",
+							"2": "已发送"
+						}
+					},
+					"type": {
+						"text": "发送方向",
+						"type": "int",
+						"enums": {
+							"1": "系统发送给客户端",
+							"2": "客户端发送给系统"
+						}
+					},
+					"message": {
+						"type": "消息内容",
+						"onmodify": true
+					}
+				}
+			}
+		},
+		"apis": {
+			"list_messages": {
+				"text": "h5端获取用户待接收信息",
+				"controllers": [{
+					"type": "db",
+					"method": "bselect",
+					"schema": "messages",
+					"where": "{userid: req.user._id, type: 1, status: 1}",
+					"send": "{data: result, time: new Date()}"
+				}],
+				"midwares": ["auth"]
+			},
+			"set_messages_read": {
+				"text": "设置消息为已读(以后不在显示)",
+				"params": {
+					"time": {
+						"required": true,
+						"type": "datetime",
+						"text": "截止时间"
+					}
+				},
+				"controllers": [{
+					"type": "db",
+					"method": "bupdate",
+					"schema": "messages",
+					"where": "{userid: req.user._id, type: 1, status: 1, time: {$lt: time}}",
+					"set": "{status: 2}",
+					"send": "{success: true}"
+				}],
+				"midwares": ["auth"]
+			}
+		}
+	},
+	"impl": {
+		"databases": {
+			"main": {
+				"withSchemas": [
+					"messages"
+				]
+			}
+		},
+		"servers": {
+			"fserver": {
+				"withApis": [
+					"list_messages",
+					"set_messages_read"
+				]
+			}
+		}
+	}
+}
