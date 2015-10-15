@@ -402,15 +402,15 @@
 				"controllers": [{
 					"type": "async",
 					"method": "codeVerify.verifyPassword",
-					"params": "{_id:req.user._id,password:password,method:'password'}",
+					"params": "{phone:phone,password:password,method:'password'}",
 					"result": "result",
-					"do": "if(result !=''){return sendJson(res,result)}else{sendJson(res,'正确')};"
+					"do": "if(result.cb !=''){return sendJson(res,result)};"
 				}, {
 					"type": "db",
 					"method": "update",
 					"schema": "session",
 					"where": "{session: session, device_token: device_token}",
-					"set": "{userid: user._id}",
+					"set": "{userid: result._id}",
 					"result": "sessionres",
 					"check": {
 						"!sessionres.n": "非法登陆"
