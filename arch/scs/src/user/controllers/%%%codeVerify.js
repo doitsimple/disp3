@@ -6,8 +6,18 @@ var libEncrypt = require("../lib/encrypt");
 var limit = require('./trylimit.js');
 
 var codeVerify = {};
+codeVerify.verify = function(text, user, method, fn){
+	if(!libEncrypt.bcryptcompare(text, user[method])) {
+		limit.check({
+			userid: user._id, 
+			method: method
+		}, fn);
+	}else{
+		fn();
+	}
+}
 
-codeVerify.verify = function(params, fn) {
+codeVerify.verify2 = function(params, fn) {
 	var smscode = db.getModel('smscode');
 	smscode.select({
 		phone: params.phone,

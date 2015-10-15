@@ -399,30 +399,42 @@
 						"required": true
 					}
 				},
-				"controllers": [{
-					"type": "async",
-					"method": "codeVerify.verifyPassword",
-					"params": "{phone:phone,password:password,method:'password'}"
-				}, {
-					"type": "db",
-					"method": "update",
-					"schema": "session",
-					"where": "{session: session, device_token: device_token}",
-					"set": "{userid: result._id}",
-					"result": "sessionres",
-					"check": {
-						"!sessionres.n": "非法登陆"
+				"controllers": [
+					{
+						"type": "db",
+						"method": "select",
+						"schema": "user",
+						"where": "{phone: phone}",
+						"result": "user",
+						"check": {
+							"!user": "用户名不存在"
+						}
+					}, 
+					{
+						"type": "async",
+						"method": "codeVerify.verify",
+						"params": "password, user, 'password'"
+					},
+					{
+						"type": "db",
+						"method": "update",
+						"schema": "session",
+						"where": "{session: session, device_token: device_token}",
+						"set": "{userid: user._id}",
+						"result": "sessionres",
+						"check": {
+							"!sessionres.n": "非法登陆"
+						}
+					}, {
+						"pre": "token = libRandom.hat();",
+						"type": "db",
+						"method": "update",
+						"schema": "user",
+						"where": "{_id: user._id}",
+						"set": "{token: token}",
+						"send": "{token: token, _id: user._id}"
 					}
-				}, {
-					"pre": "token = libRandom.hat();",
-					"type": "db",
-					"method": "update",
-					"schema": "user",
-					"where": "{_id: user._id}",
-					"set": "{token: token}",
-					"send": "{token: token, _id: user._id}"
-				}],
-				"midwares": ["auth"]
+				]
 			},
 			"user_get": {
 				"text": "获取用户信息",
