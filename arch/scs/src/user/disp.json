@@ -259,7 +259,7 @@
 					"where": "{phone: phone, code: code}",
 					"result": "sms",
 					"check": {
-						"Verify.find({phone:phone,method:'sms'}>5)" : "您已经验证五次啦，不能继续验证了",
+						"Verify.find({phone:phone,method:'sms'}>5)": "您已经验证五次啦，不能继续验证了",
 						"!sms": "验证码错误",
 						"new Date(sms.time).getTime() - new Date().getTime() > 60000*5": "验证码过期",
 						"Verify.verify({phone:phone,method:'sms'})": ""
@@ -409,9 +409,9 @@
 				"controllers": [{
 					"type": "async",
 					"method": "codeVerify.verifyPassword",
-					"params":"{phone:phone,password:password,method:'password'}",
-					"result" : "result",
-					"do": "console.log(result);if(result !=''){return sendJson(res,result)}else{sendJson(res,'正确')};"
+					"params": "{_id:req.user._id,password:password,method:'password'}",
+					"result": "result",
+					"do": "if(result !=''){return sendJson(res,result)}else{sendJson(res,'正确')};"
 				}, {
 					"type": "db",
 					"method": "update",
@@ -430,7 +430,8 @@
 					"where": "{_id: user._id}",
 					"set": "{token: token}",
 					"send": "{token: token, _id: user._id}"
-				}]
+				}],
+				"midwares": ["auth"]
 			},
 			"user_get": {
 				"text": "获取用户信息",
@@ -459,8 +460,8 @@
 			"user_set_password": {
 				"text": "修改密码",
 				"params": {
-					"phone": {
-						"required": true
+					"phone":{
+						"required":true
 					},
 					"code": {
 						"required": true
@@ -472,8 +473,8 @@
 				"controllers": [{
 					"type": "async",
 					"method": "codeVerify.verify",
-					"params":"{phone:phone,code:code}",
-					"result" : "result",
+					"params": "{phone:phone,code:code}",
+					"result": "result",
 					"do": "console.log(result);if(result !=''){return sendJson(res,result)};"
 				}, {
 					"type": "db",
@@ -482,14 +483,13 @@
 					"where": "{phone:phone}",
 					"set": "{password: newpassword}",
 					"send": "{success: true}"
-				}],
-				"midwares": ["auth"]
+				}]
 			},
-			"user_set_paypassword": {
-				"text": "设置支付密码",
+			"user_modify_paypassword": {
+				"text": "修改支付密码",
 				"params": {
-					"phone": {
-						"required": true
+					"phone":{
+						"required":true
 					},
 					"code": {
 						"required": true
@@ -501,8 +501,8 @@
 				"controllers": [{
 					"type": "async",
 					"method": "codeVerify.verify",
-					"params":"{phone:phone,code:code}",
-					"result" : "result",
+					"params": "{phone:phone,code:code}",
+					"result": "result",
 					"do": "console.log(result);if(result !=''){return sendJson(res,result)};"
 				}, {
 					"type": "db",
@@ -517,9 +517,6 @@
 			"user_verify_paypassword": {
 				"text": "校验支付密码",
 				"params": {
-					"phone": {
-						"required": true
-					},
 					"paypassword": {
 						"required": true
 					}
@@ -527,10 +524,34 @@
 				"controllers": [{
 					"type": "async",
 					"method": "codeVerify.verifyPassword",
-					"params":"{phone:phone,method:'paypassword',paypassword:paypassword}",
-					"result" : "result",
+					"params": "{_id:req.user._id,method:'paypassword',paypassword:paypassword}",
+					"result": "result",
 					"do": "console.log(result);if(result !=''){return sendJson(res,result)}else{sendJson(res,'正确')};"
-				}]
+				}],
+				"midwares": ["auth"]
+			},
+			"user_set_paypassword": {
+				"text": "设置支付密码",
+				"params": {
+					"paypassword": {
+						"required": true
+					}
+				},
+				"controllers": [{
+					"type": "async",
+					"method": "db.getModel('user').select",
+					"params": "{_id:req.user._id}",
+					"result": "result",
+					"do": "if(result.paypassword){return sendJson(res,'您已经设置过支付密码了')};"
+				}, {
+					"type": "db",
+					"method": "update",
+					"schema": "user",
+					"where": "{_id:req.user._id}",
+					"set": "{paypassword: paypassword}",
+					"send": "{success: true}"
+				}],
+				"midwares": ["auth"]
 			}
 		}
 	},
@@ -563,6 +584,7 @@
 					"user_get_invites",
 					"user_set_password",
 					"user_set_paypassword",
+					"user_modify_paypassword",
 					"user_verify_paypassword"
 				]
 			}

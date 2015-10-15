@@ -19,7 +19,10 @@ codeVerify.verify = function(params, fn) {
 			phone: params.phone,
 			method: 'sms'
 		}, function(err, result) {
-			console.log(result);
+			console.log('message>>>>>'+result);
+			console.log('message>>>>>'+result);
+			console.log('message>>>>>'+result);
+			console.log(doc);
 			if (result > 5) {
 				cb = "您验证码已经输错五次啦，不能继续验证了";
 				return fn(null, cb);
@@ -30,10 +33,11 @@ codeVerify.verify = function(params, fn) {
 					phone: params.phone,
 					method: 'sms'
 				}, function(err, result) {
-					return fn(null, cb);
+					if(err) return fn(err);
+					fn(null,cb);
 				});
 			} else {
-				if (new Date().getTime() - new Date(doc.time).getTime() > 60000 * 5) {
+				if (new Date().getTime() - new Date(doc.time).getTime() > 60000 * 15) {
 					cb = "验证码过期";
 					Verify.verify({
 						phone: params.phone,
@@ -53,12 +57,12 @@ codeVerify.verify = function(params, fn) {
 codeVerify.verifyPassword = function(params, fn) {
 	var user = db.getModel('user');
 	user.select({
-		phone: params.phone
+		_id: params._id
 	}, function(err, doc) {
 		var cb = '';
 		if (err) return fn(err);
 		Verify.find({
-			phone: params.phone,
+			_id: params._id,
 			method: params.method
 		}, function(err, result) {
 			if (result > 3) {
@@ -70,12 +74,10 @@ codeVerify.verifyPassword = function(params, fn) {
 				return fn(null, cb);
 			} else {
 				var method = params.method;
-				console.log('>>>>>>>>>>'+params[method]);
-				console.log('>>>>>>>>>>'+doc[method]);
 				if (!libEncrypt.bcryptcompare(params[method], doc[method])) {
 					cb = "密码错误";
 					Verify.verify({
-						phone: params.phone,
+						_id: params._id,
 						method: params.method
 					}, function(err) {
 						if (err) return fn(err);

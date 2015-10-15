@@ -9,7 +9,7 @@ var verifyNumbers = {};
 verifyNumbers.verify = function(params,fn) {
 		var password = db.getModel('password');
 		password.upsert2({
-			phone: params.phone,
+			userid: params._id,
 			date: today,
 			method: params.method
 		}, {
@@ -17,18 +17,20 @@ verifyNumbers.verify = function(params,fn) {
 				counts: 1
 			}
 		}, function(err, result) {
-			if (err) return fn(err);
+			if(err) return fn(err);
 		});
 }
 
 verifyNumbers.find = function(params,fn) {
 		var password = db.getModel('password');
 		password.select({
-			phone: params.phone,
-			method: params.method
+			_id: params._id,
+			method: params.method,
+			date: today
 		}, function(err, doc) {
 			if (err) return fn(err);
             if (!doc) return fn(null,0);
+            console.log('counts>>>>>>>'+today);
 			return fn(null,doc.counts);
 		});
 }
