@@ -13,7 +13,7 @@ limit.check = function(params, fn){
   };
 	Model.select(where, function(err, doc){
 		if(err) return fn(err);
-		if(doc && doc.count > params.limits)
+		if(doc && doc.count >= params.limits)
 			return fn("尝试超过限制");
 		Model.upsert2(where,{
 			$inc: {

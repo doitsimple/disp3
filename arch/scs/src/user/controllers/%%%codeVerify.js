@@ -10,7 +10,8 @@ codeVerify.verify = function(text, user, method, fn){
 	if(!libEncrypt.bcryptcompare(text, user[method])) {
 		limit.check({
 			userid: user._id, 
-			method: method
+			method: method,
+			limits: 5
 		}, fn);
 	}else{
 		fn();
