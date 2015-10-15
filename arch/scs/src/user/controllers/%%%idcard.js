@@ -23,12 +23,16 @@ function verify(params, fn){
 		}catch(e){
 			return fn("platform " + params.platform + " is not found");
 		}
-		p.verifyIdcard(params, function(err){
+		p.verifyIdcard(params, function(err, result){
+			if(!result) result = {};
+			result.idcard = params.idcard;
+			result.realname = params.realname;
 			if(err) {
 				/*^^if(!global.product){$$*/
 				if(err.code == "VERIFY_BINDED_OVERRUN" || err.code == "DUPLICATE_VERIFY"){
 					log.i("认证超限，测试环境返回正确");
-					return fn(null);
+					result.weibopayid = "jac" + params.idcard;
+					return fn(null, result);
 				}
 				/*^^}$$*/
 				return fn(err);
@@ -36,7 +40,10 @@ function verify(params, fn){
 			Model.upsert({
 				idcard: params.idcard,
 				realname: params.realname
-			}, {}, fn);
+			}, {}, function(err){
+				if(err) return fn(err);
+				fn(null, result);
+			});
 		});
 	});
 }

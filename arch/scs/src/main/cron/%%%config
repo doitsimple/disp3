@@ -4,7 +4,7 @@
 
 ^^function makeCronStr(config){
 	var str = "";
-	if(config.text)str += "#" + config.text + "\n";
+	if(config.text) str += "#" + config.text + "\n";
 	if(config.type == "raw") str+= config.frequency + " " + config.commands + "\n";
 	return str;
 }$$

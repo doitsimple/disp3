@@ -1,6 +1,7 @@
 {
 	"project": {
 		"navspaces": ["impl.clients.*","impl.databases.*","impl.servers.*", "impl.scripts.*","impl.modules.*"],
+		"ip": "127.0.0.1",
 		"roles": {
 			"$default": {
 				"uis": ["proto.uis"],
