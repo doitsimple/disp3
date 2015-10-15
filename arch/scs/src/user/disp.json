@@ -253,18 +253,11 @@
 					}
 				},
 				"controllers": [{
-					"type": "db",
-					"method": "select",
-					"schema": "smscode",
-					"where": "{phone: phone, code: code}",
-					"result": "sms",
-					"check": {
-						"Verify.find({phone:phone,method:'sms'}>5)": "您已经验证五次啦，不能继续验证了",
-						"!sms": "验证码错误",
-						"new Date(sms.time).getTime() - new Date().getTime() > 60000*5": "验证码过期",
-						"Verify.verify({phone:phone,method:'sms'})": ""
-					},
-					"send": "{success: true}"
+					"type": "async",
+					"method": "codeVerify.verify",
+					"params": "{phone:phone,code:code}",
+					"result": "result",
+					"do": "if(result !=''){return sendJson(res,result)};"
 				}]
 			},
 			"session_add": {
