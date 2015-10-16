@@ -399,42 +399,38 @@
 						"required": true
 					}
 				},
-				"controllers": [
-					{
-						"type": "db",
-						"method": "select",
-						"schema": "user",
-						"where": "{phone: phone}",
-						"result": "user",
-						"check": {
-							"!user": "用户名不存在"
-						}
-					}, 
-					{
-						"type": "async",
-						"method": "codeVerify.verify",
-						"params": "password, user, 'password'"
-					},
-					{
-						"type": "db",
-						"method": "update",
-						"schema": "session",
-						"where": "{session: session, device_token: device_token}",
-						"set": "{userid: user._id}",
-						"result": "sessionres",
-						"check": {
-							"!sessionres.n": "非法登陆"
-						}
-					}, {
-						"pre": "token = libRandom.hat();",
-						"type": "db",
-						"method": "update",
-						"schema": "user",
-						"where": "{_id: user._id}",
-						"set": "{token: token}",
-						"send": "{token: token, _id: user._id}"
+				"controllers": [{
+					"type": "db",
+					"method": "select",
+					"schema": "user",
+					"where": "{phone: phone}",
+					"result": "user",
+					"check": {
+						"!user": "用户名不存在"
 					}
-				]
+				}, {
+					"type": "async",
+					"method": "codeVerify.verify",
+					"params": "password, user, 'password'"
+				}, {
+					"type": "db",
+					"method": "update",
+					"schema": "session",
+					"where": "{session: session, device_token: device_token}",
+					"set": "{userid: user._id}",
+					"result": "sessionres",
+					"check": {
+						"!sessionres.n": "非法登陆"
+					}
+				}, {
+					"pre": "token = libRandom.hat();",
+					"type": "db",
+					"method": "update",
+					"schema": "user",
+					"where": "{_id: user._id}",
+					"set": "{token: token}",
+					"send": "{token: token, _id: user._id}"
+				}]
 			},
 			"user_get": {
 				"text": "获取用户信息",
@@ -463,8 +459,8 @@
 			"user_set_password": {
 				"text": "修改密码",
 				"params": {
-					"phone":{
-						"required":true
+					"phone": {
+						"required": true
 					},
 					"code": {
 						"required": true
@@ -475,10 +471,8 @@
 				},
 				"controllers": [{
 					"type": "async",
-					"method": "codeVerify.verify",
-					"params": "{phone:phone,code:code}",
-					"result": "result",
-					"do": "console.log(result);if(result !=''){return sendJson(res,result)};"
+					"method": "codeVerify.verify2",
+					"params": "{phone:phone,code:code}"
 				}, {
 					"type": "db",
 					"method": "update",
@@ -491,28 +485,26 @@
 			"user_modify_paypassword": {
 				"text": "修改支付密码",
 				"params": {
-					"phone":{
-						"required":true
+					"phone": {
+						"required": true
 					},
 					"code": {
 						"required": true
 					},
-					"paypassword": {
+					"newpaypassword": {
 						"required": true
 					}
 				},
 				"controllers": [{
 					"type": "async",
-					"method": "codeVerify.verify",
-					"params": "{phone:phone,code:code}",
-					"result": "result",
-					"do": "console.log(result);if(result !=''){return sendJson(res,result)};"
+					"method": "codeVerify.verify2",
+					"params": "{phone:phone,code:code}"
 				}, {
 					"type": "db",
 					"method": "update",
 					"schema": "user",
 					"where": "{phone:phone}",
-					"set": "{paypassword: paypassword}",
+					"set": "{paypassword: newpaypassword}",
 					"send": "{success: true}"
 				}],
 				"midwares": ["auth"]
@@ -525,11 +517,19 @@
 					}
 				},
 				"controllers": [{
+					"type": "db",
+					"method": "select",
+					"schema": "user",
+					"where": "{userid: req.user.user_id}",
+					"result": "user",
+					"check": {
+						"!user": "用户名不存在"
+					}
+				}, {
 					"type": "async",
-					"method": "codeVerify.verifyPassword",
-					"params": "{_id:req.user._id,method:'paypassword',paypassword:paypassword}",
-					"result": "result",
-					"do": "console.log(result);if(result !=''){return sendJson(res,result)}else{sendJson(res,'正确')};"
+					"method": "codeVerify.verify",
+					"params": "paypassword, user, 'paypassword'",
+					"send": "{success: true}"
 				}],
 				"midwares": ["auth"]
 			},
