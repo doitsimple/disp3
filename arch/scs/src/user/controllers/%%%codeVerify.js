@@ -7,6 +7,9 @@ var limit = require('./trylimit.js');
 
 var codeVerify = {};
 codeVerify.verify = function(text, user, method, fn) {
+	console.log(user[method]);
+	console.log(text);
+	console.log(user._id);
 	limit.check({
 		userid: user._id,
 		method: method,

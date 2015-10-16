@@ -520,7 +520,7 @@
 					"type": "db",
 					"method": "select",
 					"schema": "user",
-					"where": "{userid: req.user.user_id}",
+					"where": "{_id:req.user._id}",
 					"result": "user",
 					"check": {
 						"!user": "用户名不存在"
