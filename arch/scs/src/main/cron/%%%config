@@ -3,8 +3,11 @@
 ^^}$$
 
 ^^function makeCronStr(config){
-	var str = "";
+					 var str = "";
 	if(config.text) str += "#" + config.text + "\n";
-	if(config.type == "raw") str+= config.frequency + " " + config.commands + "\n";
+	if(!config.min) config.min = "*";
+	if(!config.hour) config.hour = "*";
+	if(!config.day) config.day = "*";
+	str += config.min + " " + config.hour + " " + config.day + " * * nohup node cron/" + config.name + ".js >>log/`date +%Y%m%d`-cron.log";
 	return str;
 }$$

@@ -139,7 +139,6 @@
 		},
 		"crons": {
 			"$list":{
-				"type": "cron"
 			}
 		},
 		"scripts": {
