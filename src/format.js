@@ -28,6 +28,7 @@ function readConfigs(){
 	}else{
 		return self.error("no disp.json");
 	}
+	self.global.bin = process.argv[1];
 	
 
 	self.project = projectJson;

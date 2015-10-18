@@ -141,6 +141,10 @@
 			"$list":{
 				"type": "cron"
 			}
+		},
+		"scripts": {
+			"$list": {
+			}
 		}
 	}
 }
