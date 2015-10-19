@@ -144,7 +144,6 @@ schemas["^^=schema.name$$"].formatInsertDoc = function(json){
 	 ^^}$$
 	^^}$$
 	if(schemas["^^=schema.name$$"].formatInsertDocSpec) schemas["^^=schema.name$$"].formatInsertDocSpec(json);
-	schemas["^^=schema.name$$"].formatDoc(json);
 };
 	^^if(schema.init && schema.init.length){schema.seed = schema.init;console.log("schema init depleted, please change to seed");}$$
 	^^if(schema.seed && schema.seed.length){$$

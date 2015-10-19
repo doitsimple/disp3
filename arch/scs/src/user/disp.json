@@ -93,10 +93,12 @@
 					},
 					"password": {
 						"encrypt": "bcrypt",
+						"type": "string",
 						"hidden": true
 					},
 					"paypassword": {
 						"encrypt": "bcrypt",
+						"type": "string",
 						"hidden": true
 					},
 					"token": {
@@ -255,8 +257,8 @@
 				"controllers": [{
 					"type": "async",
 					"method": "codeVerify.verify2",
-					"params": "{phone:phone,code:code}"
-
+					"params": "{phone:phone,code:code}",
+					"send": "{success: true}"
 				}]
 			},
 			"session_add": {
