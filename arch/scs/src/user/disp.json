@@ -195,7 +195,7 @@
 				}, {
 					"type": "async",
 					"method": "Sms.send",
-					"params": "{phone: phone, code: code, tplid: 'code'}"
+					"params": "{phone: phone, code: code, tplid: 'code',ip:req.ip}"
 				}, {
 					"type": "db",
 					"schema": "smscode",
@@ -232,7 +232,7 @@
 				}, {
 					"type": "async",
 					"method": "Sms.send",
-					"params": "{phone: phone, code: code, tplid: 'code'}"
+					"params": "{phone: phone, code: code, tplid: 'code',ip:req.ip}"
 				}, {
 					"type": "db",
 					"schema": "smscode",
@@ -255,9 +255,8 @@
 				"controllers": [{
 					"type": "async",
 					"method": "codeVerify.verify2",
-					"params": "{phone:phone,code:code}",
-					"result": "result",
-					"do": "if(result !=''){return sendJson(res,result)};"
+					"params": "{phone:phone,code:code}"
+
 				}]
 			},
 			"session_add": {

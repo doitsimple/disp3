@@ -56,10 +56,10 @@ phone
 platform yuntong
 */
 function send(params, fn) {
+	if(!params.ip) return fn('没有ip');
 	var record_sms = db.getModel("record_sms");
 	var ip = params.ip;
 	var smsDaily = db.getModel("record_sms_daily");
-
 	if (!params.tplid) return fn("no tplid");
 
 	getTpl(params.tplid, function(err, tpl) {
