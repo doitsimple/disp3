@@ -331,7 +331,7 @@ function getModel(schemaname){
 		if(model.select){
 			std.select = function(){
 				var args = parseArgs(schema, arguments);
-				model.select(args.where, args.callback);
+				model.select(args.where, args.options, args.callback);
 			}
 		}else{
 			std.select = function(){

@@ -1,7 +1,7 @@
 app.use(function(req, res, next){
 //	console.log(Object.keys(req));
 	var log = "\x1b[1;36m";
-	var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+	var ip = req.ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 	log += req.method + " " + req.originalUrl + "  ip:" + ip + "  " + libDate.getSimple(new Date())+ "\n";
 	if(req.method != "GET" && req.method != "DELETE"){
 		var bodystr = JSON.stringify(req.body,undefined);
