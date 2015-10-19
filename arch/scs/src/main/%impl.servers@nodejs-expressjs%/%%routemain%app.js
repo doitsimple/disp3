@@ -41,10 +41,11 @@ function ^^=api.name$$(req, res){
 ^^=ctrl.pre || ""$$;
   ^^if(ctrl.type == "raw"){$$
   ^^}else if(ctrl.type == "async"){$$
+   ^^if(ctrl.params){$$
 ^^=ctrl.method$$(^^=ctrl.params$$, function(err, ^^=result$$){
-	if(err) return sendErr(res, err);
-  ^^}else if(ctrl.type == "async2"){$$
-^^=ctrl.method$$(^^=ctrl.params$$, function(err, ^^=result$$){
+   ^^}else{$$
+^^=ctrl.method$$(function(err, ^^=result$$){
+   ^^}$$
 	if(err) return sendErr(res, err);
   ^^}else if(ctrl.type == "db"){$$
 ^^makeDbQuery(ctrl)$$
