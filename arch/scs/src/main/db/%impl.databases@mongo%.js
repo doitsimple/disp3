@@ -126,11 +126,6 @@ function getModel(cname){
 		if(!criteria) return fn("no criteria");
 		origin.deleteOne(criteria, fn);
 	};
-	model.select = function(criteria, options, fn){
-		//fn: function(err, result)
-		//result: doc
-		origin.findOne(criteria, options, fn);
-	};
 	model.bupdate = function(criteria, doc, fn){
 		origin.updateMany(criteria, {$set: doc}, function(err, result){
 			var rtn;
