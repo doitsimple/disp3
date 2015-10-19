@@ -254,7 +254,7 @@
 				},
 				"controllers": [{
 					"type": "async",
-					"method": "codeVerify.verify",
+					"method": "codeVerify.verify2",
 					"params": "{phone:phone,code:code}",
 					"result": "result",
 					"do": "if(result !=''){return sendJson(res,result)};"
@@ -460,13 +460,16 @@
 				"text": "修改密码",
 				"params": {
 					"phone": {
-						"required": true
+						"required": true,
+						"text": "手机号"
 					},
 					"code": {
-						"required": true
+						"required": true,
+						"text": "验证码"
 					},
 					"newpassword": {
-						"required": true
+						"required": true,
+						"text": "新密码"
 					}
 				},
 				"controllers": [{
