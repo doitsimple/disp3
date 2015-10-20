@@ -7,8 +7,6 @@ var limit = require('./trylimit.js');
 
 var codeVerify = {};
 codeVerify.verify = function(text, user, method, fn) {
-	console.log(user[method]);
-	console.log(text);
 	limit.check({
 		userid: user._id,
 		method: method,
@@ -69,29 +67,6 @@ codeVerify.verify2 = function(params, fn) {
 			}
 		});
 	});
-	/*
-	smscode.select({
-		phone: params.phone,
-		code: params.code
-	}, function(err, doc) {
-		if (err) return fn(err);
-		if (!doc) {
-
-			return fn("验证码错误");
-		}
-		if (new Date().getTime() - new Date(doc.time).getTime() > 60000 * 15)
-			return fn("验证码过期");
-		if (!doc || new Date().getTime() - new Date(doc.time).getTime() > 60000 * 15) {
-			limit.check({
-				phone: params.phone,
-				method: 'sms',
-				limits: 3
-			}, 'phone', fn);
-		} else {
-			fn();
-		}
-	});
-*/
 }
 
 module.exports = codeVerify;
