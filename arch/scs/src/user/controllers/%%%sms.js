@@ -62,7 +62,7 @@ function send(params, fn) {
 	var smsDaily = db.getModel("record_sms_daily");
 	if (!params.tplid) return fn("no tplid");
 
-	getTpl(params.tplid, function(err, tpl) {
+	getTpl(params.tplid, function(err, tpl) {console.log(
 		if (err) return fn(err);
 		if (!tpl.content) return fn("tplid error, please add tplid " + params.tplid + " into schema smstpl");
 		var newparams = {
@@ -111,7 +111,7 @@ function send(params, fn) {
 							0
 							insertObj.state = 2;
 							return record_sms.insert(insertObj, function(insert_err) {
-								if (insert_err) console.log(insert_err);
+								if (insert_err) fn(insert_err);
 							});
 						}
 						record_sms.insert(insertObj, function(err, result) {
