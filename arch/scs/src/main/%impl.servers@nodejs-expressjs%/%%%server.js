@@ -4,7 +4,8 @@ var db = require("../db");
 var log =require("../lib/log");
 var sync =require("../lib/sync");
 var fs = require("fs");
-
+var libDate = require("../lib/date");
+log.setOutfile("log/"+libDate.getDate(new Date()) + "-^^=name$$.log");
 process.on('uncaughtException', function(err) {
   //log the error
   log.e(err.stack);
