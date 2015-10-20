@@ -52,19 +52,8 @@ codeVerify.verify2 = function(params, fn) {
 					return fn("验证码错误");
 				});
 			}
-			if (new Date().getTime() - new Date(doc.time).getTime() > 60000 * 15) {
-				limit.inc({
-					phone: params.phone,
-					method: 'sms',
-					limits: 3
-				}, key, function(err) {
-					if (err) return fn(err);
-					return fn("验证码过期");
-				});
-			}
-			if(!(!doc||new Date().getTime() - new Date(doc.time).getTime() > 60000 * 15)){
-				fn();
-			}
+			if (new Date().getTime() - new Date(doc.time).getTime() > 60000 * 15) return fn("验证码过期");
+			if(doc) fn();
 		});
 	});
 }
