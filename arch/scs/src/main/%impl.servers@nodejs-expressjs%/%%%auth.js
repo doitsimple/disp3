@@ -3,13 +3,13 @@
 var passport = require('passport');
 var db= require("../db");
 var BearerStrategy = require('passport-http-bearer').Strategy;
-
+var log =require("../lib/log");
 function check(token, done) {
   db.getModel("^^=userschema$$").select({
     token: token
   }, function (err, user) {
     if (err) { return done(err); }
-    if (!user) { return done(null, false); }
+    if (!user) { log.i(401); return done(null, false); }
     ^^=rule$$
     return done(null, user, { scope: 'all' });
   });
