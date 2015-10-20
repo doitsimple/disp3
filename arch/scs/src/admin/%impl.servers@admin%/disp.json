@@ -1,5 +1,6 @@
 {
 	"withApis": [
+		"access",
 		"admin_signin",
 		"admin_get"
 	]

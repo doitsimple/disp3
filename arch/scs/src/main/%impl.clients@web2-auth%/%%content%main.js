@@ -6,7 +6,6 @@ var authUrls = {
 }
 rootApp.run(function ($rootScope, auth) {
   $rootScope.$on("$routeChangeStart", function (event, next, current) {
-		console.log(next);
     if(next.\$\$route && 
 			 next.\$\$route.originPath && 
 			 !authUrls[next.\$\$route.originPath] && 

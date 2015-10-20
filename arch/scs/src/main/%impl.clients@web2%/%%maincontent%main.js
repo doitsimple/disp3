@@ -154,5 +154,11 @@ rootApp.factory('req', function($http){
 	});
 	return methods;
 });
-
+rootApp.filter("stddate", function() {
+  var filterfun = function(datestr) {
+		if(!datestr) return "";
+    return datestr.substr(0, 4) + "/" + datestr.substr(4, 2) + "/" + datestr.substr(6, 2);
+  };
+  return filterfun;
+});
 ^^=content$$

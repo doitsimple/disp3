@@ -37,6 +37,9 @@
 						"type": "datetime",
 						"onmodify": true
 					},
+					"flags": {
+						"type": "json"
+					},
 					"createtime": {
 						"type": "datetime", 
 						"default": 0 
@@ -45,6 +48,30 @@
 			}
 		},
 		"apis": {
+			"access": {
+				"params": {
+					"schema": {
+						"isParams": true,
+						"require": true
+					},
+					"method": {	
+						"isParams": true,
+						"require": true
+					},
+					"where": {
+					},
+					"options": {
+					}
+				},				
+				"controllers": [
+					{
+						"type": "async",
+						"method": "db.getModel(schema)[method]",
+						"params": "where, options",
+						"send": "result"
+					}
+				]
+			},
 			"admin_signin": {
 				"text": "管理员登陆",
 				"params": {

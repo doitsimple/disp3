@@ -47,18 +47,13 @@ for(var i in withUis){
   var name1 = withUis[i];
   var ui = global.proto.uis[name1];
 $$
-rootApp.controller("^^=methods.dash2uc(ui.name)$$Controller", function($scope, $rootScope, $routeParams, $sce, auth, req){
+rootApp.controller("^^=methods.dash2uc(ui.name)$$Controller", function($scope, $rootScope, $routeParams, $sce, auth, req, ui){
 ^^=local[ui.name]$$
 ^^
- for(var j in ui.withApis){
-	if(j == "from") continue;
-	var api= global.proto.apis[ui.withApis[j]];
-  origin.api(api);
- };
  for(var key in ui.elements){
   var el = ui.elements[key];
-  if(origin[el.type])
-  origin[el.type](el);
+  if(local[el.type])
+  local[el.type](el);
  }
 $$
 
@@ -69,3 +64,5 @@ $$
 rootApp.controller("error", function($scope, $rootScope, req){
 });
 ^^}$$
+
+^^local.loadFactory({name: "ui"});$$;

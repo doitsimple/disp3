@@ -1,7 +1,7 @@
+var log =require("../lib/log");
 var app= require("./app");
 var ^^=protocol$$ = require('^^=protocol$$');
 var db = require("../db");
-var log =require("../lib/log");
 var sync =require("../lib/sync");
 var fs = require("fs");
 var libDate = require("../lib/date");
