@@ -1,17 +1,60 @@
+^^local.form = function(config){$$
+<form role="form">
+  <fieldset>
+^^for(var fname in config.fields){var f=config.fields[fname];$$
+ ^^if(f.type == "input"){$$
+    <div class="form-group">
+      <input class="form-control" id="email" type="email" ng-model="^^=config.name$$.data.email" autofocus>
+    </div>
+ ^^}else if(f.type == "button"){if(!f.stype) f.style = "default";$$
+    <a class="btn btn-lg btn-^^=f.style$$ btn-block" ng-click="^^=f.click$$()">^^=f.text$$</a>
+ ^^}$$
+^^}$$
+  </fieldset>
+</form>
+^^}$$
 ^^local.makequery = function(config){$$
 	<div class="row">
 		<div class="col-sm-8">
+			<div class="btn-group" role="group">
+				<a ng-repeat="save in ^^=config.name$$.savequerys" class="btn btn-default" ng-click="^^=config.name$$.loadSave(save)">{{save.title}}</a>
+			</div>
 		</div>
 		<div class="col-sm-4 text-right">
 			<div class="btn-group" role="group">
-				<button type="button" class="btn btn-default" ng-click="showquery=!showquery"><i class="fa fa-search"></i></button>
-				<button type="button" class="btn btn-default" ng-click="showstat=!showstat"><i class="fa fa-search"></i></button>
-				<button type="button" class="btn btn-default" ng-click="showadd=!showadd"><i class="fa fa-plus"></i></button>
+				<a class="btn btn-default" ng-tooltip="搜索" ng-click="showquery=!showquery"><i class="fa fa-search"></i></a>
+				<a class="btn btn-default" ng-click="showstat=!showstat"><i class="fa fa-calculator"></i></a>
+				<a class="btn btn-default" ng-click="showsave=!showsave"><i class="fa fa-save"></i></a>
 			</div>
 		</div>
-		<div class="col-sm-6" ng-show="showquery" style="padding: 10px;">
+		<div class="col-sm-6" ng-show="showsave" style="padding: 10px;border:1px;">
+			<div class="form-group">
+				<input class="form-control" placeholder="请为这次存储命名" ng-model="savename">
+				<a class="form-control btn btn-default" ng-click="^^=config.name$$.save(savename)"></a>
+			</div>
+		</div>
+		<div class="col-sm-6" ng-show="showquery" style="padding: 10px;border: 1px;">
+			<div class="btn-group" role="group">			
+			<a type="button" class="btn btn-default"><i class="fa fa-plus">user</i></a>
+			<a type="button" class="btn btn-default" ng-click="^^=config.name$$.addRawQuery()"><i class="fa fa-plus"></i></a>
+			<a type="button" class="btn btn-default" ng-click="^^=config.name$$.rawquerys = []">Clear</a>
+			<a type="button" class="btn btn-default" ng-click="^^=config.name$$.refresh()">Go</a>
+			</div>
+			<div class="form-group">
+				<div class="input-group" style="padding: 5px 10px;" ng-repeat="rawquery in ^^=config.name$$.rawquerys track by $index">
+					<select class="form-control" ng-model="rawquery.field" ng-options="key for key in ^^=config.name$$.fieldlist"></select>
+					<div class="input-group-addon" contenteditable ng-model="rawquery.op" autocomplete="^^=config.name$$.oplist"></div>	
+					<input type="text" class="form-control" placeholder="value" ng-model="rawquery.value">
+					<div class="input-group-addon" ng-click="^^=config.name$$.rawquerys.splice($index, 1)"><i class="fa fa-minus"></i></div>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-6 borderbox" ng-show="showstat">
+			<div class="btn-group">
 			<button type="button" class="btn btn-default">添加用户字段</button>
 			<button type="button" class="btn btn-default" ng-click="^^=config.name$$.addRawQuery()">添加字段</button>
+			<button type="button" class="btn btn-default" ng-click="^^=config.name$$.refresh()">Go</button>
+			</div>
 			<div class="form-group" ng-repeat="rawquery in ^^=config.name$$.rawquerys">
 				<div class="input-group" style="padding: 5px 10px;">
 					<select class="form-control" ng-model="rawquery.field" ng-options="key for key in ^^=config.name$$.fieldlist"></select>
@@ -19,7 +62,6 @@
 					<input type="text" class="form-control" placeholder="value" ng-model="rawquery.value">
 				</div>
 			</div>
-			<button type="button" class="btn btn-default" ng-click="^^=config.name$$.refresh()">Go!</button>
 		</div>
 	</div>
 ^^}$$

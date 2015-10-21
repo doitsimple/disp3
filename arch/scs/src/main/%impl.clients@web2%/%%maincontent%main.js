@@ -1,4 +1,5 @@
 var rootApp = angular.module('rootApp', ^^=JSON.stringify(local.angularDeps) || '[]'$$);
+
 rootApp.directive('autocomplete', function($parse) {
   return {
     require: 'ngModel',
@@ -90,9 +91,7 @@ rootApp.factory('req', function($http){
 	["get", "post", "put", "delete"].forEach(function(method){
 		methods[method] = function(url, data, fn){
 			if(!fn) fn = data;
-			var config = {url: url, method: method.toUpperCase(), headers: {
-				Cookie: ""
-			}};
+			var config = {url: url, method: method.toUpperCase()};
 			if(data) config.data = data;
 			ajax(config, fn);
 		};
@@ -100,7 +99,7 @@ rootApp.factory('req', function($http){
 			if(!fn) fn = data;
 			var config = {url: url, method: method.toUpperCase(), headers: headers};
 			if(data) config.data = data;
-			ajax(config, fn);			
+			ajax(config, fn);
 		};
 		methods[method+"Bearer"] = function(url, token, data, fn){
 			methods[method + "Ex"](url, {
@@ -115,14 +114,6 @@ rootApp.factory('req', function($http){
 		methods[method+"Json"] = function(url, data, fn){
 			methods[method + "Ex"](url, {
 				"Content-type": "application/json"
-			}, data, fn);
-		};
-		methods[method + "Cookies"] = function(url, cookies, data, fn){
-			var cookiearr = [];
-			for(var key in cookies)
-				cookiearr.push(key + "=" + cookies[key]);
-			methods[method + "Ex"](url, {
-				Cookie: cookiearr.join("; ")
 			}, data, fn);
 		};
 		methods[method+"File"] = function(url, headers, data, fn){

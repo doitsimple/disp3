@@ -1,3 +1,10 @@
+^^local.form = function(config){$$
+$scope["^^=config.name$$"] = {data:{}};
+ ^^for(var mname in config.methods){var method = config.methods[mname];$$
+  ^^$$
+ ^^}$$
+^^}$$
+
 ^^ 
 local.table = function(config) {
 	if (config.withSchema) {
@@ -15,6 +22,7 @@ local.table = function(config) {
 		schema: "^^=config.withSchema$$",
 		fields: ^^=JSON.stringify(config.fields)$$
 	});
+//	$scope["^^=config.name$$"].fetchSaveQuerys();
 	$scope["^^=config.name$$"].refresh();
 
 ^^
@@ -79,6 +87,7 @@ rootApp.factory("^^=config.name$$", function(req, auth){
 		}
 		self.fields = config.fields;
 		self.fieldlist = [];
+		self.project = [];
 		for(var f in self.fields){
 			self.fieldlist.push(f);
 		}
@@ -90,10 +99,9 @@ rootApp.factory("^^=config.name$$", function(req, auth){
 			self.where = {};
 			for(var qi in self.rawquerys){
 				var rq = self.rawquerys[qi];
-				console.log(rq);
 				if(!self.fields[rq.field]){
 					alert(rq.field + "不存在");
-					break;
+					return 1;
 				}
 				if(!rq.field) continue;
 				if(req.op == "exists"){
@@ -120,45 +128,54 @@ rootApp.factory("^^=config.name$$", function(req, auth){
 					self.where[rq.field] = rq.value;
 					continue;
 				}
+				if(self.where[rq.field] == "="){
+					alert("=不能与其他操作符共存: "+rq.field);
+					return 1;
+				}
+				if(!self.where[rq.field]) self.where[rq.field] = {};
 				if(rq.op == ">"){
-					self.where[rq.field] = {$gt:rq.value};
-					continue;
+					self.where[rq.field].$gt = rq.value;
 				}
 				if(rq.op == ">="){
-					self.where[rq.field] = {$gte: rq.value};
-					continue;
+					self.where[rq.field].$gte = rq.value;
 				}
 				if(rq.op == "<"){
-					self.where[rq.field] = {$lt: rq.value};
-					continue;
+					self.where[rq.field].$lt = rq.value;
 				}
 				if(rq.op == "<="){
-					self.where[rq.field] = {$lte: rq.value};
-					continue;
+					self.where[rq.field].$lte = rq.value;
 				}
 				if(rq.op == "!="){
-					self.where[rq.field] = {$ne:rq.value};
-					continue;
+					self.where[rq.field].$ne = rq.value;
 				}
 				if(rq.op == "in"){
-					self.where[rq.field] = {$in:JSON.parse(rq.value)};
-					continue;
+					self.where[rq.field].$in = JSON.parse(rq.value);
 				}
 				if(rq.op == "nin"){
-					self.where[rq.field] = {$ne:JSON.parse(rq.value)};
-					continue;
+					self.where[rq.field].$nin = JSON.parse(rq.value);
 				}
 				if(rq.op == "match"){
-					self.where[rq.field] = {$regex: rq.value};
-					continue;
+					self.where[rq.field].$regex = rq.value;
 				}
 			}
 		}
+		self.savquerys = config.savequerys || [];
+		self.loadSave = function(save){
+			self.rawquerys = save.data;
+		}
+		self.fetchSaveQuerys = function(){
+			req.postBearer("/api/admin_gets_qs", auth.gettoken(), {
+				schema: config.schema
+			}, function(err, data) {
+				self.savequerys = data.data;
+			});
+		}
 		self.refresh = $scope.refresh = function() {
-			self.formatRawQuery();
-			req.post("/api/access/"+ config.schema + "/bcolect", {
+			if(self.formatRawQuery()) return;
+			req.postBearer("/api/access/"+ config.schema + "/bcolect", auth.gettoken(), {
 				where: self.where,
 				options: {
+					$project: self.project,
 					$sort: self.sort,
 					$skip: (self.currPage - 1) * self.perPage,
 					$limit: self.perPage

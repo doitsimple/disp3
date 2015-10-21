@@ -65,6 +65,14 @@
 						}
 					}
 				},
+				"methods": {
+					"$list": {
+						"steps": {
+							"$list": {
+							}
+						}
+					}
+				},
 				"withApis": {
 					"$multi": true,
 					"$type": "string",

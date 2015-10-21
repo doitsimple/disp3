@@ -1,5 +1,5 @@
 var signinUrl = "#/^^=local.signin || 'signin'$$";
-var authUrls = {
+var noauthUrls = {
 	"/": 1,
 	"/signin": 1,
 	"/error": 1
@@ -7,9 +7,10 @@ var authUrls = {
 rootApp.run(function ($rootScope, auth) {
   $rootScope.$on("$routeChangeStart", function (event, next, current) {
     if(next.\$\$route && 
-			 next.\$\$route.originPath && 
-			 !authUrls[next.\$\$route.originPath] && 
+			 next.\$\$route.originalPath && 
+			 !noauthUrls[next.\$\$route.originalPath] && 
 			 !auth.gettoken()){
+			console.log("change")
       event.preventDefault();
       window.location = signinUrl;
     }

@@ -46,9 +46,18 @@ function ^^=api.name$$(req, res){
    ^^}else{$$
 ^^=ctrl.method$$(function(err, ^^=result$$){
    ^^}$$
+   ^^if(ctrl.noreturn){$$
+	if(err) {res.sent = 1;sendErr(res, err);}
+   ^^}else{$$
 	if(err) return sendErr(res, err);
+   ^^}$$
   ^^}else if(ctrl.type == "db"){$$
 ^^makeDbQuery(ctrl)$$
+   ^^if(ctrl.noreturn){$$
+	if(err) {res.sent = 1;sendErr(res, err)};
+   ^^}else{$$
+	if(err) return sendErr(res, err);
+   ^^}$$
   ^^}$$
 
   ^^if(ctrl.check){
@@ -110,7 +119,6 @@ db.getModel("^^=ctrl.schema$$").^^=ctrl.method$$(^^=ctrl.where$$, function(err, 
 $$
 db.getModel("^^=ctrl.schema$$").^^=ctrl.method$$(^^=ctrl.doc$$, function(err, ^^=result$$){
 ^^}$$
-	if(err) return sendErr(res, err);
 ^^}$$
 
 ^^function checkParams(api){$$

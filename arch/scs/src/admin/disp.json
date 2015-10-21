@@ -1,12 +1,55 @@
 {
 	"proto": {
 		"uis": {
-			"signin": {
+			"admin_signin": {
 				"elements": {
+					"sf": {
+						"type": "form",
+						"fields": {
+							"email": {
+								"type": "input",
+								"inputtype": "email"
+							},
+							"password": {
+								"type": "input",
+								"inputtype": "password"
+							},
+							"submit": {
+								"text": "登陆",
+								"type": "button",
+								"style": "success",
+								"onclick": "submit"
+							}
+						}
+					}
+				},
+				"methods": {
+					"submit": {
+						"steps": [{
+							"type": "req",
+							"method": "postBearer",
+							"url": "/api/admin_signin",
+							"data": "sf.data"
+						}]
+					}
 				}
 			}
 		},
 		"schemas": {
+			"adminquery": {
+				"fields": {
+					"adminin": {
+						"type": "ObjectId"
+					}
+				}
+			},
+			"adminstat": {
+				"fields": {
+					"adminin": {
+						"type": "ObjectId"
+					}
+				}
+			},			
 			"admin": {
 				"seed": [
 					{
@@ -49,6 +92,7 @@
 		},
 		"apis": {
 			"access": {
+				"text": "获取数据库信息",
 				"params": {
 					"schema": {
 						"isParams": true,
@@ -71,6 +115,54 @@
 						"send": "result"
 					}
 				]
+			},
+			"export": {
+				"text": "导出表格",
+				"params": {
+					"schema": {
+						"isParams": true,
+						"require": true
+					},
+					"method": {	
+						"isParams": true,
+						"require": true
+					},
+					"where": {
+					},
+					"options": {
+					}
+				}
+			},
+			"admin_save_querys": {
+				"params": {
+					"schema": {						
+					},
+					"data": {
+					},
+					"_id": {
+					}
+				},
+				"controllers": [
+					{
+						
+					}
+				]
+			},
+			"admin_get_querys": {
+				"params": {
+					"schema": {
+					}
+				},
+				"controllers": [
+					{
+						"type": "db",
+						"schema": "admin",
+						"method": "bselect",
+						"where": "{adminid: req.user._id, schema: schema}",
+						"send": "{data: result}"
+					}
+				],
+				"midwares": ["auth"]
 			},
 			"admin_signin": {
 				"text": "管理员登陆",
@@ -119,7 +211,9 @@
 		"databases":{
 			"main": {
 				"withSchemas": [
-					"admin"
+					"admin",
+					"adminstat",
+					"adminquery"
 				]
 			}
 		}
