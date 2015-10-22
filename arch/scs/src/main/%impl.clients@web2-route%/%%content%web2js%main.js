@@ -7,6 +7,7 @@ for(var i in withUis){
 	if(i == "from") continue;
 	var name1 = withUis[i];
   var ui = global.proto.uis[name1];
+	if(ui.type == 'plugin') continue;
  var route;
  if(ui.isHome)
   route = "";
@@ -27,13 +28,13 @@ $$
 				controller: '^^=methods.dash2uc(controller)$$Controller'
 			}).
   ^^}$$
+^^}$$
   ^^if(!hasError){$$
 			when('/error', {
 				templateUrl: 'partial/404.html',
 				controller: 'error'
 			}).
   ^^}$$
-^^}$$
 			otherwise({
         redirectTo: '/error'
       });
@@ -46,8 +47,9 @@ for(var i in withUis){
 	if(i == "from") continue;
   var name1 = withUis[i];
   var ui = global.proto.uis[name1];
+	if(ui.type == 'plugin') continue;
 $$
-rootApp.controller("^^=methods.dash2uc(ui.name)$$Controller", function($scope, $rootScope, $routeParams, $sce, auth, req, ui){
+rootApp.controller("^^=methods.dash2uc(ui.name)$$Controller", function($scope, $rootScope, $routeParams, $sce, auth, req, ui, $uibModal){
 ^^=local[ui.name]$$
 ^^
  for(var key in ui.elements){

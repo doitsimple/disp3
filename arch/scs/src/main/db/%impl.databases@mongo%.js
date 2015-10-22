@@ -76,7 +76,12 @@ function getModel(cname){
 	model.upsert2 = function(criteria, updateParam, fn){
 		origin.updateOne(criteria, updateParam, {upsert:true}, function(err, result){
 			var rtn;
-			if(result) rtn = result.result;
+			if(result && result.result){
+				rtn = {};
+				if(result.result.upserted && result.result.upserted.length)
+					rtn.insertedId = result.result.upserted[0]._id;
+				rtn.n = result.result.n;
+			}
 			else rtn = {n: 0};
 			if(fn) fn(err, rtn);
 		});

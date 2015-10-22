@@ -19,10 +19,12 @@ var checkpoints = require("./checkpoints");
 ^^=config$$
 ^^=method$$
 var app = express();
+
 app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(bodyParser.json());
+
 ^^=use$$
 ^^for(var key in statics){$$
 app.use("^^=key$$", express.static(__dirname + '/^^=statics[key]$$'));

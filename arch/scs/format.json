@@ -61,14 +61,10 @@
 						},
 						"fields": {
 							"$list": {
-							}
-						}
-					}
-				},
-				"methods": {
-					"$list": {
-						"steps": {
-							"$list": {
+								"type": "display",
+								"elements": {
+									"$list": {}
+								}
 							}
 						}
 					}

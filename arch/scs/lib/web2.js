@@ -1,8 +1,32 @@
+^^local.panel = function(config){$$
+
+^^}$$
 ^^local.form = function(config){$$
 $scope["^^=config.name$$"] = {data:{}};
- ^^for(var mname in config.methods){var method = config.methods[mname];$$
-  ^^$$
+^^}$$
+^^local.method = function(config){$$
+$scope["^^=config.name$$"] = function(){
+ ^^for(var sname in config.fields){var step = config.fields[sname];$$
+   ^^var stepdata = step.data?"$scope."+step.data:"undefined";$$
+   ^^if(step.type == "req"){$$
+    ^^if(step.method == "postBearer"){$$
+	req.^^=step.method$$("^^=step.url$$", auth.gettoken(), ^^=stepdata$$ || {}, function(err, result){
+    ^^}else{$$
+	req.^^=step.method$$("^^=step.url$$", ^^=stepdata$$, function(err, result){
+    ^^}$$
+			
+   ^^}$$
+	if(err) return;
+   ^^if(step.do){$$
+		^^=step.do$$;
+   ^^}$$
  ^^}$$
+ ^^for(var sname in config.fields){var step = config.fields[sname];$$
+   ^^if(step.type == "req"){$$
+	})
+   ^^}$$
+ ^^}$$
+}
 ^^}$$
 
 ^^ 
@@ -22,17 +46,19 @@ local.table = function(config) {
 		schema: "^^=config.withSchema$$",
 		fields: ^^=JSON.stringify(config.fields)$$
 	});
-//	$scope["^^=config.name$$"].fetchSaveQuerys();
+	$scope["^^=config.name$$"].fetchSaveQuerys();
 	$scope["^^=config.name$$"].refresh();
 
 ^^
 }
 $$
 ^^local.loadFactory = function(config){$$
+
 rootApp.factory("^^=config.name$$", function(req, auth){
 	var methods = {};
 	methods.displayTable = function($scope, config) {
 		this.$scope = $scope;
+		this.showsave = false;
 		this.data = [];
 		this.rawquerys = [];
 		this.currPage = 1;
@@ -104,12 +130,12 @@ rootApp.factory("^^=config.name$$", function(req, auth){
 					return 1;
 				}
 				if(!rq.field) continue;
-				if(req.op == "exists"){
-					self.where[rq.field] = {exists: true};
+				if(rq.op == "exists"){
+					self.where[rq.field] = {$exists: true};
 					continue;
 				}
-				if(req.op == "notexists"){
-					self.where[rq.field] = {exists: false};
+				if(rq.op == "notexists"){
+					self.where[rq.field] = {$exists: false};
 					continue;
 				}					
 				if(!rq.hasOwnProperty("value")) continue;
@@ -151,7 +177,7 @@ rootApp.factory("^^=config.name$$", function(req, auth){
 				if(rq.op == "in"){
 					self.where[rq.field].$in = JSON.parse(rq.value);
 				}
-				if(rq.op == "nin"){
+				if(rq.op == "notin"){
 					self.where[rq.field].$nin = JSON.parse(rq.value);
 				}
 				if(rq.op == "match"){
@@ -159,12 +185,39 @@ rootApp.factory("^^=config.name$$", function(req, auth){
 				}
 			}
 		}
-		self.savquerys = config.savequerys || [];
+
 		self.loadSave = function(save){
-			self.rawquerys = save.data;
+			self.rawquerys = save.rawquerys || [];
+			self.sort = save.sort || {};
+			self.savename = save.name;
+			self.refresh();
+		}
+		self.savePopover = 'save.html';
+		self.savequerys = [];
+		self.saveQuery = function(){			
+			if(!self.savename){
+				alert("请输入标识");
+				return;
+			}
+			req.postBearer("/api/admin_save_query", auth.gettoken(), {
+				schema: config.schema,
+				data: {
+					name: self.savename,
+					rawquerys: self.rawquerys,
+					sort: self.sort
+				}
+			}, function(err, data) {
+				if(data.insertedId){
+					self.savequerys.push({
+						name: self.savename,
+						rawquerys: self.rawquerys,
+						sort: self.sort
+					});
+				}
+			});
 		}
 		self.fetchSaveQuerys = function(){
-			req.postBearer("/api/admin_gets_qs", auth.gettoken(), {
+			req.postBearer("/api/admin_get_querys", auth.gettoken(), {
 				schema: config.schema
 			}, function(err, data) {
 				self.savequerys = data.data;

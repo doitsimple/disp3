@@ -1,15 +1,14 @@
 var log =require("../lib/log");
+var libDate = require("../lib/date");
+log.setOutfile("log/"+libDate.getDate(new Date()) + "-^^=name$$.log");
+process.on('uncaughtException', function(err) {
+  log.e(err.stack);
+});
 var app= require("./app");
 var ^^=protocol$$ = require('^^=protocol$$');
 var db = require("../db");
 var sync =require("../lib/sync");
 var fs = require("fs");
-var libDate = require("../lib/date");
-log.setOutfile("log/"+libDate.getDate(new Date()) + "-^^=name$$.log");
-process.on('uncaughtException', function(err) {
-  //log the error
-  log.e(err.stack);
-});
 var server = ^^=protocol$$.createServer(app);
 app.close = function(){
 	server.close();

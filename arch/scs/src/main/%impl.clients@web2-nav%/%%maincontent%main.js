@@ -1,10 +1,9 @@
 
 rootApp.controller("navbar", function($scope, $rootScope, req, auth){
 	if(!$rootScope.user) $rootScope.user = auth.getuser();
-	console.log($rootScope.user);
   $rootScope.$watchCollection("user", function(){
     if($rootScope.user){
-      $scope.welcome = "欢迎，" + $rootScope.user.username;
+      $scope.welcome = "欢迎，" + $rootScope.user.email;
     }else{
       $scope.welcome = "欢迎";
     }

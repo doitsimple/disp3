@@ -27,13 +27,18 @@ rootApp.factory('auth', function($http, $cookieStore, $rootScope){
       try{
         str = $cookieStore.get(p+idstr);
       }catch(e){
-        return null;
+        return undefined;
+      }
+      try{
+				str = JSON.parse(str);
+      }catch(e){
+        return str;
       }
       return str;
     };
     methods["set" + p] = function(str){
 			if(!str) str = "";
-      $cookieStore.put(p+idstr, str.toString());
+      $cookieStore.put(p+idstr, JSON.stringify(str));
     };
   });
   methods.get = function(){

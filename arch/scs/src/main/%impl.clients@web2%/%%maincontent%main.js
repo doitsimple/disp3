@@ -1,5 +1,8 @@
 var rootApp = angular.module('rootApp', ^^=JSON.stringify(local.angularDeps) || '[]'$$);
-
+rootApp.run(function($templateCache) {
+  $templateCache.put('form.html', '<div class="tooltip">{{content}}</div>');
+});
+/*
 rootApp.directive('autocomplete', function($parse) {
   return {
     require: 'ngModel',
@@ -46,6 +49,7 @@ rootApp.directive('contenteditable', function() {
     }
   };
 });
+*/
 rootApp.directive('video', function() {
   return {
     restrict: 'E',
@@ -77,11 +81,27 @@ rootApp.factory('req', function($http){
 	var ajax;
 	methods.ajax = ajax = function (config, fn){
 		$http(config).then(function(result){
-			fn(null, result.data, {
-				statusCode: result.status,
-				headers: result.headers()
-			});
+			if(typeof result.data == "object" && result.data.error){
+				alert(result.data.error);
+				fn("返回结果有error", result.data, {
+          statusCode: result.status,
+          headers: result.headers()
+        });
+			}else{
+				fn(null, result.data, {
+					statusCode: result.status,
+					headers: result.headers()
+				});
+			}
 		}, function(result){
+			if(result.status == 401){
+				alert("请去登录");
+				fn("没登录或登录过期", result.data, {
+					statusCode: result.status,
+					headers: result.headers()
+				});
+				return;
+			}
 			fn(config.method +" " + config.url + " FAILED", result.data, {
 				statusCode: result.status,
         headers: result.headers()

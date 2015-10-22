@@ -1,30 +1,46 @@
-^^local.form = function(config){$$
-<form role="form">
+^^local.panel = function(config){$$
+
+^^}$$
+
+^^local.form = function(config){
+ if(!config.hasOwnProperty('prefix'))
+  config.prefix = config.name + ".data.";
+ 
+$$
+^^if(config.tpl){$$
+<script type="text/ng-template" id="^^=config.tpl$$">
+^^}$$
+<div class="row" style="padding:10px;">
+<form role="form" style="padding:15px;max-width:400px;">
   <fieldset>
 ^^for(var fname in config.fields){var f=config.fields[fname];$$
  ^^if(f.type == "input"){$$
     <div class="form-group">
-      <input class="form-control" id="email" type="email" ng-model="^^=config.name$$.data.email" autofocus>
+      <input style="min-width:100px" class="form-control" type="^^=f.inputtype || 'text'$$" ng-model="^^=config.prefix$$^^=f.name$$" placeholder="^^=f.text || f.name$$">
     </div>
- ^^}else if(f.type == "button"){if(!f.stype) f.style = "default";$$
-    <a class="btn btn-lg btn-^^=f.style$$ btn-block" ng-click="^^=f.click$$()">^^=f.text$$</a>
+ ^^}else if(f.type == "button"){if(!f.style) f.style = "default";$$
+    <button class="btn btn-md btn-^^=f.style$$" ng-click="^^=f.click$$()">^^=f.text$$</button>
  ^^}$$
 ^^}$$
   </fieldset>
 </form>
+</div>
+^^if(config.tpl){$$
+</script>
+^^}$$
 ^^}$$
 ^^local.makequery = function(config){$$
 	<div class="row">
 		<div class="col-sm-8">
 			<div class="btn-group" role="group">
-				<a ng-repeat="save in ^^=config.name$$.savequerys" class="btn btn-default" ng-click="^^=config.name$$.loadSave(save)">{{save.title}}</a>
+				<a class="btn btn-default" ng-click="^^=config.name$$.loadSave({})">all</a>
+				<a ng-repeat="save in ^^=config.name$$.savequerys" class="btn btn-default" ng-click="^^=config.name$$.loadSave(save)">{{save.name}}</a>
 			</div>
 		</div>
 		<div class="col-sm-4 text-right">
 			<div class="btn-group" role="group">
-				<a class="btn btn-default" ng-tooltip="搜索" ng-click="showquery=!showquery"><i class="fa fa-search"></i></a>
-				<a class="btn btn-default" ng-click="showstat=!showstat"><i class="fa fa-calculator"></i></a>
-				<a class="btn btn-default" ng-click="showsave=!showsave"><i class="fa fa-save"></i></a>
+				<a class="btn btn-default" uib-tooltip="搜索" ng-click="showquery=!showquery"><i class="fa fa-search"></i></a>
+				<a class="btn btn-default" uib-tooltip="统计（TODO）" ng-click="showstat=!showstat"><i class="fa fa-calculator"></i></a>
 			</div>
 		</div>
 		<div class="col-sm-6" ng-show="showsave" style="padding: 10px;border:1px;">
@@ -33,35 +49,26 @@
 				<a class="form-control btn btn-default" ng-click="^^=config.name$$.save(savename)"></a>
 			</div>
 		</div>
-		<div class="col-sm-6" ng-show="showquery" style="padding: 10px;border: 1px;">
-			<div class="btn-group" role="group">			
-			<a type="button" class="btn btn-default"><i class="fa fa-plus">user</i></a>
-			<a type="button" class="btn btn-default" ng-click="^^=config.name$$.addRawQuery()"><i class="fa fa-plus"></i></a>
-			<a type="button" class="btn btn-default" ng-click="^^=config.name$$.rawquerys = []">Clear</a>
-			<a type="button" class="btn btn-default" ng-click="^^=config.name$$.refresh()">Go</a>
+		<div class="col-sm-6 borderbox" ng-show="showquery" style="padding: 10px;">
+			<div class="btn-group" role="group">
+			<a class="btn btn-default"><i class="fa fa-plus">user</i></a>
+			<a class="btn btn-default" ng-click="^^=config.name$$.addRawQuery()"><i class="fa fa-plus"></i></a>
+			<a class="btn btn-default" ng-click="^^=config.name$$.rawquerys = []">Clear</a>
+			<a class="btn btn-default" ng-click="^^=config.name$$.refresh()">Go</a>
+			<a class="btn btn-default" ng-click="^^=config.name$$.saveQuery()"><i class="fa fa-save"></i></a>
+			<input class="form-control" ng-model="^^=config.name$$.savename" placeholder="标识">
 			</div>
-			<div class="form-group">
-				<div class="input-group" style="padding: 5px 10px;" ng-repeat="rawquery in ^^=config.name$$.rawquerys track by $index">
+			<form class="form-inline">
+				<div class="form-group" style="padding:10px" ng-repeat="rawquery in ^^=config.name$$.rawquerys track by $index">
 					<select class="form-control" ng-model="rawquery.field" ng-options="key for key in ^^=config.name$$.fieldlist"></select>
-					<div class="input-group-addon" contenteditable ng-model="rawquery.op" autocomplete="^^=config.name$$.oplist"></div>	
+					<select class="form-control" style="width:auto" ng-model="rawquery.op" ng-options="key for key in ^^=config.name$$.oplist"></select>
 					<input type="text" class="form-control" placeholder="value" ng-model="rawquery.value">
-					<div class="input-group-addon" ng-click="^^=config.name$$.rawquerys.splice($index, 1)"><i class="fa fa-minus"></i></div>
+					<a class="btn btn-default" ng-click="^^=config.name$$.rawquerys.splice($index, 1)"><i class="fa fa-minus"></i></a>
 				</div>
-			</div>
+			</form>
 		</div>
 		<div class="col-sm-6 borderbox" ng-show="showstat">
-			<div class="btn-group">
-			<button type="button" class="btn btn-default">添加用户字段</button>
-			<button type="button" class="btn btn-default" ng-click="^^=config.name$$.addRawQuery()">添加字段</button>
-			<button type="button" class="btn btn-default" ng-click="^^=config.name$$.refresh()">Go</button>
-			</div>
-			<div class="form-group" ng-repeat="rawquery in ^^=config.name$$.rawquerys">
-				<div class="input-group" style="padding: 5px 10px;">
-					<select class="form-control" ng-model="rawquery.field" ng-options="key for key in ^^=config.name$$.fieldlist"></select>
-					<div class="input-group-addon" contenteditable ng-model="rawquery.op" autocomplete="^^=config.name$$.oplist"></div>	
-					<input type="text" class="form-control" placeholder="value" ng-model="rawquery.value">
-				</div>
-			</div>
+			TODO
 		</div>
 	</div>
 ^^}$$
@@ -117,9 +124,13 @@ $$
   <div class="col-sm-12" style="overflow-x:auto;">
   <table class="table table-striped table-bordered" style="vertical-align:middle;"><thead>
  ^^for(var name in config.fields){var col = config.fields[name];$$
- ^^if(!col.hidden){$$
+  ^^if(col.hidden){continue;}$$
+  ^^if(col.type == 'func'){$$
+  <th>^^=col.text || ""$$</th>
+  ^^}else{$$
   <th><a style="padding: 0 5px;" ng-click="^^=config.name$$.changeSort('^^=name$$')"><i class="fa" ng-class="{'fa-sort-asc':^^=config.name$$.sort.^^=name$$ === 1,'fa-sort-desc': ^^=config.name$$.sort.^^=name$$ === -1,'fa-sort':!^^=config.name$$.sort.^^=name$$}"></i></a>^^=col.text||name$$<br/>^^=name$$</th>
- ^^}}$$
+  ^^}$$
+ ^^}$$
  ^^if(config.opt){$$
   <th>opt</th>
   ^^}$$
@@ -129,6 +140,23 @@ $$
  ^^for(var name in config.fields){var col = config.fields[name];$$
  ^^if(!col.hidden){$$
  	<td>
+  ^^if(col.type == 'func'){$$
+	 ^^if(col.elements) for(var subname in col.elements){var sube = col.elements[subname];$$
+    ^^if(sube.type == "button"){$$
+     ^^
+     var clickstr = "";
+     if(sube.click){
+      clickstr = 'ng-click="' + sube.click + '"';
+     }
+     var hrefstr = "";
+     if(sube.href){
+      hrefstr = 'ng-href="' + sube.href + '"';
+     }
+     $$
+  		<a class="btn btn-xs btn-primary" ^^=clickstr$$ ^^=hrefstr$$>^^=sube.text || sube.name$$</a>
+    ^^}$$
+   ^^}$$
+  ^^}else{$$
   ^^if(col.ondemand){$$
 	<span class="glyphicon glyphicon-option-horizontal" ng-click="^^=config.name$$.showrow^^=name$$=true" ng-hide="^^=config.name$$.showrow^^=name$$"></span>
 	<div ng-click="^^=config.name$$.showrow^^=name$$=false" ng-show="^^=config.name$$.showrow^^=name$$">^^bytype(col.type)$$</div>
@@ -139,7 +167,7 @@ $$
   ^^}else{
 		bytype(col.type)
   }$$</td>
- ^^}}$$
+ ^^}}}$$
  ^^if(config.opt){$$
  <td>
     ^^if(config.opt.update){$$
@@ -185,7 +213,6 @@ $$
   <li ng-class="{active: p===^^=config.name$$.currPage}" ng-repeat="p in ^^=config.name$$.adj()"><a style="cursor:pointer;" ng-click="^^=config.name$$.gotoPage(p)">{{p}}</a></li>
   <li><a ng-click="^^=config.name$$.gotoLast()" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
 </ul>
-</div
  ^^}$$
 
 ^^}$$
