@@ -47,14 +47,14 @@ function ^^=api.name$$(req, res){
 ^^=ctrl.method$$(function(err, ^^=result$$){
    ^^}$$
    ^^if(ctrl.noreturn){$$
-	if(err) {res.sent = 1;sendErr(res, err);}
+	if(err) {sendErr(res, err);res.sent = 1;}
    ^^}else{$$
 	if(err) return sendErr(res, err);
    ^^}$$
   ^^}else if(ctrl.type == "db"){$$
 ^^makeDbQuery(ctrl)$$
    ^^if(ctrl.noreturn){$$
-	if(err) {res.sent = 1;sendErr(res, err)};
+	if(err) {sendErr(res, err); res.sent = 1;};
    ^^}else{$$
 	if(err) return sendErr(res, err);
    ^^}$$
