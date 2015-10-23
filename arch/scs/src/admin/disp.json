@@ -30,7 +30,7 @@
 								"type": "req",
 								"method": "post",
 								"url": "/api/admin_signin",
-								"data": "sf.data",
+								"data": "$scope.sf.data",
 								"do": "auth.settoken(result.token);"
 							},
 							{

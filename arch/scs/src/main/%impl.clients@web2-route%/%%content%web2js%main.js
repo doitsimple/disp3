@@ -49,7 +49,8 @@ for(var i in withUis){
   var ui = global.proto.uis[name1];
 	if(ui.type == 'plugin') continue;
 $$
-rootApp.controller("^^=methods.dash2uc(ui.name)$$Controller", function($scope, $rootScope, $routeParams, $sce, auth, req, ui, $uibModal){
+rootApp.controller("^^=methods.dash2uc(ui.name)$$Controller", function($scope, $rootScope, $routeParams, auth, req, ui){
+	$scope.ui = ui;
 ^^=local[ui.name]$$
 ^^
  for(var key in ui.elements){

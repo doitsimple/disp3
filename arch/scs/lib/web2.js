@@ -1,20 +1,52 @@
-^^local.panel = function(config){$$
+^^local.panel = function(config){
+if(config.withSchema){
+	if (config.withSchema) {
+		if(Object.keys(config.fields).length){
+			for(var f in config.fields){
+				$.append(config.fields[f], global.proto.schemas[config.withSchema].fields[f]);
+			}
+		}else{
+			$.append(config.fields, global.proto.schemas[config.withSchema].fields);
+		}
+	}
+}
+$$
 
+$scope["^^=config.name$$"] = {};
+if(!$scope.schemas) $scope.schemas = {};
+$scope["^^=config.name$$"].refresh = function(force){
+	if(!force && $scope.schemas["^^=config.withSchema$$"]) return;
+	$scope.schemas["^^=config.withSchema$$"] = {};
+^^var method;if(config.islist){method = "bselect";}else{method="select";}$$
+	req.postBearer("/api/access/^^=config.withSchema$$/^^=method$$", auth.gettoken(), {
+		where: ^^=config.where$$,
+		options: {}
+	}, function(err, data) {
+		$scope.schemas["^^=config.withSchema$$"] = data;
+	});
+}
+$scope["^^=config.name$$"].refresh();
+ ^^for(var sname in config.fields){var step = config.fields[sname];$$  
+ ^^}$$
 ^^}$$
 ^^local.form = function(config){$$
 $scope["^^=config.name$$"] = {data:{}};
 ^^}$$
-^^local.method = function(config){$$
-$scope["^^=config.name$$"] = function(){
+^^local.method = function(config){config.params = config.params || "";$$
+$scope["^^=config.name$$"] = function(^^=config.params$$){
  ^^for(var sname in config.fields){var step = config.fields[sname];$$
-   ^^var stepdata = step.data?"$scope."+step.data:"undefined";$$
+   ^^var stepdata = step.data?step.data:"undefined";$$
+   ^^if(step.pre){$$
+		^^=step.pre$$;
+   ^^}$$
    ^^if(step.type == "req"){$$
     ^^if(step.method == "postBearer"){$$
 	req.^^=step.method$$("^^=step.url$$", auth.gettoken(), ^^=stepdata$$ || {}, function(err, result){
     ^^}else{$$
 	req.^^=step.method$$("^^=step.url$$", ^^=stepdata$$, function(err, result){
-    ^^}$$
-			
+    ^^}$$			
+   ^^}else{$$
+		var err=null;
    ^^}$$
 	if(err) return;
    ^^if(step.do){$$
@@ -27,6 +59,11 @@ $scope["^^=config.name$$"] = function(){
    ^^}$$
  ^^}$$
 }
+^^if(config.runonload){$$
+$scope["^^=config.name$$"]();
+^^}$$
+
+
 ^^}$$
 
 ^^ 
@@ -41,7 +78,6 @@ local.table = function(config) {
 		}
 	}
 	$$
-
 	$scope["^^=config.name$$"] = new ui.displayTable($scope, {
 		schema: "^^=config.withSchema$$",
 		fields: ^^=JSON.stringify(config.fields)$$
@@ -53,9 +89,30 @@ local.table = function(config) {
 }
 $$
 ^^local.loadFactory = function(config){$$
-
-rootApp.factory("^^=config.name$$", function(req, auth){
+rootApp.run(function($templateCache) {
+  $templateCache.put('image.html', '<img class="img-thumbnail" ng-src="{{imgurl}}" ng-click="cancel()">');
+});
+rootApp.controller('ImageModalController', function($scope, $modalInstance, imgurl) {
+  $scope.imgurl = imgurl;
+  $scope.cancel = function(){
+    $modalInstance.dismiss('cancel');
+  };
+});
+rootApp.factory("^^=config.name$$", function(req, auth, $uibModal){
 	var methods = {};
+	methods.openImageModal = function(imgurl){
+		console.log(imgurl);
+		$uibModal.open({
+      templateUrl: 'image.html',
+      controller: 'ImageModalController',
+      size: 'lg',
+			resolve: {
+        imgurl: function () {
+          return imgurl;
+        }
+			}
+		});
+	}
 	methods.displayTable = function($scope, config) {
 		this.$scope = $scope;
 		this.showsave = false;
@@ -113,9 +170,10 @@ rootApp.factory("^^=config.name$$", function(req, auth){
 		}
 		self.fields = config.fields;
 		self.fieldlist = [];
-		self.project = [];
+		self.project = {};
 		for(var f in self.fields){
 			self.fieldlist.push(f);
+			self.project[f] = 1;
 		}
 		self.oplist = ["=",">","<",">=","<=","!=","in","notin","match","exists","notexists"];
 		self.addRawQuery =function(){

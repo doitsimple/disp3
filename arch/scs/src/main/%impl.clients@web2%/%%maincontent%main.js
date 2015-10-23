@@ -50,10 +50,35 @@ rootApp.directive('contenteditable', function() {
   };
 });
 */
+rootApp.filter('trustUrl', function ($sce) {
+    return function(url) {
+      return $sce.trustAsResourceUrl(url);
+    };
+});
+rootApp.filter('bykey', function ($sce) {
+    return function(arr, key, value) {
+			var narr = [];
+			for(var i in arr){
+				if(arr[i][key].toString() == value.toString())
+					narr.push(arr[i]);
+			}
+			return narr;
+    };
+});
+rootApp.filter('money', function ($sce) {
+    return function(m) {
+			return m/100;
+    };
+});
+rootApp.config(function($sceDelegateProvider) {
+ $sceDelegateProvider.resourceUrlWhitelist([
+   // Allow same origin resource loads.
+   'self']);
+ })
 rootApp.directive('video', function() {
   return {
     restrict: 'E',
-    link: function(scope, element) {
+    link: function(scope, element, attrs) {
       scope.$on('$destroy', function() {
         element.prop('src', '');
       });

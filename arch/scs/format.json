@@ -61,10 +61,16 @@
 						},
 						"fields": {
 							"$list": {
-								"type": "display",
 								"elements": {
 									"$list": {}
 								}
+							}
+						},
+						"addons": {
+							"$list": {
+								"elements": {
+                  "$list": {}
+                }
 							}
 						}
 					}

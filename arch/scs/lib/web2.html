@@ -1,11 +1,117 @@
-^^local.panel = function(config){$$
+ ^^function bytype(f, model){var type = f.type;$$
+	^^if(type == "date"){$$
+ 			{{^^=model$$ | stddate}}
+	^^}else if(type == "datetime"){$$
+ 			{{^^=model$$ | date:'yyyy/MM/dd HH:mm'}}
+  ^^}else if(type == "image"){$$
+<img ng-show="^^=model$$ != '' &amp;&amp; ^^=model$$ != undefined" class="img-thumbnail" ng-src="/^^=f.path$$/{{^^=model$$}}" ng-click="ui.openImageModal('/^^=f.path$$/'+^^=model$$)">
+  ^^}else if(type == "video"){$$
+<div ng-show="^^=model$$ == '' || ^^=model$$ == undefined" class="ng-hide">没有视频</div>
+<video controls ng-show="^^=model$$ != '' &amp;&amp; ^^=model$$ != undefined" class="img-thumbnail" ng-src="{{'/^^=f.path$$/'+^^=model$$}}"></video>
+<p><a class="btn btn-default" ng-href="/^^=f.path$$/{{^^=model$$}}">下载视频</a></p>
+  ^^}else{$$
+    ^^if(f.money){$$
+			{{^^=model$$ | money}}
+    ^^}else{$$
+			{{^^=model$$}}
+    ^^}$$
+  ^^}$$
+ ^^}$$
+^^local.loadraw = function(addons){$$
+ ^^for(var addname in addons){
+  var addon = addons[addname];
+  if(!addon.attrs) addon.attrs = {};
+  if(!addon.text) addon.text = "";
+  var attrstr = "";
+  for(var attr in addon.attrs)
+   attrstr += " "+attr+'="'+ addon.attrs[attr]+ '"';
+ $$
+<^^=addon.tag$$ ^^=attrstr$$ >^^=addon.text$$</^^=addon.tag$$>
+ ^^}$$
+^^}$$
+^^local.item = function(config, prefix){$$
+  ^^for(var sname in config.fields){
+   var f = config.fields[sname];
+   if(f.hidden) continue;
+   if(f.type == "func") continue;
+  $$
+	<div class="col-sm-^^=12/config.perline$$" uib-tooltip="^^=f.text || f.name$$">
+		^^bytype(f, prefix+f.name)$$
+	</div>
+  ^^}$$
+^^}$$
 
+^^local.makefunc = function(col, size){$$
+	 ^^if(col.elements) for(var subname in col.elements){var sube = col.elements[subname];$$
+    ^^if(sube.type == "button"){$$
+     ^^
+     var clickstr = "";
+     if(sube.click){
+      clickstr = 'ng-click="' + sube.click + '"';
+     }
+     var hrefstr = "";
+     if(sube.href){
+      hrefstr = 'ng-href="' + sube.href + '"';
+     }
+     $$
+  		<a class="btn btn-^^=size$$ btn-primary" ^^=clickstr$$ ^^=hrefstr$$>^^=sube.text || sube.name$$</a>
+    ^^}else if(sube.type == "input"){
+			var modelstr = "";
+			if(sube.model){
+				modelstr = 'ng-model="' + sube.model + '"';
+			}
+    $$
+			<input class="form-control" placeholder="^^=sube.text || ''$$" ^^=modelstr$$>
+    ^^}$$
+   ^^}$$
+^^}$$
+
+^^local.panel = function(config){
+if(!config.perline) config.perline = 3;
+if(!config.width) config.width = 12;
+	if (config.withSchema) {
+		if(Object.keys(config.fields).length){
+			for(var f in config.fields){
+				$.append(config.fields[f], global.proto.schemas[config.withSchema].fields[f]);
+			}
+		}else{
+			$.append(config.fields, global.proto.schemas[config.withSchema].fields);
+		}
+	}
+$$
+<div class="panel panel-primary">
+<div class="panel-heading">^^=config.text || config.name$$</div>
+<div class="panel-body">
+	<div class="col-sm-^^=config.width$$">
+		<div class="row">
+ ^^if(!config.islist){
+  local.item(config, "schemas."+config.withSchema+".")
+ }else{$$
+ 			<div class="row" ng-repeat="item in schemas.^^=config.withSchema$$">
+  ^^local.item(config, "item.");$$
+			</div>
+ ^^}$$
+		</div>
+		<div class="row text-center" style="padding:10px">
+  ^^for(var sname in config.fields){
+   var f = config.fields[sname];
+   if(f.hidden) continue;
+   if(f.type != "func") continue;
+  $$
+	 ^^local.makefunc(f, 'md');$$
+  ^^}$$	 
+		</div>
+	</div>
+	<div class="col-sm-^^=12-config.width$$">
+		^^local.loadraw(config.addons);$$	
+	</div>
+</div>
+</div>
 ^^}$$
 
 ^^local.form = function(config){
  if(!config.hasOwnProperty('prefix'))
   config.prefix = config.name + ".data.";
- 
 $$
 ^^if(config.tpl){$$
 <script type="text/ng-template" id="^^=config.tpl$$">
@@ -39,6 +145,7 @@ $$
 		</div>
 		<div class="col-sm-4 text-right">
 			<div class="btn-group" role="group">
+				<a class="btn btn-default" uib-tooltip="刷新" ng-click="^^=config.name$$.refresh()"><i class="fa fa-refresh"></i></a>
 				<a class="btn btn-default" uib-tooltip="搜索" ng-click="showquery=!showquery"><i class="fa fa-search"></i></a>
 				<a class="btn btn-default" uib-tooltip="统计（TODO）" ng-click="showstat=!showstat"><i class="fa fa-calculator"></i></a>
 			</div>
@@ -74,7 +181,6 @@ $$
 ^^}$$
 ^^local.table = function(config){$$
 ^^
-if(config.withSchema){
 	if (config.withSchema) {
 		if(Object.keys(config.fields).length){
 			for(var f in config.fields){
@@ -84,7 +190,6 @@ if(config.withSchema){
 			$.append(config.fields, global.proto.schemas[config.withSchema].fields);
 		}
 	}
-}
 $$
 <div class="panel panel-primary">
 <div class="panel-heading">^^=config.text || config.name$$</div>
@@ -125,7 +230,7 @@ $$
   <table class="table table-striped table-bordered" style="vertical-align:middle;"><thead>
  ^^for(var name in config.fields){var col = config.fields[name];$$
   ^^if(col.hidden){continue;}$$
-  ^^if(col.type == 'func'){$$
+  ^^if(col.type == "func"){$$
   <th>^^=col.text || ""$$</th>
   ^^}else{$$
   <th><a style="padding: 0 5px;" ng-click="^^=config.name$$.changeSort('^^=name$$')"><i class="fa" ng-class="{'fa-sort-asc':^^=config.name$$.sort.^^=name$$ === 1,'fa-sort-desc': ^^=config.name$$.sort.^^=name$$ === -1,'fa-sort':!^^=config.name$$.sort.^^=name$$}"></i></a>^^=col.text||name$$<br/>^^=name$$</th>
@@ -141,31 +246,17 @@ $$
  ^^if(!col.hidden){$$
  	<td>
   ^^if(col.type == 'func'){$$
-	 ^^if(col.elements) for(var subname in col.elements){var sube = col.elements[subname];$$
-    ^^if(sube.type == "button"){$$
-     ^^
-     var clickstr = "";
-     if(sube.click){
-      clickstr = 'ng-click="' + sube.click + '"';
-     }
-     var hrefstr = "";
-     if(sube.href){
-      hrefstr = 'ng-href="' + sube.href + '"';
-     }
-     $$
-  		<a class="btn btn-xs btn-primary" ^^=clickstr$$ ^^=hrefstr$$>^^=sube.text || sube.name$$</a>
-    ^^}$$
-   ^^}$$
+	 ^^local.makefunc(col, "xs");$$
   ^^}else{$$
   ^^if(col.ondemand){$$
 	<span class="glyphicon glyphicon-option-horizontal" ng-click="^^=config.name$$.showrow^^=name$$=true" ng-hide="^^=config.name$$.showrow^^=name$$"></span>
-	<div ng-click="^^=config.name$$.showrow^^=name$$=false" ng-show="^^=config.name$$.showrow^^=name$$">^^bytype(col.type)$$</div>
+	<div ng-click="^^=config.name$$.showrow^^=name$$=false" ng-show="^^=config.name$$.showrow^^=name$$">^^bytype(col, "row."+name)$$</div>
   ^^}else if(col.href){$$
-  <a ng-href="^^=col.href$${{row.^^=name$$}}">^^bytype(col.type)$$</a>
+  <a ng-href="^^=col.href$${{row.^^=name$$}}">^^bytype(col, "row."+name)$$</a>
   ^^}else if(col.showuser){$$
-  <a data-toggle="popover" class='showuser' data-container="body" data-placement="right" data-content="..." userid="{{row.^^=col.showuser$$}}">^^bytype(col.type)$$</a>
+  <a data-toggle="popover" class='showuser' data-container="body" data-placement="right" data-content="..." userid="{{row.^^=col.showuser$$}}">^^bytype(col, "row."+name)$$</a>
   ^^}else{
-		bytype(col.type)
+		bytype(col, "row."+name)
   }$$</td>
  ^^}}}$$
  ^^if(config.opt){$$
@@ -196,16 +287,6 @@ $$
 </div>
 </div>
 
-
- ^^function bytype(type){$$
-	^^if(type == "date"){$$
- 			{{row.^^=name$$ | stddate}}
-	^^}else if(type == "datetime"){$$
- 			{{row.^^=name$$|date:'yy/MM/dd HH:mm'}}
-  ^^}else{$$
- 			{{row.^^=name$$}}
-  ^^}$$
- ^^}$$
 
  ^^function pagenator(config){$$
 <ul class="pagination" style="margin:2px 0;">
