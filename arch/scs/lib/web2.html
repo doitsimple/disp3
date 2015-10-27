@@ -1,4 +1,4 @@
- ^^function bytype(f, model){var type = f.type;$$
+ ^^function bytype(f, model, fields){var type = f.type;$$
 	^^if(type == "date"){$$
  			{{^^=model$$ | stddate}}
 	^^}else if(type == "datetime"){$$
@@ -9,25 +9,25 @@
 <div ng-show="^^=model$$ == '' || ^^=model$$ == undefined" class="ng-hide">没有视频</div>
 <video controls ng-show="^^=model$$ != '' &amp;&amp; ^^=model$$ != undefined" class="img-thumbnail" ng-src="{{'/^^=f.path$$/'+^^=model$$}}"></video>
 <p><a class="btn btn-default" ng-href="/^^=f.path$$/{{^^=model$$}}">下载视频</a></p>
+  ^^}else if(type == "ObjectId" && f.ref){$$
+<small>{{^^=model$$}}</small>
   ^^}else{$$
     ^^if(f.money){$$
-			{{^^=model$$ | money}}
+			{{^^=model$$ | fmoney}}
+    ^^}else if(f.enums && fields){$$
+			{{^^=model$$ | fenums:^^=fields+'.'+f.name$$.enums}}
     ^^}else{$$
 			{{^^=model$$}}
     ^^}$$
   ^^}$$
  ^^}$$
-^^local.loadraw = function(addons){$$
- ^^for(var addname in addons){
-  var addon = addons[addname];
-  if(!addon.attrs) addon.attrs = {};
+^^local.loadraw = function(addon){$$
+ ^^
   if(!addon.text) addon.text = "";
-  var attrstr = "";
-  for(var attr in addon.attrs)
-   attrstr += " "+attr+'="'+ addon.attrs[attr]+ '"';
+  var attrstr = local.makeng(addon);
  $$
 <^^=addon.tag$$ ^^=attrstr$$ >^^=addon.text$$</^^=addon.tag$$>
- ^^}$$
+ 
 ^^}$$
 ^^local.item = function(config, prefix){$$
   ^^for(var sname in config.fields){
@@ -40,28 +40,36 @@
 	</div>
   ^^}$$
 ^^}$$
-
+^^local.makeng = function(sube){
+	if(!sube) return "";
+  var addonstr = "";
+  if(sube.click)
+  addonstr += 'ng-click="' + sube.click + '" ';
+  if(sube.class)
+  addonstr += 'ng-class="' + sube.class + '" ';
+  if(sube.repeat)
+  addonstr += 'ng-repeat="' + sube.repeat + '" ';
+  if(sube.href)
+  addonstr += 'ng-href="' + sube.href + '" ';
+  if(sube.show)
+  addonstr += 'ng-show="' + sube.show + '" ';
+  if(sube.model)
+	addonstr += 'ng-model="' + sube.model + '" ';
+	if(sube.attr)
+	addonstr += sube.attr + ' ';
+	return addonstr;
+}$$
 ^^local.makefunc = function(col, size){$$
-	 ^^if(col.elements) for(var subname in col.elements){var sube = col.elements[subname];$$
+	 ^^if(col.elements) for(var subname in col.elements){
+     var sube = col.elements[subname];
+     var addonstr = local.makeng(sube);  
+   $$
     ^^if(sube.type == "button"){$$
-     ^^
-     var clickstr = "";
-     if(sube.click){
-      clickstr = 'ng-click="' + sube.click + '"';
-     }
-     var hrefstr = "";
-     if(sube.href){
-      hrefstr = 'ng-href="' + sube.href + '"';
-     }
-     $$
-  		<a class="btn btn-^^=size$$ btn-primary" ^^=clickstr$$ ^^=hrefstr$$>^^=sube.text || sube.name$$</a>
-    ^^}else if(sube.type == "input"){
-			var modelstr = "";
-			if(sube.model){
-				modelstr = 'ng-model="' + sube.model + '"';
-			}
-    $$
-			<input class="form-control" placeholder="^^=sube.text || ''$$" ^^=modelstr$$>
+  		<a class="btn btn-^^=size$$ btn-primary" ^^=addonstr$$>^^=sube.text || sube.name$$</a>
+    ^^}else if(sube.type == "input"){$$
+			<input class="form-control" placeholder="^^=sube.text || ''$$" ^^=addonstr$$>
+    ^^}else{$$
+			^^loadraw(sube)$$
     ^^}$$
    ^^}$$
 ^^}$$
@@ -103,29 +111,32 @@ $$
 		</div>
 	</div>
 	<div class="col-sm-^^=12-config.width$$">
-		^^local.loadraw(config.addons);$$	
+		^^for(var addname in config.addons){$$
+		^^local.loadraw(config.addons[addname]);$$	
+		^^}$$
 	</div>
 </div>
 </div>
 ^^}$$
 
-^^local.form = function(config){
- if(!config.hasOwnProperty('prefix'))
-  config.prefix = config.name + ".data.";
-$$
+^^local.form = function(config){$$
 ^^if(config.tpl){$$
 <script type="text/ng-template" id="^^=config.tpl$$">
 ^^}$$
 <div class="row" style="padding:10px;">
 <form role="form" style="padding:15px;max-width:400px;">
   <fieldset>
-^^for(var fname in config.fields){var f=config.fields[fname];$$
+^^for(var fname in config.fields){
+ var f=config.fields[fname];
+ var ngstr = local.makeng(f);$$
  ^^if(f.type == "input"){$$
     <div class="form-group">
-      <input style="min-width:100px" class="form-control" type="^^=f.inputtype || 'text'$$" ng-model="^^=config.prefix$$^^=f.name$$" placeholder="^^=f.text || f.name$$">
+      <input style="min-width:100px" class="form-control" type="^^=f.inputtype || 'text'$$" ^^=ngstr$$ placeholder="^^=f.text || f.name$$">
     </div>
  ^^}else if(f.type == "button"){if(!f.style) f.style = "default";$$
-    <button class="btn btn-md btn-^^=f.style$$" ng-click="^^=f.click$$()">^^=f.text$$</button>
+    <button class="btn btn-md btn-^^=f.style$$" ^^=ngstr$$>^^=f.text$$</button>
+ ^^}else{$$
+		^^loadraw(f)$$
  ^^}$$
 ^^}$$
   </fieldset>
@@ -192,32 +203,19 @@ $$
 	}
 $$
 <div class="panel panel-primary">
-<div class="panel-heading">^^=config.text || config.name$$</div>
-<div class="panel-body">
+<div class="panel-heading" ^^=local.makeng(config.heading)$$>^^=config.text || config.name$$</div>
+<div class="panel-body" ^^=local.makeng(config.body)$$>
 <div class="col-sm-9">
 ^^local.makequery(config)$$
 </div>
 <div class="col-sm-3">
-<div class="input-group">
+	<div class="input-group">
   <input type="text" class="form-control" placeholder="page" ng-model="pageToGo">
   <span class="input-group-btn">
     <button class="btn btn-default" type="button" ng-click="^^=config.name$$.gotoPage(pageToGo)">Go!</button>
   </span>
+	</div>
 </div>
-<div class="col-sm-9">
-</div>
-</div>
-<div class="col-sm-12 btn-group">
-^^if(config.opt && config.opt.add){$$
-  <button class="btn btn-default" ng-click="optAdd()">添加数据</button>
-^^}$$
-^^if(config.toolbar){
-  for(var name in config.toolbar){
-    var ele = config.toolbar[name];
-    if(!ele.tag)ele.tag="button";
-  $$<^^=ele.tag$$^^if(ele.attr){if(!ele.attr.class){$$ class="btn btn-default"^^}for(var attrname in ele.attr){$$^^= attrname$$="^^=ele.attr[attrname]$$"^^}}else{$$ class="btn btn-default"^^}$$>^^=ele.text||name$$</^^=ele.tag$$>^^}}$$
-</div>
-
 <div class="col-sm-6">
 	<div class="form-inline" style="verical-align:middle;padding:0.2em 0;">
 	<label style="font-weight:normal">Show <select class="form-control input-sm" ng-model="^^=config.name$$.perPage" ng-options="op for op in ^^=config.name$$.perPages"></select> entries</label>
@@ -250,32 +248,13 @@ $$
   ^^}else{$$
   ^^if(col.ondemand){$$
 	<span class="glyphicon glyphicon-option-horizontal" ng-click="^^=config.name$$.showrow^^=name$$=true" ng-hide="^^=config.name$$.showrow^^=name$$"></span>
-	<div ng-click="^^=config.name$$.showrow^^=name$$=false" ng-show="^^=config.name$$.showrow^^=name$$">^^bytype(col, "row."+name)$$</div>
+	<div ng-click="^^=config.name$$.showrow^^=name$$=false" ng-show="^^=config.name$$.showrow^^=name$$">^^bytype(col, "row."+name, config.name+".fields")$$</div>
   ^^}else if(col.href){$$
-  <a ng-href="^^=col.href$${{row.^^=name$$}}">^^bytype(col, "row."+name)$$</a>
-  ^^}else if(col.showuser){$$
-  <a data-toggle="popover" class='showuser' data-container="body" data-placement="right" data-content="..." userid="{{row.^^=col.showuser$$}}">^^bytype(col, "row."+name)$$</a>
+  <a ng-href="^^=col.href$${{row.^^=name$$}}">^^bytype(col, "row."+name, config.name+".fields")$$</a>
   ^^}else{
-		bytype(col, "row."+name)
+		bytype(col, "row."+name, config.name+".fields")
   }$$</td>
  ^^}}}$$
- ^^if(config.opt){$$
- <td>
-    ^^if(config.opt.update){$$
-      <button class="btn btn-primary" ng-click="optUpdate(row)">修改</button>
-    ^^}$$
-    ^^if(config.opt.delete){$$
-      <button class="btn btn-primary" ng-click="optDelete(row)">删除</button>
-    ^^}$$
-    ^^for(var name in config.opt){if(name != "add" && name != "update" && name != "delete"){$$
-      <button class="btn btn-primary"
-      ^^for(var attr in config.opt[name].attr){var value = config.opt[name].attr[attr];$$
-        ^^=attr$$="^^=value$$" 
-        ^^}$$
-        >^^= config.opt[name].text || name$$</button>
-    ^^}}$$
-  </td>
-  ^^}$$
 		</tr>
 	</tbody>
 </table>

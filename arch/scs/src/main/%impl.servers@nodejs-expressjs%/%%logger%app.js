@@ -11,7 +11,9 @@ app.use(function(req, res, next){
 	logx+="\x1b[0m";
 	log.i(logx);
 ^^if(!global.product){$$
-	res.header("Access-Control-Allow-Origin", "*");
+res.header("Access-Control-Allow-Origin", "*");
+res.header("Access-Control-Allow-Headers", "Content-Type,Content-Length, Authorization, Accept,X-Requested-With");
+res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
 ^^}$$
 	next();
 });

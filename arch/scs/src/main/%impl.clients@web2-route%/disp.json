@@ -2,5 +2,6 @@
 	"jsLibs": {
     "/vendor/js/angular-route.min.js": 1
 	},
-  "angularDeps": ["ngRoute"]
+  "angularDeps": ["ngRoute"],
+  "angularCtrlDeps": ["auth", "req", "ui"]
 }

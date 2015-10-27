@@ -198,7 +198,7 @@ module.exports.connect = function (){
 		});
 	});
 };
-function parseArgs(schema, args){
+function parseArgs(schema, args, notformat){
 	var pargs = {};
 	if(args.length == 3){
 		pargs.where = args[0] || {};
@@ -236,8 +236,8 @@ function parseArgs(schema, args){
 	}else{
 		log.e("args error");
 		return;
-	}	
-	if(schema.formatDoc)
+	}
+	if(schema.formatDoc && !notformat)
 		schema.formatDoc(pargs.where);
 	return pargs;
 }
@@ -343,9 +343,10 @@ function getModel(schemaname){
 			}
 		}
 		if(model.binsert) std.binsert = function(){
-			var args = parseArgs(schema, arguments);
+			var args = parseArgs(schema, arguments, 1);
 			if(schema.formatInsertDoc)
 				args.where.forEach(function(doc){
+					schema.formatDoc(doc);
 					schema.formatInsertDoc(doc);
 				});
 			model.binsert(args.where, args.callback);

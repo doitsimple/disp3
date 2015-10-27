@@ -1,8 +1,5 @@
 var rootApp = angular.module('rootApp', ^^=JSON.stringify(local.angularDeps) || '[]'$$);
-rootApp.run(function($templateCache) {
-  $templateCache.put('form.html', '<div class="tooltip">{{content}}</div>');
-});
-/*
+
 rootApp.directive('autocomplete', function($parse) {
   return {
     require: 'ngModel',
@@ -49,46 +46,10 @@ rootApp.directive('contenteditable', function() {
     }
   };
 });
-*/
-rootApp.filter('trustUrl', function ($sce) {
-    return function(url) {
-      return $sce.trustAsResourceUrl(url);
-    };
-});
-rootApp.filter('bykey', function () {
-    return function(arr, key, value) {
-			var narr = [];
-			for(var i in arr){
-				if(arr[i][key].toString() == value.toString())
-					narr.push(arr[i]);
-			}
-			return narr;
-    };
-});
-rootApp.filter('fmoney', function () {
-    return function(m) {
-			return "￥"+m/100;
-    };
-});
-rootApp.filter('fenums', function () {
-    return function(m, json) {
-			if(m == undefined){
-				if(json["undefined"]) return json["undefined"];
-				return "";
-			}
-			if(!json || !json.hasOwnProperty(m)) return "数值有误"+m;
-			return json[m];
-    };
-});
-rootApp.config(function($sceDelegateProvider) {
- $sceDelegateProvider.resourceUrlWhitelist([
-   // Allow same origin resource loads.
-   'self']);
- })
 rootApp.directive('video', function() {
   return {
     restrict: 'E',
-    link: function(scope, element, attrs) {
+    link: function(scope, element) {
       scope.$on('$destroy', function() {
         element.prop('src', '');
       });
@@ -116,27 +77,11 @@ rootApp.factory('req', function($http){
 	var ajax;
 	methods.ajax = ajax = function (config, fn){
 		$http(config).then(function(result){
-			if(typeof result.data == "object" && result.data.error){
-				alert(result.data.error);
-				fn("返回结果有error", result.data, {
-          statusCode: result.status,
-          headers: result.headers()
-        });
-			}else{
-				fn(null, result.data, {
-					statusCode: result.status,
-					headers: result.headers()
-				});
-			}
+			fn(null, result.data, {
+				statusCode: result.status,
+				headers: result.headers()
+			});
 		}, function(result){
-			if(result.status == 401){
-				alert("请去登录");
-				fn("没登录或登录过期", result.data, {
-					statusCode: result.status,
-					headers: result.headers()
-				});
-				return;
-			}
 			fn(config.method +" " + config.url + " FAILED", result.data, {
 				statusCode: result.status,
         headers: result.headers()
@@ -146,7 +91,9 @@ rootApp.factory('req', function($http){
 	["get", "post", "put", "delete"].forEach(function(method){
 		methods[method] = function(url, data, fn){
 			if(!fn) fn = data;
-			var config = {url: url, method: method.toUpperCase()};
+			var config = {url: url, method: method.toUpperCase(), headers: {
+				Cookie: ""
+			}};
 			if(data) config.data = data;
 			ajax(config, fn);
 		};
@@ -154,7 +101,7 @@ rootApp.factory('req', function($http){
 			if(!fn) fn = data;
 			var config = {url: url, method: method.toUpperCase(), headers: headers};
 			if(data) config.data = data;
-			ajax(config, fn);
+			ajax(config, fn);			
 		};
 		methods[method+"Bearer"] = function(url, token, data, fn){
 			methods[method + "Ex"](url, {
@@ -169,6 +116,14 @@ rootApp.factory('req', function($http){
 		methods[method+"Json"] = function(url, data, fn){
 			methods[method + "Ex"](url, {
 				"Content-type": "application/json"
+			}, data, fn);
+		};
+		methods[method + "Cookies"] = function(url, cookies, data, fn){
+			var cookiearr = [];
+			for(var key in cookies)
+				cookiearr.push(key + "=" + cookies[key]);
+			methods[method + "Ex"](url, {
+				Cookie: cookiearr.join("; ")
 			}, data, fn);
 		};
 		methods[method+"File"] = function(url, headers, data, fn){
@@ -196,14 +151,13 @@ rootApp.factory('req', function($http){
 				Authorization: "Bearer "+token
 			}, data, fn);
 		};
+
 	});
 	return methods;
 });
-rootApp.filter("stddate", function() {
-  var filterfun = function(datestr) {
-		if(!datestr) return "";
-    return datestr.substr(0, 4) + "/" + datestr.substr(4, 2) + "/" + datestr.substr(6, 2);
-  };
-  return filterfun;
+
+rootApp.controller("error", function($scope, $rootScope, req){
 });
-^^=content$$
+
+
+^^=ctrl$$

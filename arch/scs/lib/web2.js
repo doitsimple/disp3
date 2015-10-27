@@ -30,7 +30,7 @@ $scope["^^=config.name$$"].refresh();
  ^^}$$
 ^^}$$
 ^^local.form = function(config){$$
-$scope["^^=config.name$$"] = {data:{}};
+$scope["^^=config.name$$"] = {};
 ^^}$$
 ^^local.method = function(config){config.params = config.params || "";$$
 $scope["^^=config.name$$"] = function(^^=config.params$$){
