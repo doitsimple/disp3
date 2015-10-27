@@ -90,25 +90,47 @@ local.table = function(config) {
 $$
 ^^local.loadFactory = function(config){$$
 rootApp.run(function($templateCache) {
-  $templateCache.put('image.html', '<img class="img-thumbnail" ng-src="{{imgurl}}" ng-click="cancel()">');
+  $templateCache.put('image.html', '<img class="img-thumbnail" ng-src="{{params.imgurl}}" ng-click="cancel()">');
+  $templateCache.put('confirm.html', '<div>{{params.content}}</div><a class="btn btn-primary" ng-click="params.sumbit()">确认</a><a class="btn btn-default" ng-click="cancel()">取消</a>');
 });
-rootApp.controller('ImageModalController', function($scope, $modalInstance, imgurl) {
-  $scope.imgurl = imgurl;
+rootApp.controller('ModalController', function($scope, $modalInstance, params) {
+  $scope.params = params;
   $scope.cancel = function(){
     $modalInstance.dismiss('cancel');
   };
 });
-rootApp.factory("^^=config.name$$", function(req, auth, $uibModal){
+rootApp.factory("ui", function($uibModal, req, ^^=angularCtrlDeps.join(', ')$$){
 	var methods = {};
+	methods.convert2arr = function(json){
+		var arr = [];
+		for(var key in json){
+			arr.push({key: key, val: json[key]});
+		}
+		return arr;
+	}
 	methods.openImageModal = function(imgurl){
-		console.log(imgurl);
 		$uibModal.open({
       templateUrl: 'image.html',
-      controller: 'ImageModalController',
+      controller: 'ModalController',
       size: 'lg',
 			resolve: {
-        imgurl: function () {
-          return imgurl;
+        params: function () {
+          return {imgurl: imgurl};
+        }
+			}
+		});
+	}
+	methods.openConfirmModal = function(content, submit){
+		$uibModal.open({
+      templateUrl: 'confirm.html',
+      controller: 'ModalController',
+      size: 'sm',
+			resolve: {
+        params: function () {
+          return {
+						content: content,
+						submit: submit
+					};
         }
 			}
 		});
@@ -296,6 +318,39 @@ rootApp.factory("^^=config.name$$", function(req, auth, $uibModal){
 				self.count = data.count;
 				self.totalPage = Math.ceil(data.count / self.perPage);
 			});
+		};
+		self.showaddrow = false;
+		self.showupdaterow = false;
+		self.new = {};
+		self.showadd = function(){
+			if(self.showupdaterow) self.showupdaterow = false;
+			self.showaddrow = !self.showaddrow;
+			if(self.showaddrow){				
+				self.new = {};
+			}
+		};
+		self.showupdate = function(row){
+			if(self.showaddrow) self.showaddrow = false;
+			self.showupdaterow = !self.showupdaterow;
+			if(self.showupdaterow){
+				for(var key in row){
+					self.new[key] = row[key];
+				}
+			}
+		}
+
+		self.upsert = function(){
+			var row = self.new;
+			var _id = row._id;
+			if(!_id)
+				access.add(row);
+			else{
+				delete row._id;
+				access.update(_id, row);
+			}
+		}
+		self.showdelete = function(id){
+			access.delete(id);
 		}
 	}
 	return methods;

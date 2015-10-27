@@ -1,22 +1,22 @@
 rootApp.factory('access', function(req, auth){
 	var methods = {};
 	methods.delete = function(schema, _id){
-		req.postBearer("/api/access/"+schema+"/delete", auth.gettoken(), {_id: _id}, function(err){
+		req.postBearer("/api/access/"+schema+"/delete", auth.gettoken(), {where: {_id: _id}}, function(err){
 			if(!err) alert("success");
 		});
 	}
 	methods.get = function(schema, _id){
-		req.postBearer("/api/access/"+schema+"/select", auth.gettoken(), {_id: _id}, function(err){
+		req.postBearer("/api/access/"+schema+"/select", auth.gettoken(), {where: {_id: _id}}, function(err){
 			if(!err) alert("success");
 		});
 	}
 	methods.put = function(schema, _id, json){
-		req.postBearer("/api/access/"+schema+"/delete", auth.gettoken(), {_id: _id}, function(err){
+		req.postBearer("/api/access/"+schema+"/delete", auth.gettoken(), {where: {_id: _id}, options: json}, function(err){
 			if(!err) alert("success");
 		});
 	}
 	methods.add = function(schema, json){
-		req.postBearer("/api/access/"+schema+"/insert", auth.gettoken(), json, function(err){
+		req.postBearer("/api/access/"+schema+"/insert", auth.gettoken(), {where: json}, function(err){
 			if(!err) alert("success");
 		});
 	}

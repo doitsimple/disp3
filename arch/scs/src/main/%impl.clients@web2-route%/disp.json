@@ -3,5 +3,5 @@
     "/vendor/js/angular-route.min.js": 1
 	},
   "angularDeps": ["ngRoute"],
-  "angularCtrlDeps": ["auth", "req", "ui"]
+  "angularCtrlDeps": ["auth"]
 }

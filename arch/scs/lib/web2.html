@@ -12,13 +12,55 @@
   ^^}else if(type == "ObjectId" && f.ref){$$
 <small>{{^^=model$$}}</small>
   ^^}else{$$
-    ^^if(f.money){$$
+
+    ^^if(f.ondemand && fields){$$
+	<span class="glyphicon glyphicon-option-horizontal" ng-click="^^=fields$$.showrow^^=name$$=true" ng-hide="^^=fields$$.showrow^^=name$$"></span>
+	<div ng-click="^^=fields$$.showrow^^=name$$=false" ng-show="^^=fields$$.showrow^^=name$$">{{^^=model$$}}</div>
+    ^^}else if(f.href){$$
+  <a ng-href="^^=f.href$${{row.^^=name$$}}">{{^^=model$$}}</a>
+    ^^}else if(f.money){$$
 			{{^^=model$$ | fmoney}}
     ^^}else if(f.enums && fields){$$
 			{{^^=model$$ | fenums:^^=fields+'.'+f.name$$.enums}}
     ^^}else{$$
 			{{^^=model$$}}
     ^^}$$
+  ^^}$$
+ ^^}$$
+
+ ^^function newbytype(f, model, fields){
+  var type = f.type;
+	if(f.nomanual){
+		bytype(f, model, fields);
+    return;
+  }$$
+	^^if(type == "date"){$$
+<uib-datepicker ng-model="^^=model$$"></uib-datepicker>
+	^^}else if(type == "datetime"){$$
+<uib-datepicker ng-model="^^=model$$"></uib-datepicker>
+  ^^}else if(type == "image"){$$
+<input type="file" class="form-control" file-model="^^=f.name$$buffer">
+<a class="btn btn-primary btn-xs">上传</a>
+<img ng-show="^^=model$$ != '' &amp;&amp; ^^=model$$ != undefined" class="img-thumbnail" ng-src="/^^=f.path$$/{{^^=model$$}}" ng-click="ui.openImageModal('/^^=f.path$$/'+^^=model$$)">
+  ^^}else if(type == "video"){$$
+<input type="file" class="form-control" file-model="^^=f.name$$buffer">
+<a class="btn btn-primary btn-xs">上传</a>
+<div ng-show="^^=model$$ == '' || ^^=model$$ == undefined" class="ng-hide">没有视频</div>
+<video controls ng-show="^^=model$$ != '' &amp;&amp; ^^=model$$ != undefined" class="img-thumbnail" ng-src="{{'/^^=f.path$$/'+^^=model$$}}"></video>
+  ^^}else if(type == "float"){$$
+<input ng-model="^^=model$$" ng-pattern="/^[0-9\.]+$/">
+  ^^}else if(type == "int"){$$
+    ^^if(f.money){$$
+			{{^^=model$$ | fmoney}}
+    ^^}else if(f.enums && fields){$$
+<select ng-model="^^=model$$" ng-init="^^=fields+'.'+f.name$$.enumsarr = ui.convert2arr(^^=fields+'.'+f.name$$.enums)" ng-options="item.key as item.val for item in ^^=fields+'.'+f.name$$.enumsarr"></select>
+    ^^}else{$$
+<input ng-model="^^=model$$" ng-pattern="/^[0-9]+$/">
+    ^^}$$
+  ^^}else if(type == "ObjectId" && f.ref){$$
+<small>{{^^=model$$}}</small>
+  ^^}else{$$
+<input ng-model="^^=model$$">
   ^^}$$
  ^^}$$
 ^^local.loadraw = function(addon){$$
@@ -159,6 +201,9 @@ $$
 				<a class="btn btn-default" uib-tooltip="刷新" ng-click="^^=config.name$$.refresh()"><i class="fa fa-refresh"></i></a>
 				<a class="btn btn-default" uib-tooltip="搜索" ng-click="showquery=!showquery"><i class="fa fa-search"></i></a>
 				<a class="btn btn-default" uib-tooltip="统计（TODO）" ng-click="showstat=!showstat"><i class="fa fa-calculator"></i></a>
+^^if(config.add){$$
+				<a class="btn btn-danger" uib-tooltip="添加" ng-click="^^=config.name$$.showadd()"><i class="fa fa-plus"></i></a>
+^^}$$
 			</div>
 		</div>
 		<div class="col-sm-6" ng-show="showsave" style="padding: 10px;border:1px;">
@@ -227,35 +272,59 @@ $$
   <div class="col-sm-12" style="overflow-x:auto;">
   <table class="table table-striped table-bordered" style="vertical-align:middle;"><thead>
  ^^for(var name in config.fields){var col = config.fields[name];$$
-  ^^if(col.hidden){continue;}$$
+  ^^if(col.hidden) continue;$$
   ^^if(col.type == "func"){$$
   <th>^^=col.text || ""$$</th>
   ^^}else{$$
   <th><a style="padding: 0 5px;" ng-click="^^=config.name$$.changeSort('^^=name$$')"><i class="fa" ng-class="{'fa-sort-asc':^^=config.name$$.sort.^^=name$$ === 1,'fa-sort-desc': ^^=config.name$$.sort.^^=name$$ === -1,'fa-sort':!^^=config.name$$.sort.^^=name$$}"></i></a>^^=col.text||name$$<br/>^^=name$$</th>
   ^^}$$
  ^^}$$
- ^^if(config.opt){$$
-  <th>opt</th>
-  ^^}$$
+ ^^if(config.update || config.delete){$$
+  <th></th>
+ ^^}$$
   </thead>
   <tbody>
-    <tr ng-repeat="row in ^^=config.name$$.data" onlastrepeat>
+ ^^if(config.add || config.update){$$
+		<tr ng-show="^^=config.name$$.showaddrow || ^^=config.name$$.showupdaterow" style="background: #f0ad4e;">
+  ^^for(var name in config.fields){var col = config.fields[name];$$
+   ^^if(col.hidden) continue;$$
+ 	<td>
+   ^^if(col.type == 'func'){$$
+	 ^^}else{$$
+		^^newbytype(col, config.name+".new."+name, config.name+".fields");$$
+	 ^^}$$
+	</td>
+  ^^}$$
+	<td>
+  	<a class="btn btn-sm btn-primary" ng-click="^^=config.name$$.upsert()">保存</a>
+  	<a class="btn btn-sm btn-default" ng-click="^^=config.name$$.showaddrow=0">取消</a>
+	</td>
+
+		</tr>
+ ^^}$$
+    <tr ng-repeat="row in ^^=config.name$$.data">
  ^^for(var name in config.fields){var col = config.fields[name];$$
- ^^if(!col.hidden){$$
+ ^^if(col.hidden) continue;$$
  	<td>
   ^^if(col.type == 'func'){$$
 	 ^^local.makefunc(col, "xs");$$
   ^^}else{$$
-  ^^if(col.ondemand){$$
-	<span class="glyphicon glyphicon-option-horizontal" ng-click="^^=config.name$$.showrow^^=name$$=true" ng-hide="^^=config.name$$.showrow^^=name$$"></span>
-	<div ng-click="^^=config.name$$.showrow^^=name$$=false" ng-show="^^=config.name$$.showrow^^=name$$">^^bytype(col, "row."+name, config.name+".fields")$$</div>
-  ^^}else if(col.href){$$
-  <a ng-href="^^=col.href$${{row.^^=name$$}}">^^bytype(col, "row."+name, config.name+".fields")$$</a>
-  ^^}else{
-		bytype(col, "row."+name, config.name+".fields")
-  }$$</td>
- ^^}}}$$
+		^^bytype(col, "row."+name, config.name+".fields")$$
+ ^^}}$$
+
+ ^^if(config.update || config.delete){$$
+  <td>
+		^^if(config.update){$$
+  		<a class="btn btn-xs btn-danger" ng-click="^^=config.name$$.showupdate(row)">修改</a>
+		^^}$$
+		^^if(config.delete){$$
+  		<a class="btn btn-xs btn-danger" ng-click="^^=config.name$$.showdelete(row._id)">删除</a>
+		^^}$$
+	</td>
+ ^^}$$
+
 		</tr>
+
 	</tbody>
 </table>
   </div>

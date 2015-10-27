@@ -49,7 +49,9 @@ for(var i in withUis){
   var ui = global.proto.uis[name1];
 	if(ui.type == 'plugin') continue;
 $$
-rootApp.controller("^^=methods.dash2uc(ui.name)$$Controller", function($scope, $rootScope, $routeParams, ^^=angularCtrlDeps.join(",")$$){
+rootApp.controller("^^=methods.dash2uc(ui.name)$$Controller", function($scope, $rootScope, $routeParams, req, ui, ^^=angularCtrlDeps.join(",")$$){
+	$scope.ui = ui;
+	$scope.req = req;
 ^^for(var acdi in angularCtrlDeps){var acd = angularCtrlDeps[acdi];$$
 	$scope.^^=acd$$ = ^^=acd$$;
 ^^}$$

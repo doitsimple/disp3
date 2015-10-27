@@ -21,6 +21,7 @@
 						"_id": {
 							"text": "ID",
 							"ondemand": true,
+							"nomanual": 1,
 							"type": "ObjectId"
 						}
 					}
