@@ -262,6 +262,9 @@ function formatUpsertArgs(schema, args){
 	for(var key in args.options.$inc){
 		delete args.options.$setOnInsert[key];
 	}
+	for(var key in args.options.$set){
+		delete args.options.$setOnInsert[key];
+	}
 }
 module.exports.getModel = getModel;
 function getModel(schemaname){
