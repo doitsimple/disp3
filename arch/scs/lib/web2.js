@@ -78,10 +78,14 @@ local.table = function(config) {
 		}
 	}
 	$$
-	$scope["^^=config.name$$"] = new ui.displayTable($scope, {
-		schema: "^^=config.withSchema$$",
-		fields: ^^=JSON.stringify(config.fields)$$
-	});
+	var params = {
+    schema: "^^=config.withSchema$$",
+    fields: ^^=JSON.stringify(config.fields)$$
+  }
+	^^if(config.where){$$
+	params.where = ^^=config.where$$;
+  ^^}$$
+	$scope["^^=config.name$$"] = new ui.displayTable($scope, params);
 	$scope["^^=config.name$$"].fetchSaveQuerys();
 	$scope["^^=config.name$$"].refresh();
 
@@ -91,21 +95,28 @@ $$
 ^^local.loadFactory = function(config){$$
 rootApp.run(function($templateCache) {
   $templateCache.put('image.html', '<img class="img-thumbnail" ng-src="{{params.imgurl}}" ng-click="cancel()">');
-  $templateCache.put('confirm.html', '<div>{{params.content}}</div><a class="btn btn-primary" ng-click="params.sumbit()">确认</a><a class="btn btn-default" ng-click="cancel()">取消</a>');
+  $templateCache.put('confirm.html', '<p class="bg-danger">{{params.content}}</p><a class="btn btn-primary" ng-click="ok()">确认</a><a class="btn btn-default" ng-click="cancel()">取消</a>');
+  $templateCache.put('info.html', '<div ng-repeat="item in params">{{item.key}}:{{item.val}}</div><a class="btn btn-default" ng-click="cancel()">关闭</a>');
 });
 rootApp.controller('ModalController', function($scope, $modalInstance, params) {
   $scope.params = params;
+  $scope.ok = function(){
+    $modalInstance.close();
+  };
   $scope.cancel = function(){
     $modalInstance.dismiss('cancel');
   };
 });
 rootApp.factory("ui", function($uibModal, req, ^^=angularCtrlDeps.join(', ')$$){
 	var methods = {};
-	methods.convert2arr = function(json){
+	methods.convert2arr = function(json, asstring){
 		var arr = [];
-		for(var key in json){
-			arr.push({key: key, val: json[key]});
-		}
+		if(!asstring)
+			for(var key in json)
+				arr.push({key: parseInt(key), val: json[key]});
+		else
+			for(var key in json)
+				arr.push({key: key, val: json[key]});
 		return arr;
 	}
 	methods.openImageModal = function(imgurl){
@@ -120,25 +131,51 @@ rootApp.factory("ui", function($uibModal, req, ^^=angularCtrlDeps.join(', ')$$){
 			}
 		});
 	}
+	var cache = {};
+	methods.getFormated = function(schema, id, fn){
+		if(cache[schema + id]) return fn(cache[schema + id]);
+		access.select(schema, id, function(err, doc){
+			if(err) return alert("网络错误");
+			var fmdoc = methods.convert2arr(doc, true);
+			cache[schema + id] = fmdoc;
+			fn(fmdoc);
+		});
+	}
+	methods.openInfoModal = function(schema, id){
+		methods.getFormated(schema, id, function(doc){
+			$uibModal.open({
+				templateUrl: 'info.html',
+				controller: 'ModalController',
+				size: 'md',
+				resolve: {
+					params: function () {
+						return doc;
+					}
+				}
+			});
+		});
+	}
 	methods.openConfirmModal = function(content, submit){
-		$uibModal.open({
+		var modalInstance = $uibModal.open({
       templateUrl: 'confirm.html',
       controller: 'ModalController',
       size: 'sm',
 			resolve: {
         params: function () {
           return {
-						content: content,
-						submit: submit
+						content: content
 					};
         }
 			}
+		});
+		modalInstance.result.then(function(){
+			submit();
 		});
 	}
 	methods.displayTable = function($scope, config) {
 		this.$scope = $scope;
 		this.showsave = false;
-		this.data = [];
+//		this.data = [];
 		this.rawquerys = [];
 		this.currPage = 1;
 		this.totalPage = 0;
@@ -150,16 +187,16 @@ rootApp.factory("ui", function($uibModal, req, ^^=angularCtrlDeps.join(', ')$$){
 		self.sort = {};
 		$scope.$watch(function() {
 			return self.perPage;
-		}, function(oldv, newv) {
-			if (oldv && oldv != newv) {
+		}, function(newv, oldv) {
+			if (newv && oldv != newv) {
 				self.currPage = 1;
 				self.refresh();
 			}
 		});
 		$scope.$watchCollection(function() {
 			return self.sort;
-		}, function(oldv, newv) {
-			if (oldv && oldv != newv) self.refresh();
+		}, function(newv, oldv) {
+			if (newv && oldv != newv) self.refresh();
 		});
 		self.adj = function() {
 			var b = (self.perScreen - 1) / 2;
@@ -197,12 +234,15 @@ rootApp.factory("ui", function($uibModal, req, ^^=angularCtrlDeps.join(', ')$$){
 			self.fieldlist.push(f);
 			self.project[f] = 1;
 		}
-		self.oplist = ["=",">","<",">=","<=","!=","in","notin","match","exists","notexists"];
+		self.oplist = ["=",">","<",">=","<=","!=","in","notin","match","exists","notexists", "clear"];
 		self.addRawQuery =function(){
 			self.rawquerys.push({op:"="});
 		}
 		self.formatRawQuery = function(){
 			self.where = {};
+			if(config.where)
+				for(var key in config.where)
+					self.where[key] = config.where;
 			for(var qi in self.rawquerys){
 				var rq = self.rawquerys[qi];
 				if(!self.fields[rq.field]){
@@ -218,20 +258,25 @@ rootApp.factory("ui", function($uibModal, req, ^^=angularCtrlDeps.join(', ')$$){
 					self.where[rq.field] = {$exists: false};
 					continue;
 				}					
-				if(!rq.hasOwnProperty("value")) continue;
+				if(rq.op == "clear"){
+					delete self.where[rq.field];
+					continue;
+				}					
+				if(!rq.hasOwnProperty("v"+rq.field)) continue;
+				var value = rq["v"+rq.field];
 				var type = self.fields[rq.field].type;
 				if(type == "string")
-					rq.value = rq.value.toString();
+					value = value.toString();
 				else if(type == "int")
-					rq.value = parseInt(rq.value);
+					value = parseInt(value);
 				else if(type == "float")
-					rq.value = parseFloat(rq.value);
+					value = parseFloat(value);
 				else if(type == "date")
-					rq.value = req.value;
+					value = new Date(value);
 				else if(type == "datetime")
-					rq.value = req.value;
+					value = new Date(value);
 				if(rq.op == "="){
-					self.where[rq.field] = rq.value;
+					self.where[rq.field] = value;
 					continue;
 				}
 				if(self.where[rq.field] == "="){
@@ -240,33 +285,36 @@ rootApp.factory("ui", function($uibModal, req, ^^=angularCtrlDeps.join(', ')$$){
 				}
 				if(!self.where[rq.field]) self.where[rq.field] = {};
 				if(rq.op == ">"){
-					self.where[rq.field].$gt = rq.value;
+					self.where[rq.field].$gt = value;
 				}
 				if(rq.op == ">="){
-					self.where[rq.field].$gte = rq.value;
+					self.where[rq.field].$gte = value;
 				}
 				if(rq.op == "<"){
-					self.where[rq.field].$lt = rq.value;
+					self.where[rq.field].$lt = value;
 				}
 				if(rq.op == "<="){
-					self.where[rq.field].$lte = rq.value;
+					self.where[rq.field].$lte = value;
 				}
 				if(rq.op == "!="){
-					self.where[rq.field].$ne = rq.value;
+					self.where[rq.field].$ne = value;
 				}
 				if(rq.op == "in"){
-					self.where[rq.field].$in = JSON.parse(rq.value);
+					self.where[rq.field].$in = JSON.parse(value);
 				}
 				if(rq.op == "notin"){
-					self.where[rq.field].$nin = JSON.parse(rq.value);
+					self.where[rq.field].$nin = JSON.parse(value);
 				}
 				if(rq.op == "match"){
-					self.where[rq.field].$regex = rq.value;
+					self.where[rq.field].$regex = value;
 				}
 			}
 		}
 
-		self.loadSave = function(save){
+		self.loadSave = function(orisave){
+			var save;
+			if(!orisave) save = {};
+			else save = angular.copy(orisave);
 			self.rawquerys = save.rawquerys || [];
 			self.sort = save.sort || {};
 			self.savename = save.name;
@@ -319,18 +367,22 @@ rootApp.factory("ui", function($uibModal, req, ^^=angularCtrlDeps.join(', ')$$){
 				self.totalPage = Math.ceil(data.count / self.perPage);
 			});
 		};
-		self.showaddrow = false;
+		self.showinsertrow = false;
 		self.showupdaterow = false;
 		self.new = {};
+		self.hiderow = function(){
+			self.showinsertrow = false;
+			self.showupdaterow = false;
+		}
 		self.showadd = function(){
 			if(self.showupdaterow) self.showupdaterow = false;
-			self.showaddrow = !self.showaddrow;
-			if(self.showaddrow){				
+			self.showinsertrow = !self.showinsertrow;
+			if(self.showinsertrow){				
 				self.new = {};
 			}
 		};
 		self.showupdate = function(row){
-			if(self.showaddrow) self.showaddrow = false;
+			if(self.showinsertrow) self.showinsertrow = false;
 			self.showupdaterow = !self.showupdaterow;
 			if(self.showupdaterow){
 				for(var key in row){
@@ -343,14 +395,24 @@ rootApp.factory("ui", function($uibModal, req, ^^=angularCtrlDeps.join(', ')$$){
 			var row = self.new;
 			var _id = row._id;
 			if(!_id)
-				access.add(row);
+				access.insert(config.schema, row, function(){
+					self.hiderow();
+					self.refresh();
+				});
 			else{
 				delete row._id;
-				access.update(_id, row);
+				access.update(config.schema, _id, row, function(){
+					self.hiderow();
+					self.refresh();
+				});
 			}
 		}
 		self.showdelete = function(id){
-			access.delete(id);
+			self.fields.showrow_id = true;
+			methods.openConfirmModal("确定要删除"+id+"吗", function(){
+				access.delete(config.schema, id);
+				self.refresh();
+			});
 		}
 	}
 	return methods;

@@ -17,7 +17,12 @@ schemas["^^=schema.name$$"].formatDoc = function(json){
 			try{
 				json["^^=field.name$$"] = new mongodb.ObjectId(json["^^=field.name$$"]);
 			}catch(e){
-				json["^^=field.name$$"] = "";
+				if(typeof json["^^=field.name$$"] == "object" && 
+					 Object.keys(json["^^=field.name$$"]).length){
+					
+				}else{
+					json["^^=field.name$$"] = "";
+				}
 				log.e(e);
 			}
 		}else{

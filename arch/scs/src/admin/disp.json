@@ -134,6 +134,8 @@
 						"isParams": true,
 						"require": true
 					},
+					"by": {						
+					},
 					"where": {
 					},
 					"options": {
@@ -142,11 +144,12 @@
 				"controllers": [
 					{
 						"type": "async",
-						"method": "db.getModel(schema)[method]",
-						"params": "where, options",
+						"method": "Admin.access",
+						"params": "schema, method, req.body, req.user",
 						"send": "result"
 					}
-				]
+				],
+				"midwares": ["auth"]
 			},
 			"export_file": {
 				"text": "导出表格",

@@ -1,8 +1,8 @@
 var rootApp = angular.module('rootApp', ^^=JSON.stringify(local.angularDeps) || '[]'$$);
+/*
 rootApp.run(function($templateCache) {
   $templateCache.put('form.html', '<div class="tooltip">{{content}}</div>');
 });
-/*
 rootApp.directive('autocomplete', function($parse) {
   return {
     require: 'ngModel',
@@ -85,6 +85,7 @@ rootApp.config(function($sceDelegateProvider) {
    // Allow same origin resource loads.
    'self']);
  })
+
 rootApp.directive('video', function() {
   return {
     restrict: 'E',
