@@ -18,7 +18,17 @@
 						"type": "string"
 					},
 					"state": {
+						"type": "int"
+					}
+				}
+			},
+			"record_sms_daily": {
+				"fields": {
+					"ip": {
 						"type": "string"
+					},
+					"date": {
+						"type": "date"
 					}
 				}
 			},
@@ -568,6 +578,7 @@
 				"withSchemas": [
 					"record_user_signin",
 					"record_sms",
+					"record_sms_daily",
 					"smstpl",
 					"smscode",
 					"user",

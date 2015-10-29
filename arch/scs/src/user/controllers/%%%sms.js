@@ -2,10 +2,10 @@ var db = require("../db");
 var refreshCache = 1;
 var cache = {};
 var log = require("../lib/log");
-var defaultPlatform;
+var defaultPlatform = "sms99";
 var prefix = "";
 var libDate = require('../lib/date');
-var today = libDate.getDate(new Date());
+var COUNT = 3;
 
 function setPlatform(platform) {
 	defaultPlatform = platform;
@@ -56,19 +56,21 @@ phone
 platform yuntong
 */
 function send(params, fn) {
-	if (!params.ip) return fn('没有ip');
+	var today = libDate.getDate(new Date());
+	if (!params.ip) return fn('没有IP');
+	if (!params.tplid) return fn("没有指定模板");
+	if (!params.phone) return fn("没有手机号");
 	var record_sms = db.getModel("record_sms");
-	var ip = params.ip;
 	var smsDaily = db.getModel("record_sms_daily");
-	if (!params.tplid) return fn("no tplid");
-
-	getTpl(params.tplid, function(err, tpl) {
+	var ip = params.ip;
+	var tplid = params.tplid;
+	getTpl(tplid, function(err, tpl) {
 		if (err) return fn(err);
-		if (!tpl.content) return fn("tplid error, please add tplid " + params.tplid + " into schema smstpl");
+		if (!tpl.content) return fn("tplid error, please add tplid " + tplid + " into schema smstpl");
 		var newparams = {
-			phone: params.phone,
-			tpl: tpl,
-			code: params.code
+			// tpl: tpl,
+			// code: params.code,
+			phone: params.phone
 		};
 		newparams.msg = prefix + tpl.content.replace(/%([^%]+)%/g, function(str, p1) {
 			return params[p1];
@@ -88,7 +90,6 @@ function send(params, fn) {
 			date: today
 		}, function(err, doc) {
 			if (err) return fn(err);
-			var counts = 20;
 			smsDaily.upsert2({
 				ip: ip,
 				date: today
@@ -98,27 +99,20 @@ function send(params, fn) {
 				}
 			}, function(err, result) {
 				if (err) return fn(err);
-				if (!doc) {
-					var number = 0
-				} else {
-					var number = doc.counts
-				};
-
-				if (number < counts) {
+				if (!doc || (doc.counts && doc.counts < COUNT)) {
 					p.sendsms(newparams, function(err, result) {
 						var refid = parseInt(result);
 						var insertObj = {
 							phone: params.phone,
-							tplid: params.tplid,
+							tplid: tplid,
 							refid: refid,
 							state: 1
 						}
 						if (err) {
 							fn(err);
-							0
 							insertObj.state = 2;
-							return record_sms.insert(insertObj, function(insert_err) {
-								if (insert_err) fn(insert_err);
+							record_sms.insert(insertObj, function(insert_err) {
+								if (insert_err) return fn(insert_err);
 							});
 						}
 						record_sms.insert(insertObj, function(err, result) {
