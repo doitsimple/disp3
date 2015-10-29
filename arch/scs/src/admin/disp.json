@@ -1,6 +1,17 @@
 {
 	"proto": {
 		"uis": {
+			"admin_list": {
+				"text": "管理员列表",
+				"elements": {
+					"admin": {
+						"type": "table",
+						"withSchema": "admin",
+						"insert": 1,
+						"update": 1
+					}
+				}
+			},
 			"signin": {
 				"text": "登录",
 				"elements": {
@@ -96,8 +107,7 @@
 					},
 					"password": {
 						"type": "string",
-						"encrypt": "bcrypt",
-						"hidden": true
+						"encrypt": "bcrypt"
 					},
 					"token": {
 						"type": "string",
@@ -108,21 +118,42 @@
             "type": "string",
             "basic": true
           },
-					"modifytime": {
-						"type": "datetime",
-						"onmodify": true
-					},
 					"flags": {
 						"type": "json"
 					},
 					"createtime": {
-						"type": "datetime", 
+						"type": "datetime",
+						"nomanual": 1,
 						"default": 0 
 					}
 				}
 			}
 		},
 		"apis": {
+			"upload": {
+				"text": "上传文件",
+				"params": {
+					"path1": {
+						"isParams": 1
+					},
+					"path2": {
+						"isParams": 1
+					},
+					"buffer": {
+						"isMultipartFile": true,
+            "required": true
+					}
+				},
+				"controllers": [
+					{
+						"pre": "libFile.mkdirpSync(path1+'/'+path2)",
+						"type": "raw",
+						"do": "libFile.mvSync(buffer, path1+'/'+path2+'/'+path.basename(buffer))",
+						"send": "{filename: path.basename(buffer)}"
+					}
+				],
+				"midwares": ["auth", "multipart('filecache')"]
+			},
 			"access": {
 				"text": "获取数据库信息",
 				"params": {

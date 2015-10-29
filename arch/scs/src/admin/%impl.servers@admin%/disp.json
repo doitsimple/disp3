@@ -1,5 +1,6 @@
 {
 	"withApis": [
+		"upload",
 		"access",
 		"export_file",
 		"admin_signin",

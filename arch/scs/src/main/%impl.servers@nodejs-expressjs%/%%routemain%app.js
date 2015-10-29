@@ -2,10 +2,9 @@ var auth = require("./auth").midware;
 var auths = require("./auth").midwares;
 var multiparty = require('connect-multiparty');
 var multiparts = {};
-var uploadPath = "upload";
 function multipart(field){
 	if(!multiparts[field]){
-		var udir = path.resolve(uploadPath + "/" + field);
+		var udir = path.resolve(field);
 		libFile.mkdirpSync(udir);
 		multiparts[field] = multiparty({uploadDir: udir});
 	}

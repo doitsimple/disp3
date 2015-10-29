@@ -22,8 +22,8 @@ schemas["^^=schema.name$$"].formatDoc = function(json){
 					
 				}else{
 					json["^^=field.name$$"] = "";
+					log.e(e);
 				}
-				log.e(e);
 			}
 		}else{
 			if(!json["^^=field.name$$"]) json["^^=field.name$$"] = "";
