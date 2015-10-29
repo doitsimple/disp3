@@ -56,7 +56,7 @@ phone
 platform yuntong
 */
 function send(params, fn) {
-	if(!params.ip) return fn('没有ip');
+	if (!params.ip) return fn('没有ip');
 	var record_sms = db.getModel("record_sms");
 	var ip = params.ip;
 	var smsDaily = db.getModel("record_sms_daily");
@@ -83,17 +83,24 @@ function send(params, fn) {
 			return fn("platform " + platform + " is not found");
 		}
 
-		smsDaily.select({ip: ip,date:today}, function(err, doc) {
+		smsDaily.select({
+			ip: ip,
+			date: today
+		}, function(err, doc) {
 			if (err) return fn(err);
 			var counts = 20;
-			if (ip == '192.1.111') {
-				counts = doc.count + 1;
-			}
-			smsDaily.upsert2({ip: ip,date: today}, {$inc: {counts: 1}}, function(err, result) {
+			smsDaily.upsert2({
+				ip: ip,
+				date: today
+			}, {
+				$inc: {
+					counts: 1
+				}
+			}, function(err, result) {
 				if (err) return fn(err);
-				if(!doc) {
+				if (!doc) {
 					var number = 0
-				}else{
+				} else {
 					var number = doc.counts
 				};
 
@@ -116,7 +123,9 @@ function send(params, fn) {
 						}
 						record_sms.insert(insertObj, function(err, result) {
 							if (err) return fn(err);
-							fn(null, {success: true});
+							fn(null, {
+								success: true
+							});
 						});
 					});
 				} else {
@@ -134,6 +143,7 @@ function send(params, fn) {
 	});
 }
 module.exports = {
+	addTpl: addTpl,
 	send: send,
 	setPlatform: setPlatform,
 	setPrefix: setPrefix

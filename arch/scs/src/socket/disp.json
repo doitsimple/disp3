@@ -79,10 +79,7 @@
 		},
 		"servers": {
 			"fserver": {
-				"withApis": [
-					"list_messages",
-					"set_messages_read"
-				]
+				"withApis": []
 			}
 		}
 	}
