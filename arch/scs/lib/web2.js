@@ -242,7 +242,7 @@ rootApp.factory("ui", function($uibModal, req, ^^=angularCtrlDeps.join(', ')$$){
 			self.where = {};
 			if(config.where)
 				for(var key in config.where)
-					self.where[key] = config.where;
+					self.where[key] = config.where[key];
 			for(var qi in self.rawquerys){
 				var rq = self.rawquerys[qi];
 				if(!self.fields[rq.field]){
