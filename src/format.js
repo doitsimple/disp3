@@ -241,8 +241,9 @@ function format(key1, parent, formatJson){
 			$default: formatJson
 		}
 	}
-	if(typeof parent != "object")
+	if(typeof parent != "object"){
 		return self.error(parent + " is not object");
+	}
 	// assume both json and formatJson are ensured not null
 	if(formatJson.$required && !parent.hasOwnProperty(key1)) 
 		return self.error(key1 + " required" + "\n" + JSON.stringify(formatJson));

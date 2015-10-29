@@ -1,5 +1,5 @@
-^^local.panel = function(config){
-if(config.withSchema){
+^^function appendconfig(config){
+ if(!config.refs) config.refs = {};
 	if (config.withSchema) {
 		if(Object.keys(config.fields).length){
 			for(var f in config.fields){
@@ -9,7 +9,20 @@ if(config.withSchema){
 			$.append(config.fields, global.proto.schemas[config.withSchema].fields);
 		}
 	}
-}
+  for(var f in config.fields){
+		if(config.fields[f].ref){
+			var fields = global.proto.schemas[config.fields[f].ref].fields;
+			var ref = config.refs[config.fields[f].ref] = {
+				fields: fields,
+				field: f,
+				fieldlist: Object.keys(fields)
+			};	
+		}
+	}
+}$$
+
+^^local.panel = function(config){
+appendconfig(config);
 $$
 
 $scope["^^=config.name$$"] = {};
@@ -68,22 +81,19 @@ $scope["^^=config.name$$"]();
 
 ^^ 
 local.table = function(config) {
-	if (config.withSchema) {
-		if(Object.keys(config.fields).length){
-			for(var f in config.fields){
-				$.append(config.fields[f], global.proto.schemas[config.withSchema].fields[f]);
-			}
-		}else{
-			$.append(config.fields, global.proto.schemas[config.withSchema].fields);
-		}
-	}
+appendconfig(config);
 	$$
 	var params = {
     schema: "^^=config.withSchema$$",
-    fields: ^^=JSON.stringify(config.fields)$$
+    fields: ^^=$.stringify(config.fields)$$,
+		fieldlist: ^^=$.stringify(Object.keys(config.fields))$$,
+		refs: ^^=$.stringify(config.refs)$$
   }
 	^^if(config.where){$$
 	params.where = ^^=config.where$$;
+  ^^}$$
+	^^if(config.sort){$$
+	params.sort = ^^=config.sort$$;
   ^^}$$
 	$scope["^^=config.name$$"] = new ui.displayTable($scope, params);
 	$scope["^^=config.name$$"].fetchSaveQuerys();
@@ -184,7 +194,7 @@ rootApp.factory("ui", function($uibModal, req, ^^=angularCtrlDeps.join(', ')$$){
 		this.perScreen = 5; //the number of pages per screen
 		this.api = config.api;
 		var self = this;
-		self.sort = {};
+		self.sort = config.sort || {};
 		$scope.$watch(function() {
 			return self.perPage;
 		}, function(newv, oldv) {
@@ -227,48 +237,67 @@ rootApp.factory("ui", function($uibModal, req, ^^=angularCtrlDeps.join(', ')$$){
 			json[key] = value || -self.sort[key] || -1;
 			self.sort = json;
 		}
+		self.refs = config.refs;
 		self.fields = config.fields;
-		self.fieldlist = [];
+		self.fieldlist = config.fieldlist;
 		self.project = {};
 		for(var f in self.fields){
-			self.fieldlist.push(f);
 			self.project[f] = 1;
 		}
 		self.oplist = ["=",">","<",">=","<=","!=","in","notin","match","exists","notexists", "clear"];
-		self.addRawQuery =function(){
-			self.rawquerys.push({op:"="});
+		self.addRawQuery =function(by){
+			if(!by){
+				self.rawquerys.push({op:"=", by: ""});
+			}else{
+				self.rawquerys.push({op:"=", by: by});
+			}
 		}
 		self.formatRawQuery = function(){
 			self.where = {};
+			self.by = {};
 			if(config.where)
 				for(var key in config.where)
 					self.where[key] = config.where[key];
 			for(var qi in self.rawquerys){
 				var rq = self.rawquerys[qi];
-				if(!self.fields[rq.field]){
+				var fields, where;
+				if(rq.by) {
+					fields = config.refs[rq.by].fields;
+					if(!self.by[rq.by]) self.by[rq.by] = {where:{},field:config.refs[rq.by].field};
+					where = self.by[rq.by].where;
+				}else{
+					fields = self.fields;
+					where = self.where;
+				}
+				if(!fields[rq.field]){
 					alert(rq.field + "不存在");
 					return 1;
 				}
 				if(!rq.field) continue;
 				if(rq.op == "exists"){
-					self.where[rq.field] = {$exists: true};
+					where[rq.field] = {$exists: true};
 					continue;
 				}
 				if(rq.op == "notexists"){
-					self.where[rq.field] = {$exists: false};
+					where[rq.field] = {$exists: false};
 					continue;
 				}					
 				if(rq.op == "clear"){
-					delete self.where[rq.field];
+					delete where[rq.field];
 					continue;
-				}					
-				if(!rq.hasOwnProperty("v"+rq.field)) continue;
-				var value = rq["v"+rq.field];
-				var type = self.fields[rq.field].type;
+				}
+				if(!rq.hasOwnProperty("v"+rq.by+rq.field)) continue;
+				var value = rq["v"+rq.by+rq.field];
+				var type = fields[rq.field].type;
 				if(type == "string")
 					value = value.toString();
-				else if(type == "int")
-					value = parseInt(value);
+				else if(type == "int"){
+					if(fields[rq.field].money){
+						value = parseInt(value*100);
+					}else{
+						value = parseInt(value);
+					}
+				}
 				else if(type == "float")
 					value = parseFloat(value);
 				else if(type == "date")
@@ -276,41 +305,40 @@ rootApp.factory("ui", function($uibModal, req, ^^=angularCtrlDeps.join(', ')$$){
 				else if(type == "datetime")
 					value = new Date(value);
 				if(rq.op == "="){
-					self.where[rq.field] = value;
+					where[rq.field] = value;
 					continue;
 				}
-				if(self.where[rq.field] == "="){
+				if(where[rq.field] == "="){
 					alert("=不能与其他操作符共存: "+rq.field);
 					return 1;
 				}
-				if(!self.where[rq.field]) self.where[rq.field] = {};
+				if(!where[rq.field]) where[rq.field] = {};
 				if(rq.op == ">"){
-					self.where[rq.field].$gt = value;
+					where[rq.field].$gt = value;
 				}
 				if(rq.op == ">="){
-					self.where[rq.field].$gte = value;
+					where[rq.field].$gte = value;
 				}
 				if(rq.op == "<"){
-					self.where[rq.field].$lt = value;
+					where[rq.field].$lt = value;
 				}
 				if(rq.op == "<="){
-					self.where[rq.field].$lte = value;
+					where[rq.field].$lte = value;
 				}
 				if(rq.op == "!="){
-					self.where[rq.field].$ne = value;
+					where[rq.field].$ne = value;
 				}
 				if(rq.op == "in"){
-					self.where[rq.field].$in = JSON.parse(value);
+					where[rq.field].$in = JSON.parse(value);
 				}
 				if(rq.op == "notin"){
-					self.where[rq.field].$nin = JSON.parse(value);
+					where[rq.field].$nin = JSON.parse(value);
 				}
 				if(rq.op == "match"){
-					self.where[rq.field].$regex = value;
+					where[rq.field].$regex = value;
 				}
 			}
 		}
-
 		self.loadSave = function(orisave){
 			var save;
 			if(!orisave) save = {};
@@ -351,9 +379,10 @@ rootApp.factory("ui", function($uibModal, req, ^^=angularCtrlDeps.join(', ')$$){
 				self.savequerys = data.data;
 			});
 		}
-		self.refresh = $scope.refresh = function() {
+		self.refresh = function() {
 			if(self.formatRawQuery()) return;
 			req.postBearer("/api/access/"+ config.schema + "/bcolect", auth.gettoken(), {
+				by: self.by,
 				where: self.where,
 				options: {
 					$project: self.project,

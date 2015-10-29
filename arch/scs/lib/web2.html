@@ -1,3 +1,19 @@
+^^function appendconfig(config){
+ if(!config.reflist) config.reflist = {};
+	if (config.withSchema) {
+		if(Object.keys(config.fields).length){
+			for(var f in config.fields){
+				$.append(config.fields[f], global.proto.schemas[config.withSchema].fields[f]);
+			}
+		}else{
+			$.append(config.fields, global.proto.schemas[config.withSchema].fields);
+		}
+	}
+  for(var f in config.fields){
+	 if(config.fields[f].ref) config.reflist[config.fields[f].ref] = f;
+	}
+}$$
+
  ^^function bytype(f, model, fields){
   var type = f.type;
 	^^if(type == "date"){$$
@@ -12,13 +28,13 @@
 <p><a class="btn btn-default" ng-href="/^^=f.path$$/{{^^=model$$}}">下载视频</a></p>
   ^^}else if(type == "ObjectId" && f.ref){$$
 <div ng-show="!!^^=model$$">
-<a class="btn btn-xs btn-default" ng-click="ui.openInfoModal('^^=f.ref$$', ^^=model$$)"><i class="fa fa-folder-open"></i></a>
-	<a class="btn btn-xs btn-warning" ng-href="#/^^=f.ref$$_details/{{^^=model$$}}" target="_blank"><i class="fa fa-plus-square"></i></a>
+<a class="btn btn-xs btn-default" ng-click="ui.openInfoModal('^^=f.ref$$', ^^=model$$)">{{^^=model$$ | last:4}}</a>
+	<a class="btn btn-xs btn-warning" ng-href="#/^^=f.ref$$_details/{{^^=model$$}}" target="_blank"><i class="fa fa-folder-open"></i></a>
 </div>
   ^^}else{$$
 
-    ^^if(f.ondemand && fields){$$
-	<span ng-show="!!^^=model$$" class="glyphicon glyphicon-option-horizontal" ng-click="^^=fields$$.showrow^^=name$$=true" ng-hide="^^=fields$$.showrow^^=name$$"></span>
+    ^^if(f.ondemand && type == "ObjectId" && fields){$$
+	<a ng-show="!!^^=model$$" class="btn btn-xs btn-default" ng-click="^^=fields$$.showrow^^=name$$=true" ng-hide="^^=fields$$.showrow^^=name$$">{{^^=model$$ | last:4}}</a>
 	<div ng-click="^^=fields$$.showrow^^=name$$=false" ng-show="^^=fields$$.showrow^^=name$$">{{^^=model$$}}</div>
     ^^}else if(f.href){$$
   <a ng-href="^^=f.href$${{row.^^=name$$}}">{{^^=model$$}}</a>
@@ -39,12 +55,12 @@
     return;
   }$$
 	^^if(type == "date"){$$
-<input type="date" ng-model="^^=model$$"></input>
+<input class="form-control" type="date" ng-model="^^=model$$"></input>
 	^^}else if(type == "datetime"){$$
-<input ng-model="^^=model$$"></input><pre>example: 2015/09/10 09:30</pre>
+<input class="form-control" ng-model="^^=model$$"></input><pre>example: 2015/09/10 09:30</pre>
   ^^}else if(type == "image"){$$
-<input type="file" class="form-control" file-model="^^=f.name$$buffer">
-<a class="btn btn-primary btn-xs">上传</a>
+<input type="file" class="form-control" file-model="^^=f.name$$.buffer">
+<a class="btn btn-primary btn-xs" ng-click="access.saveUpload('^^=f.path$$', ^^=f.name$$, ^^=$.stem(model)$$, '^^=$.leaf(model)$$')">上传</a>
 <img ng-show="^^=model$$ != '' &amp;&amp; ^^=model$$ != undefined" class="img-thumbnail" ng-src="/^^=f.path$$/{{^^=model$$}}" ng-click="ui.openImageModal('/^^=f.path$$/'+^^=model$$)">
   ^^}else if(type == "video"){$$
 <input type="file" class="form-control" file-model="^^=f.name$$buffer">
@@ -52,22 +68,22 @@
 <div ng-show="^^=model$$ == '' || ^^=model$$ == undefined" class="ng-hide">没有视频</div>
 <video controls ng-show="^^=model$$ != '' &amp;&amp; ^^=model$$ != undefined" class="img-thumbnail" ng-src="{{'/^^=f.path$$/'+^^=model$$}}"></video>
   ^^}else if(type == "float"){$$
-<input ng-model="^^=model$$" ng-pattern="/^[0-9\.]+$/">
+<input class="form-control" ng-model="^^=model$$" ng-pattern="/^[0-9\.]+$/">
   ^^}else if(type == "int"){$$
-    ^^if(f.money){$$
-			{{^^=model$$ | fmoney}}
-    ^^}else if(f.enums && fields){$$
-<select ng-model="^^=model$$" ng-init="^^=fields+'.'+f.name$$.enumsarr = ui.convert2arr(^^=fields+'.'+f.name$$.enums)" ng-options="item.key as item.val for item in ^^=fields+'.'+f.name$$.enumsarr"></select>
+    ^^if(f.enums && fields){$$
+<select class="form-control" ng-model="^^=model$$" ng-init="^^=fields+'.'+f.name$$.enumsarr = ui.convert2arr(^^=fields+'.'+f.name$$.enums)" ng-options="item.key as item.val for item in ^^=fields+'.'+f.name$$.enumsarr"></select>
     ^^}else{$$
-<input ng-model="^^=model$$" ng-pattern="/^[0-9]+$/">
+<input class="form-control" ng-model="^^=model$$" ng-pattern="/^[0-9]+$/">
     ^^}$$
   ^^}else if(type == "ObjectId" && f.ref){$$
 <small>{{^^=model$$}}</small>
   ^^}else{$$
-<input ng-model="^^=model$$">
+<input class="form-control" ng-model="^^=model$$">
   ^^}$$
  ^^}$$
-^^local.loadraw = function(addon){$$
+ 
+
+^^function loadraw(addon){$$
  ^^
   if(!addon.text) addon.text = "";
   var attrstr = local.makeng(addon);
@@ -75,7 +91,7 @@
 <^^=addon.tag$$ ^^=attrstr$$ >^^=addon.text$$</^^=addon.tag$$>
  
 ^^}$$
-^^local.item = function(config, prefix){$$
+^^function makeitem(config, prefix){$$
   ^^for(var sname in config.fields){
    var f = config.fields[sname];
    if(f.hidden) continue;
@@ -123,15 +139,7 @@
 ^^local.panel = function(config){
 if(!config.perline) config.perline = 3;
 if(!config.width) config.width = 12;
-	if (config.withSchema) {
-		if(Object.keys(config.fields).length){
-			for(var f in config.fields){
-				$.append(config.fields[f], global.proto.schemas[config.withSchema].fields[f]);
-			}
-		}else{
-			$.append(config.fields, global.proto.schemas[config.withSchema].fields);
-		}
-	}
+appendconfig(config);
 $$
 <div class="panel panel-primary">
 <div class="panel-heading">^^=config.text || config.name$$</div>
@@ -139,10 +147,10 @@ $$
 	<div class="col-sm-^^=config.width$$">
 		<div class="row">
  ^^if(!config.islist){
-  local.item(config, "schemas."+config.withSchema)
+  makeitem(config, "schemas."+config.withSchema)
  }else{$$
  			<div class="row" ng-repeat="item in schemas.^^=config.withSchema$$">
-  ^^local.item(config, "item");$$
+  ^^makeitem(config, "item");$$
 			</div>
  ^^}$$
 		</div>
@@ -158,7 +166,7 @@ $$
 	</div>
 	<div class="col-sm-^^=12-config.width$$">
 		^^for(var addname in config.addons){$$
-		^^local.loadraw(config.addons[addname]);$$	
+		^^loadraw(config.addons[addname]);$$	
 		^^}$$
 	</div>
 </div>
@@ -218,8 +226,12 @@ $$
 		</div>
 		<div class="col-sm-6 borderbox" ng-show="showquery" style="padding: 10px;">
 			<div class="btn-group" role="group">
-			<a class="btn btn-default"><i class="fa fa-plus">user</i></a>
+		^^for(var key in config.reflist){$$
+			<a class="btn btn-default" ng-click="^^=config.name$$.addRawQuery('^^=key$$')"><i class="fa fa-plus">^^=key$$</i></a>
+    ^^}$$
 			<a class="btn btn-default" ng-click="^^=config.name$$.addRawQuery()"><i class="fa fa-plus"></i></a>
+			</div>
+			<div class="btn-group" role="group">
 			<a class="btn btn-default" ng-click="^^=config.name$$.rawquerys = []">Clear</a>
 			<a class="btn btn-default" ng-click="^^=config.name$$.refresh()">Go</a>
 			<a class="btn btn-default" ng-click="^^=config.name$$.saveQuery()"><i class="fa fa-save"></i></a>
@@ -227,15 +239,30 @@ $$
 			</div>
 			<form class="form-inline">
 				<div class="form-group" style="padding:10px" ng-repeat="rawquery in ^^=config.name$$.rawquerys track by $index">
-					<select class="form-control" ng-model="rawquery.field" ng-options="key for key in ^^=config.name$$.fieldlist"></select>
-					<select class="form-control" style="width:auto" ng-model="rawquery.op" ng-options="key for key in ^^=config.name$$.oplist"></select>
+					<div class="input-group" ng-show="!rawquery.by">
+						<select class="form-control" ng-model="rawquery.field" ng-options="key for key in ^^=config.name$$.fieldlist"></select>
+						<select class="form-control" style="width:auto" ng-model="rawquery.op" ng-options="key for key in ^^=config.name$$.oplist"></select>
  ^^for(var fname in config.fields){
   var f=config.fields[fname];$$
-					<div ng-show="rawquery.field == '^^=f.name$$'">
+						<div ng-show="rawquery.field == '^^=f.name$$'">
 						^^newbytype(f, "rawquery.v"+f.name, config.name+".fields");$$
-					</div>
+						</div>
  ^^}$$
 					<a class="btn btn-default" ng-click="^^=config.name$$.rawquerys.splice($index, 1)"><i class="fa fa-minus"></i></a>
+					</div>
+					<div class="input-group" ng-show="!!rawquery.by">
+						<div class="input-group-addon">{{rawquery.by}}</div>
+						<select class="form-control" ng-model="rawquery.field" ng-options="key for key in ^^=config.name$$.refs[rawquery.by].fieldlist"></select>
+						<select class="form-control" style="width:auto" ng-model="rawquery.op" ng-options="key for key in ^^=config.name$$.oplist"></select>
+ ^^for(var key in config.reflist){var s=config.reflist[key];$$
+  ^^for(var fname in global.proto.schemas[key].fields){var f=global.proto.schemas[key].fields[fname];$$
+						<div ng-show="rawquery.field == '^^=f.name$$' && rawquery.by == '^^=key$$'">
+						^^newbytype(f, "rawquery.v"+key+f.name, config.name+".refs."+key);$$
+						</div>
+  ^^}$$
+ ^^}$$
+					<a class="btn btn-default" ng-click="^^=config.name$$.rawquerys.splice($index, 1)"><i class="fa fa-minus"></i></a>
+					</div>
 				</div>
 			</form>
 		</div>
@@ -245,17 +272,7 @@ $$
 	</div>
 ^^}$$
 ^^local.table = function(config){$$
-^^
-	if (config.withSchema) {
-		if(Object.keys(config.fields).length){
-			for(var f in config.fields){
-				$.append(config.fields[f], global.proto.schemas[config.withSchema].fields[f]);
-			}
-		}else{
-			$.append(config.fields, global.proto.schemas[config.withSchema].fields);
-		}
-	}
-$$
+^^appendconfig(config)$$
 <div class="panel panel-primary">
 <div class="panel-heading" ^^=local.makeng(config.heading)$$>^^=config.text || config.name$$</div>
 <div class="panel-body" ^^=local.makeng(config.body)$$>

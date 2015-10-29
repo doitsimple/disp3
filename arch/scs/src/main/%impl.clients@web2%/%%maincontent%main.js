@@ -55,6 +55,12 @@ rootApp.filter('trustUrl', function ($sce) {
       return $sce.trustAsResourceUrl(url);
     };
 });
+rootApp.filter('last', function ($sce) {
+    return function(str, len) {
+			if(!str) return "";
+      return str.substr(str.length-len);
+    };
+});
 rootApp.filter('bykey', function () {
     return function(arr, key, value) {
 			var narr = [];

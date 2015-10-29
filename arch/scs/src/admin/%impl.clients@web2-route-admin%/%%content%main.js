@@ -1,5 +1,16 @@
 rootApp.factory('access', function(req, auth){
 	var methods = {};
+	methods.saveUpload = function(path, obj, pobj, key){		
+		methods.upload(path, obj, function(err, result){
+			if(err) return;
+			pobj[key] = result.filename;
+		});
+	}
+	methods.upload = function(path, obj, fn){
+		req.postBearerFile("/api/upload/" + path, auth.gettoken(), obj, function(err, result){
+			fn(err, result);
+		});
+	}
 	methods.delete = function(schema, _id, fn){
 		req.postBearer("/api/access/"+schema+"/delete", auth.gettoken(), {where: {_id: _id}}, function(err, result){
 			if(fn) fn(err, result);

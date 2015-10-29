@@ -8,7 +8,12 @@ $scope.loadTemplate = function(name){
 $scope.submit= function(name, params){
 	$scope.result = "";
 	if(params.isfile){
-		req.postBearerFile("/api/"+name, $scope.token, this[name], function(err, result){
+		var url = "/api/"+name;
+		for(var key in this[name]){
+			if(key != 'buffer')
+				url += "/" + this[name][key];
+		}
+		req.postBearerFile(url, $scope.token, this[name], function(err, result){
 			$scope.result = JSON.stringify(result, undefined, 2);
 		});		
 	}else{
