@@ -45,15 +45,21 @@ codeVerify.verify2 = function(params, fn) {
 			if (!doc) {
 				limit.inc({
 					phone: params.phone,
-					method: 'sms',
-					limits: 3
+					method: 'sms'
 				}, key, function(err) {
 					if (err) return fn(err);
 					return fn("验证码错误");
 				});
 			}
 			if (new Date().getTime() - new Date(doc.time).getTime() > 60000 * 15) return fn("验证码过期");
-			if(doc) fn();
+			smscode.update({
+				phone: params.phone
+			}, {
+				valid: 1
+			}, function(err, doc) {
+				if (err) log.e(err);
+			});
+			if (doc) fn();
 		});
 	});
 }
