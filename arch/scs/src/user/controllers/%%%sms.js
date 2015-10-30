@@ -2,11 +2,14 @@ var db = require("../db");
 var refreshCache = 1;
 var cache = {};
 var log = require("../lib/log");
-var defaultPlatform;
+var defaultPlatform = "";
 var prefix = "";
 var libDate = require('../lib/date');
-var today = libDate.getDate(new Date());
-
+/*^^if(global.product){$$*/
+var COUNT = 200;
+/*^^}else{$$*/
+var COUNT = 3;
+/*^^}$$*/
 function setPlatform(platform) {
 	defaultPlatform = platform;
 }
@@ -56,23 +59,28 @@ phone
 platform yuntong
 */
 function send(params, fn) {
-	if(!params.ip) return fn('没有ip');
+	var today = libDate.getDate(new Date());
+	if (!params.ip) return fn('没有IP');
+	if (!params.tplid) return fn("没有指定模板");
+	if (!params.phone) return fn("没有手机号");
 	var record_sms = db.getModel("record_sms");
-	var ip = params.ip;
 	var smsDaily = db.getModel("record_sms_daily");
-	if (!params.tplid) return fn("no tplid");
-
-	getTpl(params.tplid, function(err, tpl) {
+	var ip = params.ip;
+	var tplid = params.tplid;
+	getTpl(tplid, function(err, tpl) {
 		if (err) return fn(err);
-		if (!tpl.content) return fn("tplid error, please add tplid " + params.tplid + " into schema smstpl");
+		if (!tpl.content) return fn("tplid error, please add tplid " + tplid + " into schema smstpl");
 		var newparams = {
-			phone: params.phone,
-			tpl: tpl,
-			code: params.code
+			// tpl: tpl,
+			// code: params.code,
+			phone: params.phone
 		};
+		var msgerr;
 		newparams.msg = prefix + tpl.content.replace(/%([^%]+)%/g, function(str, p1) {
+			if (!params.hasOwnProperty(p1)) msgerr = "sms.send缺少属性:[" + p1 + "]";
 			return params[p1];
 		});
+		if (msgerr) return log.e(msgerr);
 		var platform = params.platform || defaultPlatform;
 		var p;
 		try {
@@ -83,50 +91,65 @@ function send(params, fn) {
 			return fn("platform " + platform + " is not found");
 		}
 
-		smsDaily.select({ip: ip,date:today}, function(err, doc) {
+		smsDaily.select({
+			ip: ip,
+			date: today
+		}, function(err, doc) {
 			if (err) return fn(err);
-			var counts = 20;
-			if (ip == '192.1.111') {
-				counts = doc.count + 1;
-			}
-			smsDaily.upsert2({ip: ip,date: today}, {$inc: {counts: 1}}, function(err, result) {
+			smsDaily.upsert2({
+				ip: ip,
+				date: today
+			}, {
+				$inc: {
+					counts: 1
+				}
+			}, function(err, result) {
 				if (err) return fn(err);
-				if(!doc) {
-					var number = 0
-				}else{
-					var number = doc.counts
-				};
-
-				if (number < counts) {
-					p.sendsms(newparams, function(err, result) {
-						var refid = parseInt(result);
-						var insertObj = {
-							phone: params.phone,
-							tplid: params.tplid,
-							refid: refid,
-							state: 1
-						}
-						if (err) {
-							fn(err);
-							0
-							insertObj.state = 2;
-							return record_sms.insert(insertObj, function(insert_err) {
-								if (insert_err) fn(insert_err);
-							});
-						}
-						record_sms.insert(insertObj, function(err, result) {
-							if (err) return fn(err);
-							fn(null, {success: true});
+				//filter local ip
+				if (ip.match(/^\d{1,3}(?:\.\d{1,3}){3}/g)) {
+					if (!doc || doc.ip == "127.0.0.1" || doc.ip.match(/^192\.168(?:\.\d{1,3}){2}/g) || (doc.counts && doc.counts < COUNT)) {
+						p.sendsms(newparams, function(err, result) {
+							var refid = parseInt(result);
+							var insertObj = {
+								phone: params.phone,
+								tplid: tplid,
+								refid: refid,
+								state: 1
+							}
+							if (err) {
+								fn(err);
+								insertObj.state = 2;
+								record_sms.insert(insertObj, function(insert_err) {
+									if (insert_err) log.e(insert_err);
+								});
+							} else {
+								log.v("sms.send:" + newparams.phone + "\t" + newparams.msg);
+								fn(null, {
+									success: true
+								});
+								record_sms.insert(insertObj, function(err, result) {
+									if (err) log.e(err);
+								});
+							}
 						});
-					});
+					} else {
+						fn('当前ip发送发送短信超过上限');
+						record_sms.update({
+							phone: params.phone
+						}, {
+							state: 2
+						}, function(err, result) {
+							if (err) log.e(err);
+						});
+					}
 				} else {
-					record_sms.update({
+					fn('ip错误');
+					record_sms.insert({
 						phone: params.phone
 					}, {
 						state: 2
 					}, function(err, result) {
-						if (err) return fn(err);
-						fn('当前ip发送发送短信超过上限');
+						if (err) log.e(err);
 					});
 				}
 			});
@@ -134,6 +157,7 @@ function send(params, fn) {
 	});
 }
 module.exports = {
+	addTpl: addTpl,
 	send: send,
 	setPlatform: setPlatform,
 	setPrefix: setPrefix
