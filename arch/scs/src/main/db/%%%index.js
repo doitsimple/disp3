@@ -90,7 +90,7 @@ for(var key in dbs["^^=dbname$$"].schemas["^^=schema.name$$"]){
 	schemas["^^=schema.name$$"][key+"Spec"] = dbs["^^=dbname$$"].schemas["^^=schema.name$$"][key];
 }
 schemas["^^=schema.name$$"].db = "^^=dbname$$";
-schemas["^^=schema.name$$"].formatUpdateDoc = function(json){
+schemas["^^=schema.name$$"].formatUpdateDoc = function(json, sp){
   ^^for(var fieldname in schema.fields){var field = schema.fields[fieldname];$$
    ^^if(!field.setonmodify) continue;$$
 	 ^^if(field.hasOwnProperty("default")){$$
@@ -104,9 +104,9 @@ schemas["^^=schema.name$$"].formatUpdateDoc = function(json){
     ^^}$$
 	 ^^}$$
 	^^}$$
-	if(schemas["^^=schema.name$$"].formatUpdateDocSpec) schemas["^^=schema.name$$"].formatUpdateDocSpec(json);
+	if(schemas["^^=schema.name$$"].formatUpdateDocSpec) schemas["^^=schema.name$$"].formatUpdateDocSpec(json, sp);
 }
-schemas["^^=schema.name$$"].formatDoc = function(json){
+schemas["^^=schema.name$$"].formatDoc = function(json, sp){
   ^^for(var fieldname in schema.fields){var field = schema.fields[fieldname];$$
  	 ^^if(field.type == "string"){$$
 		formatString(json, "^^=field.name$$");
@@ -120,7 +120,7 @@ schemas["^^=schema.name$$"].formatDoc = function(json){
  		formatDatetime(json, "^^=field.name$$");
 	 ^^}$$
 	 ^^if(field.encrypt){$$
-	if(json.hasOwnProperty("^^=field.name$$"))
+	if(json.hasOwnProperty("^^=field.name$$") && !sp.$encrypt_disabled)
     ^^if(!field.encryptParams){$$
 		json["^^=field.name$$"] = libEncrypt["^^=field.encrypt$$"](json["^^=field.name$$"]);
     ^^}else{$$
@@ -128,9 +128,9 @@ schemas["^^=schema.name$$"].formatDoc = function(json){
 	  ^^}$$
 	 ^^}$$
 	^^}$$
-	if(schemas["^^=schema.name$$"].formatDocSpec) schemas["^^=schema.name$$"].formatDocSpec(json);
+	if(schemas["^^=schema.name$$"].formatDocSpec) schemas["^^=schema.name$$"].formatDocSpec(json, sp);
 }
-schemas["^^=schema.name$$"].formatInsertDoc = function(json){
+schemas["^^=schema.name$$"].formatInsertDoc = function(json, sp){
   ^^for(var fieldname in schema.fields){var field = schema.fields[fieldname];$$
 	 ^^if(field.hasOwnProperty("default")){$$
 		if(!json.hasOwnProperty("^^=field.name$$"))
@@ -143,7 +143,7 @@ schemas["^^=schema.name$$"].formatInsertDoc = function(json){
     ^^}$$
 	 ^^}$$
 	^^}$$
-	if(schemas["^^=schema.name$$"].formatInsertDocSpec) schemas["^^=schema.name$$"].formatInsertDocSpec(json);
+	if(schemas["^^=schema.name$$"].formatInsertDocSpec) schemas["^^=schema.name$$"].formatInsertDocSpec(json, sp);
 };
 	^^if(schema.init && schema.init.length){schema.seed = schema.init;console.log("schema init depleted, please change to seed");}$$
 	^^if(schema.seed && schema.seed.length){$$
@@ -199,7 +199,7 @@ module.exports.connect = function (){
 	});
 };
 function parseArgs(schema, args, notformat){
-	var pargs = {};
+	var pargs = {sp:{}};
 	if(args.length == 3){
 		pargs.where = args[0] || {};
 		pargs.options = args[1] || {};
@@ -237,28 +237,32 @@ function parseArgs(schema, args, notformat){
 		log.e("args error");
 		return;
 	}
+	if(pargs.options.$encrypt_disabled){
+		pargs.sp.$encrypt_disabled = 1;
+		delete pargs.options.$encrypt_disabled;
+	}
 	if(schema.formatDoc && !notformat)
-		schema.formatDoc(pargs.where);
+		schema.formatDoc(pargs.where, pargs.sp);
 	return pargs;
 }
 function formatInsertArgs(schema, args){
 	if(schema.formatInsertDoc)
-		schema.formatInsertDoc(args.where);
+		schema.formatInsertDoc(args.where, args.sp);
 }
 function formatUpdateArgs(schema, args){
 	if(!args.options.$set) args.options.$set = {};
 	if(schema.formatDoc){
-		schema.formatDoc(args.options.$set);
+		schema.formatDoc(args.options.$set, args.sp);
 	}
 	if(schema.formatUpdateDoc){
-		schema.formatUpdateDoc(args.options.$set);
+		schema.formatUpdateDoc(args.options.$set, args.sp);
 	}
 }
 function formatUpsertArgs(schema, args){
 	formatUpdateArgs(schema, args);
 	if(!args.options.$setOnInsert) args.options.$setOnInsert = {};
 	if(schema.formatInsertDoc)
-		schema.formatInsertDoc(args.options.$setOnInsert);
+		schema.formatInsertDoc(args.options.$setOnInsert, args.sp);
 	for(var key in args.options.$inc){
 		delete args.options.$setOnInsert[key];
 	}
@@ -394,6 +398,7 @@ function getModel(schemaname){
 			});
 		}
 		if(model.each) std.each = model.each;
+		if(model.eachSeries) std.eachSeries = model.eachSeries;
 /*
 		if(model.leftjoin) std.leftjoin = model.leftjoin;
 		else if(std.each) std.leftjoin = function(rschema, key, left, right, fn){

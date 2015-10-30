@@ -173,9 +173,21 @@ function getModel(cname){
 	model.each = function(fn, fnfinal){
 		origin.find().each(function(err, doc){
 			if(!doc) return fnfinal();
-			else fn(err, doc);
+			fn(err, doc);
 		});
 	};
+	model.eachSeries = function(fn, fnfinal){
+		var c = origin.find();
+		var nextFn = function(err, doc){
+			if(err) return fnfinal(err);
+			if(!doc) return fnfinal();
+			fn(err, doc, function(err2){
+				if(err2) return fnfinal(err2);
+				c.next(nextFn);
+			});
+		};
+		c.next(nextFn);
+	}
 	model.bcolect = function(criteria, selectOptions, fn){
 		if(!fn){
 			fn = selectOptions; 
