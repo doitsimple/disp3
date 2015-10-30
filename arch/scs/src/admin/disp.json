@@ -24,6 +24,7 @@
 								"model": "sf.email"
 							},
 							"password": {
+								"text": "密码",
 								"type": "input",
 								"inputtype": "password",
 								"model": "sf.password"
@@ -118,9 +119,6 @@
             "type": "string",
             "basic": true
           },
-					"flags": {
-						"type": "json"
-					},
 					"createtime": {
 						"type": "datetime",
 						"nomanual": 1,
@@ -152,7 +150,11 @@
 						"send": "{filename: path.basename(buffer)}"
 					}
 				],
-				"midwares": ["auth", "multipart('filecache')"]
+				"midwares": [
+					"auth", 
+					"auths.checkflag('upload', '没有上传权限，请联系管理员开通')",
+					"multipart('filecache')"
+				]
 			},
 			"access": {
 				"text": "获取数据库信息",

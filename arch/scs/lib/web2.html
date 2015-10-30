@@ -26,6 +26,8 @@
 <div ng-show="^^=model$$ == '' || ^^=model$$ == undefined" class="ng-hide">没有视频</div>
 <video controls ng-show="^^=model$$ != '' &amp;&amp; ^^=model$$ != undefined" class="img-thumbnail" ng-src="{{'/^^=f.path$$/'+^^=model$$}}"></video>
 <p><a class="btn btn-default" ng-href="/^^=f.path$$/{{^^=model$$}}">下载视频</a></p>
+  ^^}else if(type == "file"){$$
+<a class="btn btn-default" ng-href="/^^=f.path$$/{{^^=model$$}}">{{^^=model$$}}</a>
   ^^}else if(type == "ObjectId" && f.ref){$$
 <div ng-show="!!^^=model$$">
 <a class="btn btn-xs btn-default" ng-click="ui.openInfoModal('^^=f.ref$$', ^^=model$$)">{{^^=model$$ | last:4}}</a>
@@ -36,6 +38,8 @@
     ^^if(f.ondemand && type == "ObjectId" && fields){$$
 	<a ng-show="!!^^=model$$" class="btn btn-xs btn-default" ng-click="^^=fields$$.showrow^^=name$$=true" ng-hide="^^=fields$$.showrow^^=name$$">{{^^=model$$ | last:4}}</a>
 	<div ng-click="^^=fields$$.showrow^^=name$$=false" ng-show="^^=fields$$.showrow^^=name$$">{{^^=model$$}}</div>
+    ^^}else if(f.encrypt){$$
+	<a class="btn btn-default btn-xs"><i class="fa fa-lock"></i></a>
     ^^}else if(f.href){$$
   <a ng-href="^^=f.href$${{row.^^=name$$}}">{{^^=model$$}}</a>
     ^^}else if(f.money){$$
@@ -58,15 +62,10 @@
 <input class="form-control" type="date" ng-model="^^=model$$"></input>
 	^^}else if(type == "datetime"){$$
 <input class="form-control" ng-model="^^=model$$"></input><pre>example: 2015/09/10 09:30</pre>
-  ^^}else if(type == "image"){$$
+  ^^}else if(type == "image" || type=="video" || type=="file"){$$
 <input type="file" class="form-control" file-model="^^=f.name$$.buffer">
 <a class="btn btn-primary btn-xs" ng-click="access.saveUpload('^^=f.path$$', ^^=f.name$$, ^^=$.stem(model)$$, '^^=$.leaf(model)$$')">上传</a>
-<img ng-show="^^=model$$ != '' &amp;&amp; ^^=model$$ != undefined" class="img-thumbnail" ng-src="/^^=f.path$$/{{^^=model$$}}" ng-click="ui.openImageModal('/^^=f.path$$/'+^^=model$$)">
-  ^^}else if(type == "video"){$$
-<input type="file" class="form-control" file-model="^^=f.name$$buffer">
-<a class="btn btn-primary btn-xs">上传</a>
-<div ng-show="^^=model$$ == '' || ^^=model$$ == undefined" class="ng-hide">没有视频</div>
-<video controls ng-show="^^=model$$ != '' &amp;&amp; ^^=model$$ != undefined" class="img-thumbnail" ng-src="{{'/^^=f.path$$/'+^^=model$$}}"></video>
+    ^^bytype(f, model, fields)$$
   ^^}else if(type == "float"){$$
 <input class="form-control" ng-model="^^=model$$" ng-pattern="/^[0-9\.]+$/">
   ^^}else if(type == "int"){$$

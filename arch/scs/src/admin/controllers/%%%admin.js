@@ -1,6 +1,49 @@
 var db = require("../db");
 var sync = require("../lib/sync");
+var log = require("../lib/log");
+function validate(schema, method, project, admin, config){
+	var pass = 0;
+	for(var key in admin){
+		if(!config[key]) continue;
+		var c = config[key];
+		if(c.all){
+			pass = 1;
+			break;
+		}
+		if(!c.schemas){
+			log.e("not schema for config");
+			continue;
+		}
+		if(c.schemas[schema]){
+			var s = c.schemas[schema];
+			if(s.all) pass = 1;
+			if(method == "select" || method == "bselect" || method =="bcolect"){
+				if(s.noproject)
+					for(var pkey in s.noproject)
+						delete project[pkey];
+				if(s.project){
+					for(var pkey in project)
+						delete project[pkey];
+					for(var pkey in s.project)
+						project[pkey] = s.project[pkey];
+				}
+			}
+			if(s.methods){
+				if(s.methods[method])
+					pass = 1;
+			}
+		}
+	}
+	return pass;
+}
+
 module.exports.access = function(schema, method, body, admin, fn){
+	if(method == "select" || method == "bselect" || method =="bcolect"){
+		if(!body.options) body.options = {};
+		if(!body.options.$project) body.options.$project = {};
+	}
+	if(!auth(schema, method, body.options.$project, admin))
+		 return fn("无操作权限");
 	if(body.by && Object.keys(body.by).length > 0){
 		sync.each(Object.keys(body.by), function(schema, cb){
 			var byconfig = body.by[schema];
@@ -28,4 +71,3 @@ module.exports.access = function(schema, method, body, admin, fn){
 		db.getModel(schema)[method](body.where, body.options, fn);
 	}
 }
-
