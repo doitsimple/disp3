@@ -9,10 +9,9 @@ rootApp.controller("navbar", function($scope, $rootScope, req, auth){
     }
   });
   $scope.signout = auth.signout;
-	^^=JSON.stringify(global.impl.servers[withServer].authflags)$$.forEach(function(tag){
-    $scope["is" + tag] = function(){
-      if(!$rootScope.user) return false;
-      return tag == "all" || $rootScope.user[tag];
-    }
-  });
+  $scope.isauth = function(tag){
+    if(!$rootScope.user) return false;
+		if($rootScope.user.admin) return true;
+    return !!$rootScope.user[tag];
+  }
 });

@@ -415,6 +415,7 @@ rootApp.factory("ui", function($uibModal, req, ^^=angularCtrlDeps.join(', ')$$){
 			self.showupdaterow = !self.showupdaterow;
 			if(self.showupdaterow){
 				for(var key in row){
+					if(key.match('pass')) continue;
 					self.new[key] = row[key];
 				}
 			}
