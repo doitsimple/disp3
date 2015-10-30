@@ -22,7 +22,9 @@ module.exports.midware = midwares["default"];
 midwares.checkflag = function(flag, content){
 	if(!content) content = "权限不足";
 	return function(req, res, next){
-		if(req.user[flag] || req.user.admin) return next(req, res);
+		if(req.user[flag] || req.user.admin) {
+			return next();
+		}
 		else res.send({error:content});
 	};
 }
