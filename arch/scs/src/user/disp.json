@@ -34,22 +34,6 @@
 			},
 			"smstpl": {
 				"text": "短信模板",
-				"seed": [{
-					"tplid": "code",
-					"content": "短信验证码为：%code%，有效时间15分钟，感谢使用学银钱包，如有疑问或非本人操作，请咨询：4009207299"
-				}, {
-					"tplid": "loan_async_withdraw_success",
-					"content": "您申请的%amount%元借款已经成功，将在1~2天到账尾号%no%的储蓄卡，请注意查收。"
-				}, {
-					"tplid": "loan_async_deposit_success",
-					"content": "【学银钱包】我们已经收到您%month%月份的还款%amount%元。"
-				}, {
-					"tplid": "loan_repay_hint_before_duedate_3day",
-					"content": "您本期的应还款为%amount%元，最后还款日期为%duedate%，请准时还款，以免影响信用等级。若已还款，请忽略。"
-				}, {
-					"tplid": "loan_repay_hint_after_duedate_weekly",
-					"content": "尊敬的会员，您应于%duedate%还款%amount%元，现已逾期。逾期还款会产生滞纳金及手续费，并会影响您的个人信用，请尽快还款！"
-				}],
 				"fields": {
 					"tplid": {
 						"type": "string",

@@ -38,21 +38,18 @@
 					},
 					"submit": {
 						"type": "method",
-						"fields": [
-							{
-								"type": "req",
-								"method": "post",
-								"url": "/api/admin_signin",
-								"data": "$scope.sf",
-								"do": "auth.settoken(result.token);"
-							},
-							{
-								"type": "req",
-								"method": "postBearer",
-								"url": "/api/admin_get",
-								"do": "auth.setuser(result);$rootScope.user = auth.getuser();location = '/';"
-							}
-						]
+						"fields": [{
+							"type": "req",
+							"method": "post",
+							"url": "/api/admin_signin",
+							"data": "$scope.sf",
+							"do": "auth.settoken(result.token);"
+						}, {
+							"type": "req",
+							"method": "postBearer",
+							"url": "/api/admin_get",
+							"do": "auth.setuser(result);$rootScope.user = auth.getuser();location = '/';"
+						}]
 					}
 				}
 			}
@@ -71,35 +68,29 @@
 						"type": "ObjectId"
 					}
 				}
-			},			
+			},
 			"admin": {
-				"seed": [
-					{
-						"email": "test",
-						"password": "test",
-						"token": "abcdef"
-					},
-					{
-						"email": "test1",
-						"password": "test1",
-						"token": "abcdefg"
-					},
-					{
-						"email": "test2",
-						"password": "test2",
-						"token": "abcdefgh"
-					},
-					{
-						"email": "test3",
-						"password": "test3",
-						"token": "abcdefgi"
-					},
-					{
-						"email": "test4",
-						"password": "test4",
-						"token": "abcdefghij"
-					}
-				],
+				"seed": [{
+					"email": "test",
+					"password": "test",
+					"token": "abcdef"
+				}, {
+					"email": "test1",
+					"password": "test1",
+					"token": "abcdefg"
+				}, {
+					"email": "test2",
+					"password": "test2",
+					"token": "abcdefgh"
+				}, {
+					"email": "test3",
+					"password": "test3",
+					"token": "abcdefgi"
+				}, {
+					"email": "test4",
+					"password": "test4",
+					"token": "abcdefghij"
+				}],
 				"fields": {
 					"email": {
 						"type": "string",
@@ -114,17 +105,17 @@
 						"hidden": true
 					},
 					"realname": {
-            "text": "真实姓名",
-            "type": "string",
-            "basic": true
-          },
+						"text": "真实姓名",
+						"type": "string",
+						"basic": true
+					},
 					"flags": {
 						"type": "json"
 					},
 					"createtime": {
 						"type": "datetime",
 						"nomanual": 1,
-						"default": 0 
+						"default": 0
 					}
 				}
 			}
@@ -141,17 +132,15 @@
 					},
 					"buffer": {
 						"isMultipartFile": true,
-            "required": true
+						"required": true
 					}
 				},
-				"controllers": [
-					{
-						"pre": "libFile.mkdirpSync(path1+'/'+path2)",
-						"type": "raw",
-						"do": "libFile.mvSync(buffer, path1+'/'+path2+'/'+path.basename(buffer))",
-						"send": "{filename: path.basename(buffer)}"
-					}
-				],
+				"controllers": [{
+					"pre": "libFile.mkdirpSync(path1+'/'+path2)",
+					"type": "raw",
+					"do": "libFile.mvSync(buffer, path1+'/'+path2+'/'+path.basename(buffer))",
+					"send": "{filename: path.basename(buffer)}"
+				}],
 				"midwares": ["auth", "multipart('filecache')"]
 			},
 			"access": {
@@ -161,25 +150,20 @@
 						"isParams": true,
 						"require": true
 					},
-					"method": {	
+					"method": {
 						"isParams": true,
 						"require": true
 					},
-					"by": {						
-					},
-					"where": {
-					},
-					"options": {
-					}
-				},				
-				"controllers": [
-					{
-						"type": "async",
-						"method": "Admin.access",
-						"params": "schema, method, req.body, req.user",
-						"send": "result"
-					}
-				],
+					"by": {},
+					"where": {},
+					"options": {}
+				},
+				"controllers": [{
+					"type": "async",
+					"method": "Admin.access",
+					"params": "schema, method, req.body, req.user",
+					"send": "result"
+				}],
 				"midwares": ["auth"]
 			},
 			"export_file": {
@@ -189,40 +173,32 @@
 						"isParams": true,
 						"require": true
 					},
-					"method": {	
+					"method": {
 						"isParams": true,
 						"require": true
 					},
-					"where": {
-					},
-					"options": {
-					}
+					"where": {},
+					"options": {}
 				}
 			},
 			"admin_save_query": {
 				"params": {
-					"schema": {						
-					},
-					"data": {
-					},
-					"_id": {
-					}
+					"schema": {},
+					"data": {},
+					"_id": {}
 				},
-				"controllers": [
-					{
-						"check": {
-							"!data.rawquerys || !data.rawquerys.length": "查询为空"
-						}
-					},
-					{
-						"type": "db",
-						"schema": "adminquery",
-						"method": "upsert",
-						"where": "{name: data.name, adminid: req.user._id}",
-						"set": "{schema: schema, rawquerys: data.rawquerys, sort: data.sort}",
-						"send": "result"
+				"controllers": [{
+					"check": {
+						"!data.rawquerys || !data.rawquerys.length": "查询为空"
 					}
-				],
+				}, {
+					"type": "db",
+					"schema": "adminquery",
+					"method": "upsert",
+					"where": "{name: data.name, adminid: req.user._id}",
+					"set": "{schema: schema, rawquerys: data.rawquerys, sort: data.sort}",
+					"send": "result"
+				}],
 				"midwares": ["auth"]
 			},
 			"admin_get_querys": {
@@ -231,21 +207,17 @@
 						"type": "string"
 					}
 				},
-				"controllers": [
-					{
-						"type": "db",
-						"schema": "adminquery",
-						"method": "bselect",
-						"where": "{adminid: req.user._id, schema: schema}",
-						"send": "{data: result}"
-					}
-				],
+				"controllers": [{
+					"type": "db",
+					"schema": "adminquery",
+					"method": "bselect",
+					"where": "{adminid: req.user._id, schema: schema}",
+					"send": "{data: result}"
+				}],
 				"midwares": ["auth"]
 			},
-			"admin_get_stats": {
-			},
-			"admin_save_stat": {
-			},
+			"admin_get_stats": {},
+			"admin_save_stat": {},
 			"admin_signin": {
 				"text": "管理员登陆",
 				"params": {
@@ -260,47 +232,42 @@
 						"required": true
 					}
 				},
-				"controllers": [
-					{
-						"type": "db",
-						"method": "select",
-						"schema": "admin",
-						"where": "{email: email}",
-						"result": "user",
-						"check": {
-							"!user": "用户名不存在",
-							"!libEncrypt.bcryptcompare(password, user.password)": "密码错误"
-						}						
-					},
-					{
-						"pre": "token = libRandom.hat();",
-						"type": "db",
-						"method": "update",
-						"schema": "admin",
-						"where": "{_id: user._id}",
-						"set": "{token: token}",
-						"send": "{token: token}"
+				"controllers": [{
+					"type": "db",
+					"method": "select",
+					"schema": "admin",
+					"where": "{email: email}",
+					"result": "user",
+					"check": {
+						"!user": "用户名不存在",
+						"!libEncrypt.bcryptcompare(password, user.password)": "密码错误"
 					}
-				]
+				}, {
+					"pre": "token = libRandom.hat();",
+					"type": "db",
+					"method": "update",
+					"schema": "admin",
+					"where": "{_id: user._id}",
+					"set": "{token: token}",
+					"send": "{token: token}"
+				}]
 			},
 			"admin_get": {
 				"text": "获取管理员信息",
-				"controllers": [
-					{
-						"type": "db",
-						"method": "select",
-						"schema": "admin",
-						"where": "{_id: req.user._id}",
-						"do": "delete result.password;",
-						"send": "result"
-					}
-				],
+				"controllers": [{
+					"type": "db",
+					"method": "select",
+					"schema": "admin",
+					"where": "{_id: req.user._id}",
+					"do": "delete result.password;",
+					"send": "result"
+				}],
 				"midwares": ["auth"]
 			}
 		}
 	},
 	"impl": {
-		"databases":{
+		"databases": {
 			"main": {
 				"withSchemas": [
 					"admin",
