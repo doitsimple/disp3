@@ -24,6 +24,7 @@
 								"model": "sf.email"
 							},
 							"password": {
+								"text": "密码",
 								"type": "input",
 								"inputtype": "password",
 								"model": "sf.password"
@@ -109,9 +110,6 @@
 						"type": "string",
 						"basic": true
 					},
-					"flags": {
-						"type": "json"
-					},
 					"createtime": {
 						"type": "datetime",
 						"nomanual": 1,
@@ -135,13 +133,19 @@
 						"required": true
 					}
 				},
-				"controllers": [{
-					"pre": "libFile.mkdirpSync(path1+'/'+path2)",
-					"type": "raw",
-					"do": "libFile.mvSync(buffer, path1+'/'+path2+'/'+path.basename(buffer))",
-					"send": "{filename: path.basename(buffer)}"
-				}],
-				"midwares": ["auth", "multipart('filecache')"]
+				"controllers": [
+					{
+						"pre": "libFile.mkdirpSync(path1+'/'+path2)",
+						"type": "raw",
+						"do": "libFile.mvSync(buffer, path1+'/'+path2+'/'+path.basename(buffer))",
+						"send": "{filename: path.basename(buffer)}"
+					}
+				],
+				"midwares": [
+					"auth", 
+					"auths.checkflag('upload', '没有上传权限，请联系管理员开通')",
+					"multipart('filecache')"
+				]
 			},
 			"access": {
 				"text": "获取数据库信息",

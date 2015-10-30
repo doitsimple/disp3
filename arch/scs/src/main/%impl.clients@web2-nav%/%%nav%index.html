@@ -58,7 +58,7 @@
 for (var name in local.navbar){var li = navbar[name];
 var showstr;
 if(li.auth)
-	showstr = ' ng-show="is' + li.auth + '()"';
+	showstr = ' ng-show="isauth(\'' + li.auth + '\')"';
 else
 showstr = "";
 $$

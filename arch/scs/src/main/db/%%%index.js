@@ -339,7 +339,8 @@ function getModel(schemaname){
 		}else{
 			std.select = function(){
 				var args = parseArgs(schema, arguments);
-				std.bselect(args.where, {$limit: 1}, function(err, docs){
+				args.options.$limit = 1;
+				std.bselect(args.where, args.options, function(err, docs){
 					if(err) return args.callback(err);
 					args.callback(undefined, docs[0]);
 				});

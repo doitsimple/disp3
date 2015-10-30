@@ -424,15 +424,15 @@
 					"type": "async",
 					"method": "codeVerify.verify",
 					"params": "password, user, 'password'"
-				}, {
+				},  {
 					"type": "db",
-					"method": "update",
+					"method": "sedate",
 					"schema": "session",
 					"where": "{session: session, device_token: device_token}",
 					"set": "{userid: user._id}",
 					"result": "sessionres",
 					"check": {
-						"!sessionres.n": "非法登陆"
+						"!sessionres": "非法登陆"
 					}
 				}, {
 					"pre": "token = libRandom.hat();",
@@ -440,7 +440,7 @@
 					"method": "update",
 					"schema": "user",
 					"where": "{_id: user._id}",
-					"set": "{token: token}",
+					"set": "{token: token, channel: sessionres.channel}",
 					"send": "{token: token, _id: user._id}"
 				}]
 			},
