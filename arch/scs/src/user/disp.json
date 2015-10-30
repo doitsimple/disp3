@@ -297,12 +297,12 @@
 					"type": "db",
 					"schema": "session",
 					"method": "insert",
-					"doc": "{device_token: device_token, session: session, version: version, channel: channel, userid: userid}",
+					"doc": "{device_token: device_token, ip: req.ip, agent: req.headers['user-agent'], session: session, version: version, channel: channel, userid: userid}",
 					"send": "{success: true}"
 				}]
 			},
 			"session_supp": {
-				"text": "发送用户体验数据, 原sendUserExp",
+				"text": "追加用户体验数据",
 				"params": {
 					"session": {
 						"required": true
@@ -315,12 +315,15 @@
 					},
 					"userid": {
 						"text": "用户id"
+					},
+					"device_token": {
+						"required": true
 					}
 				},
 				"controllers": [{
 					"type": "async",
 					"method": "Session.supplementary",
-					"params": "{session: session,index:index,content:content,userid: userid}",
+					"params": "{session: session, device_token: device_token, index:index, content:content, userid: userid}",
 					"send": "result"
 				}]
 			},
@@ -424,7 +427,7 @@
 					"type": "async",
 					"method": "codeVerify.verify",
 					"params": "password, user, 'password'"
-				},  {
+				}, {
 					"type": "db",
 					"method": "sedate",
 					"schema": "session",
