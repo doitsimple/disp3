@@ -2,8 +2,8 @@ var db = require("../db");
 var refreshCache = 1;
 var cache = {};
 var log = require("../lib/log");
-var defaultPlatform = "sms99";
-var prefix = "【学银钱包】";
+var defaultPlatform = "";
+var prefix = "";
 var libDate = require('../lib/date');
 /*^^if(global.product){$$*/
 var COUNT = 200;
