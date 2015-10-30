@@ -3,10 +3,13 @@ var refreshCache = 1;
 var cache = {};
 var log = require("../lib/log");
 var defaultPlatform = "sms99";
-var prefix = "";
+var prefix = "【学银钱包】";
 var libDate = require('../lib/date');
+/*^^if(global.product){$$*/
+var COUNT = 200;
+/*^^}else{$$*/
 var COUNT = 3;
-
+/*^^}$$*/
 function setPlatform(platform) {
 	defaultPlatform = platform;
 }
@@ -72,9 +75,12 @@ function send(params, fn) {
 			// code: params.code,
 			phone: params.phone
 		};
+		var msgerr;
 		newparams.msg = prefix + tpl.content.replace(/%([^%]+)%/g, function(str, p1) {
+			if (!params.hasOwnProperty(p1)) msgerr = "sms.send缺少属性:[" + p1 + "]";
 			return params[p1];
 		});
+		if (msgerr) return log.e(msgerr);
 		var platform = params.platform || defaultPlatform;
 		var p;
 		try {
@@ -99,37 +105,51 @@ function send(params, fn) {
 				}
 			}, function(err, result) {
 				if (err) return fn(err);
-				if (!doc || (doc.counts && doc.counts < COUNT)) {
-					p.sendsms(newparams, function(err, result) {
-						var refid = parseInt(result);
-						var insertObj = {
-							phone: params.phone,
-							tplid: tplid,
-							refid: refid,
-							state: 1
-						}
-						if (err) {
-							fn(err);
-							insertObj.state = 2;
-							record_sms.insert(insertObj, function(insert_err) {
-								if (insert_err) return fn(insert_err);
-							});
-						}
-						record_sms.insert(insertObj, function(err, result) {
-							if (err) return fn(err);
-							fn(null, {
-								success: true
-							});
+				//filter local ip
+				if (ip.match(/^\d{1,3}(?:\.\d{1,3}){3}/g)) {
+					if (!doc || doc.ip == "127.0.0.1" || doc.ip.match(/^192\.168(?:\.\d{1,3}){2}/g) || (doc.counts && doc.counts < COUNT)) {
+						p.sendsms(newparams, function(err, result) {
+							var refid = parseInt(result);
+							var insertObj = {
+								phone: params.phone,
+								tplid: tplid,
+								refid: refid,
+								state: 1
+							}
+							if (err) {
+								fn(err);
+								insertObj.state = 2;
+								record_sms.insert(insertObj, function(insert_err) {
+									if (insert_err) log.e(insert_err);
+								});
+							} else {
+								log.v("sms.send:" + newparams.phone + "\t" + newparams.msg);
+								fn(null, {
+									success: true
+								});
+								record_sms.insert(insertObj, function(err, result) {
+									if (err) log.e(err);
+								});
+							}
 						});
-					});
+					} else {
+						fn('当前ip发送发送短信超过上限');
+						record_sms.update({
+							phone: params.phone
+						}, {
+							state: 2
+						}, function(err, result) {
+							if (err) log.e(err);
+						});
+					}
 				} else {
-					record_sms.update({
+					fn('ip错误');
+					record_sms.insert({
 						phone: params.phone
 					}, {
 						state: 2
 					}, function(err, result) {
-						if (err) return fn(err);
-						fn('当前ip发送发送短信超过上限');
+						if (err) log.e(err);
 					});
 				}
 			});
