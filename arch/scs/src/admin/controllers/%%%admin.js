@@ -17,7 +17,8 @@ function validate(schema, method, project, admin, config){
 		if(c.schemas[schema]){
 			var s = c.schemas[schema];
 			if(s.all) pass = 1;
-			if(method == "select" || method == "bselect" || method =="bcolect"){
+			if(project &&
+				(method == "select" || method == "bselect" || method =="bcolect")){
 				if(s.noproject)
 					for(var pkey in s.noproject)
 						delete project[pkey];
@@ -38,11 +39,13 @@ function validate(schema, method, project, admin, config){
 }
 
 module.exports.access = function(schema, method, body, admin, fn){
+	var project = {};
 	if(method == "select" || method == "bselect" || method =="bcolect"){
 		if(!body.options) body.options = {};
 		if(!body.options.$project) body.options.$project = {};
+		project = body.options.$project;
 	}
-	if(!auth(schema, method, body.options.$project, admin))
+	if(!auth(schema, method, project, admin))
 		 return fn("无操作权限");
 	if(body.by && Object.keys(body.by).length > 0){
 		sync.each(Object.keys(body.by), function(schema, cb){
