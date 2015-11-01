@@ -613,6 +613,15 @@
 					"user_verify_paypassword"
 				]
 			}
+		},
+		"stats": {
+			"stat_channel": {
+				"schemas": {
+					"session": {
+						"key": "time"
+					}
+				}
+			}
 		}
 	}
 }

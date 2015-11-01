@@ -385,7 +385,7 @@ function getModel(schemaname){
 		}
 
 		std.bcolect = function(){
-			var args = parseArgs(schema, arguments);				
+			var args = parseArgs(schema, arguments);
 			model.count(args.where, function(err, count){
 				if(err) return args.callback(err);
 				model.bselect(args.where, args.options, function(err, data){
@@ -399,6 +399,41 @@ function getModel(schemaname){
 		}
 		if(model.each) std.each = model.each;
 		if(model.eachSeries) std.eachSeries = model.eachSeries;
+		if(model.freq) std.freq = model.freq;
+		else if(std.each){
+			std.freq2d = function(){
+				var args = parseArgs(schema, arguments);
+				if(!args.options.$dim1 || !args.options.$dim2 || !args.options.$sum)
+					return args.callback("params error");
+				var hash = {};
+				std.each(function(err, doc){
+					var key = doc[args.options.$dim1]+"\t"+doc[args.options.$dim2];
+					var val = doc[args.options.$sum];
+					if(typeof val != "float" && typeof val !="int")
+						val = 1;
+					if(!hash[key]) hash[key] = val;
+					else hash[key] += val;
+				}, function(){
+					args.callback(null, hash);
+				});
+			}
+			std.freq = function(){
+				var args = parseArgs(schema, arguments);
+				if(!args.options.$dim || !args.options.$sum)
+					return args.callback("params error");
+				var hash = {};
+				std.each(function(err, doc){
+					var key = doc[args.options.$dim];
+					var val = doc[args.options.$sum];
+					if(typeof val != "float" && typeof val !="int")
+						val = 1;
+					if(!hash[key]) hash[key] = val;
+					else hash[key] += val;
+				}, function(){
+					args.callback(null, hash);
+				});
+			}
+		}
 /*
 		if(model.leftjoin) std.leftjoin = model.leftjoin;
 		else if(std.each) std.leftjoin = function(rschema, key, left, right, fn){

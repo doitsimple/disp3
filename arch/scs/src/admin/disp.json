@@ -170,20 +170,27 @@
 				}],
 				"midwares": ["auth"]
 			},
-			"export_file": {
+			"stat": {
+				"method": "get",
 				"text": "导出表格",
 				"params": {
-					"schema": {
+					"statname": {
 						"isParams": true,
 						"require": true
 					},
-					"method": {
+					"filename": {
 						"isParams": true,
 						"require": true
-					},
-					"where": {},
-					"options": {}
-				}
+					}
+				},
+				"controllers": [
+					{
+						"type": "async",
+						"method": "require('../controllers/stat')[statname]",
+						"do": "result.pipe(res)"
+					}
+				],
+				"midwares": ["auth", "auths.checkflag('opstat')"]
 			},
 			"admin_save_query": {
 				"params": {

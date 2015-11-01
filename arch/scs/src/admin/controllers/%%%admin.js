@@ -68,9 +68,12 @@ module.exports.access = function(schema, method, body, admin, fn){
 		}, function(err){
 			if(err == "returned") return;
 			if(err) return fn(err);
-			db.getModel(schema)[method](body.where, body.options, fn);
+			_access(schema, method, body, fn);
 		});
 	}else{
-		db.getModel(schema)[method](body.where, body.options, fn);
+		_access(schema, method, body, fn);
 	}
+}
+function _access(schema, method, body, fn){
+	db.getModel(schema)[method](body.where, body.options, fn);
 }
