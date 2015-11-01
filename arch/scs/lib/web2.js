@@ -33,7 +33,7 @@ $scope["^^=config.name$$"].refresh = function(force){
 ^^var method;if(config.islist){method = "bselect";}else{method="select";}$$
 	req.postBearer("/api/access/^^=config.withSchema$$/^^=method$$", auth.gettoken(), {
 		where: ^^=config.where$$,
-		options: {}
+		options: ^^=config.options || "{}"$$
 	}, function(err, data) {
 		$scope.schemas["^^=config.withSchema$$"] = data;
 	});

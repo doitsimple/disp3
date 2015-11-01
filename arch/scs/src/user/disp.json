@@ -59,6 +59,10 @@
 						"type": "string",
 						"index": 1
 					},
+					"valid": {
+						"type": "int",
+						"text": "是否已经调用过注册短信"
+					},
 					"time": {
 						"type": "datetime"
 					}
@@ -197,6 +201,7 @@
 					"method": "select",
 					"where": "{phone: phone}",
 					"check": {
+						"!result.valid": "该手机未验证",
 						"result && new Date().getTime() - new Date(result.time).getTime() < 60000": "发送短信过于频繁"
 					},
 					"do": "var code = libRandom.genNum(4);"
@@ -440,7 +445,7 @@
 					"type": "async",
 					"method": "codeVerify.verify",
 					"params": "password, user, 'password'"
-				},  {
+				}, {
 					"pre": "token = libRandom.hat();",
 					"type": "db",
 					"method": "update",

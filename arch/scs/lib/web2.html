@@ -153,8 +153,8 @@ $$
  ^^if(!config.islist){
   makeitem(config, "schemas."+config.withSchema)
  }else{$$
- 			<div class="row" ng-repeat="item in schemas.^^=config.withSchema$$">
-  ^^makeitem(config, "item");$$
+ 			<div class="row" ng-repeat="row in schemas.^^=config.withSchema$$">
+  ^^makeitem(config, "row");$$
 			</div>
  ^^}$$
 		</div>
