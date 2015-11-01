@@ -622,8 +622,13 @@
 		"stats": {
 			"stat_channel": {
 				"schemas": {
-					"session": {
-						"key": "time"
+					"user": {
+						"type": "count",
+						"key": "createtime",
+						"dims": {
+							"channel":1
+						},
+						"val": "_id"
 					}
 				}
 			}

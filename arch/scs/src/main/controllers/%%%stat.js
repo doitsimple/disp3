@@ -2,6 +2,7 @@ var fs = require("fs");
 var libDate = require("../lib/date");
 var libFile = require("../lib/file");
 var libFormat = require("../lib/format");
+var db = require("../db");
 ^^for(var key in global.impl.stats){
  var stat = global.impl.stats[key];
 $$
@@ -11,6 +12,9 @@ module.exports.^^=stat.name$$ = function(fn){
  var filename = "^^=stat.name$$-" + libDate.getDate(new Date())+".csv";
 	if(fs.existsSync("static/stat/"+filename))
 		 return fn(null, fs.createReadStream("static/stat/"+filename));
+	^^if(!stat.schemas){$$
+ return fn("该统计暂不可用");
+  ^^}$$
  ^^for(var schema in stat.schemas){
 	 var sc = stat.schemas[schema];
    var fkeydef = global.proto.schemas[schema].fields[sc.key];

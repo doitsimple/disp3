@@ -47,16 +47,20 @@ $scope["^^=config.name$$"] = {};
 ^^}$$
 ^^local.method = function(config){config.params = config.params || "";$$
 $scope["^^=config.name$$"] = function(^^=config.params$$){
- ^^for(var sname in config.fields){var step = config.fields[sname];$$
-   ^^var stepdata = step.data?step.data:"undefined";$$
+ ^^for(var sname in config.fields){
+	 var step = config.fields[sname];
+   var stepdata = step.data?step.data:"undefined";
+	 if(step.url && step.url[0] !="'" && step.url[0] !="\"")
+		 step.url = "\""+ step.url+ "\"";
+ $$
    ^^if(step.pre){$$
 		^^=step.pre$$;
    ^^}$$
    ^^if(step.type == "req"){$$
-    ^^if(step.method == "postBearer"){$$
-	req.^^=step.method$$("^^=step.url$$", auth.gettoken(), ^^=stepdata$$ || {}, function(err, result){
+    ^^if(step.method == "postBearer" || step.method == "getBearer"){$$
+	req.^^=step.method$$(^^=step.url$$, auth.gettoken(), ^^=stepdata$$ || {}, function(err, result){
     ^^}else{$$
-	req.^^=step.method$$("^^=step.url$$", ^^=stepdata$$, function(err, result){
+	req.^^=step.method$$(^^=step.url$$, ^^=stepdata$$, function(err, result){
     ^^}$$			
    ^^}else{$$
 		var err=null;
