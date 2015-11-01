@@ -624,9 +624,9 @@
 				"schemas": {
 					"user": {
 						"type": "count",
-						"key": "createtime",
+						"key": "channel",
 						"dims": {
-							"channel":1
+							"createtime":1
 						},
 						"val": "_id"
 					}

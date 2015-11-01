@@ -24,7 +24,7 @@ module.exports.^^=stat.name$$ = function(fn){
 	 for(var dim in sc.dims){
 		 cd ++;
 		 var fdef = global.proto.schemas[schema].fields[dim];
-		 if(fdef && fdef.type == "date")
+		 if(fdef && fdef.type == "datetime")
 			 key2 += "libDate.getDate(doc."+dim +")";
 		 else
 			 key2 += "doc."+dim;
