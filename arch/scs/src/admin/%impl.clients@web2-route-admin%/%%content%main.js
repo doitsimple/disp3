@@ -16,8 +16,9 @@ rootApp.factory('access', function(req, auth){
 			if(fn) fn(err, result);
 		});
 	}
-	methods.select = function(schema, _id, fn){
-		req.postBearer("/api/access/"+schema+"/select", auth.gettoken(), {where: {_id: _id}}, function(err, result){
+	methods.select = function(schema, where, fn){
+		if(typeof where != "object") where = {_id: where};
+		req.postBearer("/api/access/"+schema+"/select", auth.gettoken(), {where: where}, function(err, result){
 			if(fn) fn(err, result);
 		});
 	}

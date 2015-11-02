@@ -84,7 +84,7 @@ $$
 dbs["^^=dbname$$"] = require("./^^=dbname$$");
 dbs["^^=dbname$$"].initSchemas = function(){
  ^^for(var i in db.withSchemas){var schema = global.proto.schemas[db.withSchemas[i]];$$
-if(schemas["^^=schema.name$$"]) log.e("same schema for two db");
+if(schemas["^^=schema.name$$"]) log.e("same schema for two db ^^=schema.name$$");
 schemas["^^=schema.name$$"] = {};
 for(var key in dbs["^^=dbname$$"].schemas["^^=schema.name$$"]){
 	schemas["^^=schema.name$$"][key+"Spec"] = dbs["^^=dbname$$"].schemas["^^=schema.name$$"][key];
@@ -296,6 +296,7 @@ function getModel(schemaname){
 				var args = parseArgs(schema, arguments);
 				if(!args.where) return args.callback("no doc");
 				formatInsertArgs(schema, args);
+
 				model.insert(args.where, function(err, result){
 					if(err) return args.callback(err);
 					return args.callback(null, {insertedId: result.insertedId});

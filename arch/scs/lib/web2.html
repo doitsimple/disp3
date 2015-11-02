@@ -30,8 +30,12 @@
 <a class="btn btn-default" ng-href="/^^=f.path$$/{{^^=model$$}}">{{^^=model$$}}</a>
   ^^}else if(type == "ObjectId" && f.ref){$$
 <div ng-show="!!^^=model$$">
-<a class="btn btn-xs btn-default" ng-click="ui.openInfoModal('^^=f.ref$$', ^^=model$$)">{{^^=model$$ | last:4}}</a>
+<a class="btn btn-xs btn-default" ng-click="ui.openInfoModal('^^=f.ref$$', '^^=f.reffield || '_id'$$', ^^=model$$)">{{^^=model$$ | last:4}}</a>
 	<a class="btn btn-xs btn-warning" ng-href="#/^^=f.ref$$_details/{{^^=model$$}}" target="_blank"><i class="fa fa-folder-open"></i></a>
+</div>
+  ^^}else if(f.ref){$$
+<div ng-show="!!^^=model$$">
+<a class="btn btn-xs btn-default" ng-click="ui.openInfoModal('^^=f.ref$$', '^^=f.reffield || '_id'$$', ^^=model$$)">{{^^=model$$}}</a>
 </div>
   ^^}else{$$
 

@@ -2,33 +2,66 @@
 	"proto": {
 		"schemas": {
 			"record_sms": {
+				"text": "短信发送记录",
 				"fields": {
 					"phone": {
 						"type": "string",
+						"text": "手机",
 						"index": 1
 					},
+					"platform": {
+						"type": "string",
+						"text": "平台"
+					},
 					"tplid": {
-						"type": "string"
+						"type": "string",
+						"text": "模板id",
+						"ref": "smstpl",
+						"reffield": "tplid"
 					},
 					"time": {
 						"type": "datetime",
+						"text": "发送时间",
 						"default": 0
 					},
-					"refid": {
+					"arrivedtime": {
+						"type": "datetime",
+						"text": "到达时间"
+					},
+					"status": {
+						"text": "状态",
+						"type": "int",
+						"enums": {
+							"1": "进行",
+							"2": "取消",
+							"3": "失败",
+							"4": "成功"
+						}
+					},
+					"message": {
+						"text": "消息",
 						"type": "string"
 					},
-					"state": {
-						"type": "int"
+					"refid": {
+						"text": "第三方ID",
+						"type": "string"
 					}
 				}
 			},
 			"record_sms_daily": {
+				"text": "每日每ip发送条数",
 				"fields": {
 					"ip": {
+						"text": "ip",
 						"type": "string"
 					},
 					"date": {
+						"text": "日期",
 						"type": "date"
+					},
+					"counts": {
+						"type": "int",
+						"text": "计数"
 					}
 				}
 			},
@@ -37,46 +70,53 @@
 				"fields": {
 					"tplid": {
 						"type": "string",
+						"text": "模板ID",
 						"index": 1
 					},
 					"content": {
 						"type": "string",
-						"index": 1
+						"text": "模板内容"
 					},
 					"time": {
 						"type": "datetime",
+						"text": "创建时间",
 						"default": 0
 					}
 				}
 			},
 			"smscode": {
+				"text": "短信验证码",
 				"fields": {
 					"phone": {
 						"type": "string",
+						"text": "手机",
 						"index": 1
 					},
 					"code": {
 						"type": "string",
+						"text": "验证码",
 						"index": 1
 					},
 					"valid": {
 						"type": "int",
-						"text": "是否已经调用过注册短信"
+						"text": "是否认证"
 					},
 					"time": {
-						"type": "datetime"
+						"type": "datetime",
+						"text": "创建时间",
+						"default": 0
 					}
 				}
 			},
 			"trylimit": {
-				"_id": {
-					"type": "ObjectId"
-				},
+				"text": "密码/验证码尝试限制",
 				"count": {
-					"type": "int"
+					"type": "int",
+					"text": "次数"
 				},
 				"date": {
-					"type": "date"
+					"type": "date",
+					"text": "日期"
 				},
 				"key": {
 					"type": "ObjectId"
@@ -85,7 +125,6 @@
 					"type": "string"
 				}
 			},
-			"record_user_signin": {},
 			"invite": {},
 			"channel": {},
 			"invite": {},
@@ -607,14 +646,53 @@
 				}],
 				"midwares": ["auth"]
 			}
+		},
+		"uis":{
+			"smscode_list": {
+				"elements": {
+					"smscode": {
+						"type": "table",
+						"withSchema": "smscode",
+						"sort": "{time: -1}"
+					}
+				}
+			},
+			"smstpl_list": {
+				"elements": {
+					"smscode": {
+						"type": "table",
+						"insert": 1,
+						"update": 1,
+						"delete": 1,
+						"withSchema": "smstpl"
+					}
+				}
+			},
+			"record_sms_list": {
+				"elements": {
+					"smscode": {
+						"type": "table",
+						"withSchema": "record_sms",
+						"sort": "{time: -1}"
+					}
+				}
+			},
+			"record_sms_daily_list": {
+				"elements": {
+					"smscode": {
+						"type": "table",
+						"withSchema": "record_sms_daily",
+						"sort": "{date: -1}"
+					}
+				}
+			}
 		}
 	},
 	"impl": {
 		"databases": {
 			"main": {
 				"withSchemas": [
-					"record_user_signin",
-					"record_sms",
+					"record_sms",					
 					"record_sms_daily",
 					"smstpl",
 					"smscode",
@@ -642,6 +720,16 @@
 					"user_set_paypassword",
 					"user_modify_paypassword",
 					"user_verify_paypassword"
+				]
+			}
+		},
+		"clients": {
+			"bclient": {
+				"withUis": [
+					"smscode_list",
+					"smstpl_list",
+					"record_sms_list",
+					"record_sms_daily_list"
 				]
 			}
 		},

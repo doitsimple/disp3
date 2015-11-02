@@ -146,17 +146,20 @@ rootApp.factory("ui", function($uibModal, req, ^^=angularCtrlDeps.join(', ')$$){
 		});
 	}
 	var cache = {};
-	methods.getFormated = function(schema, id, fn){
-		if(cache[schema + id]) return fn(cache[schema + id]);
-		access.select(schema, id, function(err, doc){
+	methods.getFormated = function(schema, field, id, fn){
+		var key = schema + field + id;
+		var where = {};
+		where[field] = id;
+		if(cache[key]) return fn(cache[key]);
+		access.select(schema, where, function(err, doc){
 			if(err) return alert("网络错误");
 			var fmdoc = methods.convert2arr(doc, true);
-			cache[schema + id] = fmdoc;
+			cache[key] = fmdoc;
 			fn(fmdoc);
 		});
 	}
-	methods.openInfoModal = function(schema, id){
-		methods.getFormated(schema, id, function(doc){
+	methods.openInfoModal = function(schema, field, id){
+		methods.getFormated(schema, field, id, function(doc){
 			$uibModal.open({
 				templateUrl: 'info.html',
 				controller: 'ModalController',

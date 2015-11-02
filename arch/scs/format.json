@@ -19,7 +19,7 @@
 					},
 					"$default": {
 						"_id": {
-							"text": "ID",
+							"text": "数据库ID",
 							"ondemand": true,
 							"nomanual": 1,
 							"type": "ObjectId"
@@ -140,6 +140,10 @@
 				"withServer": {
 					"$type": "string",
 					"$from": "impl.servers"
+				},
+				"withDatabase": {
+					"$type": "string",
+					"$from": "impl.databases"
 				},
 				"withServers": {
 					"$multi": true,
