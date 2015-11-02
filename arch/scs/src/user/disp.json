@@ -125,11 +125,27 @@
 					"type": "string"
 				}
 			},
-			"invite": {},
-			"channel": {},
-			"invite": {},
-			"channel": {},
+			"invite": {
+				"text":"邀请渠道",
+				"fields": {
+					"code": {
+						"type": "string",
+						"text": "邀请码",
+						"index": 1
+					},
+					"desc": {
+						"type": "string",
+						"text": "特征码",
+						"unique": 1
+					},
+					"comment": {
+						"type": "string",
+						"text": "描述"
+					}
+				}
+			},
 			"session": {
+				"text": "app行为记录",
 				"fields": {
 					"session": {
 						"text": "会话",
@@ -154,6 +170,20 @@
 					}
 				}
 			},
+			"idcard": {
+				"text": "已知身份证",
+				"fields": {
+          "realname": {
+            "text": "真实姓名",
+            "type": "string",
+            "basic": true
+          },
+          "idcard": {
+            "text": "身份证号",
+            "type": "string"
+          }
+				}
+			},
 			"user": {
 				"fields": {
 					"phone": {
@@ -176,13 +206,30 @@
 						"type": "string",
 						"hidden": true
 					},
+					"realname": {
+            "text": "真实姓名",
+            "type": "string",
+            "basic": true
+          },
+          "idcard": {
+            "text": "身份证号",
+            "type": "string",
+						"ondemand": 1
+          },
+					"channel": {
+            "text": "下载渠道",
+            "type": "string"
+          },
 					"invite": {
-						"text": "注册渠道",
-						"type": "string"
+						"text": "邀请渠道",
+						"type": "string",
+						"ref": "invite",
+						"reffield": "desc"
 					},
 					"inviteby": {
 						"text": "邀请人",
-						"type": "ObjectId"
+						"type": "ObjectId",
+						"ref": "user"
 					},
 					"invitecode": {
 						"text": "邀请码",
@@ -647,7 +694,50 @@
 				"midwares": ["auth"]
 			}
 		},
-		"uis":{
+		"uis":{			
+			"invite_list": {
+				"elements": {
+					"invite": {
+						"type": "table",
+            "withSchema": "invite",
+						"insert": 1,
+						"update": 1,
+						"delete": 1
+					}
+				}
+			},
+			"idcard_list": {
+				"elements": {
+					"invite": {
+						"type": "table",
+            "withSchema": "idcard",
+						"add": 1,
+						"delete": 1
+					}
+				}
+			},
+			"user_list": {
+				"elements": {
+          "user": {
+            "type": "table",
+            "withSchema": "user",
+						"sort": "{createtime:-1}",
+						"fields": {
+							"phone": {},
+							"realname": {},
+							"idcard": {},
+							"channel": {},
+							"invite": {},
+							"inviteby": {},
+							"invitecode": {},
+							"email": {},
+							"modifytime": {},
+							"createtime": {},
+							"_id":{}
+						}
+					}
+				}
+			},
 			"smscode_list": {
 				"elements": {
 					"smscode": {
@@ -697,9 +787,10 @@
 					"smstpl",
 					"smscode",
 					"trylimit",
+					"invite",
 					"user",
-					"channel",
-					"session"
+					"session",
+					"idcard"
 				]
 			}
 		},
@@ -728,8 +819,11 @@
 				"withUis": [
 					"smscode_list",
 					"smstpl_list",
+					"invite_list",
 					"record_sms_list",
-					"record_sms_daily_list"
+					"record_sms_daily_list",
+					"user_list",
+					"idcard_list"
 				]
 			}
 		},

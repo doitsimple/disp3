@@ -14,8 +14,7 @@ function check(invitecode, fn){
 	var User = db.getModel("user");
 	Invite.select({code: invitecode}, function(err, doc){
 		if(err) return fn(err);
-		console.log(doc);
-		if(!doc || !doc.name){
+		if(!doc || !doc.desc){
 			User.select({invitecode: invitecode}, function(err, user){
 				if(err) return fn(err);
 				if(!user)
@@ -28,7 +27,7 @@ function check(invitecode, fn){
 			})
 		}else{
 			fn(null, {
-				"invite": doc.name
+				"invite": doc.desc
 			});
 		}
 	});
