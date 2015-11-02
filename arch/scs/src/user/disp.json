@@ -68,6 +68,23 @@
 					}
 				}
 			},
+			"trylimit": {
+				"_id": {
+					"type": "ObjectId"
+				},
+				"count": {
+					"type": "int"
+				},
+				"date": {
+					"type": "date"
+				},
+				"key": {
+					"type": "ObjectId"
+				},
+				"method": {
+					"type": "string"
+				}
+			},
 			"record_user_signin": {},
 			"invite": {},
 			"channel": {},
@@ -370,7 +387,7 @@
 					"check": {
 						"!sessionres": "非法注册"
 					}
-				},{
+				}, {
 					"type": "db",
 					"method": "select",
 					"schema": "smscode",
@@ -601,6 +618,7 @@
 					"record_sms_daily",
 					"smstpl",
 					"smscode",
+					"trylimit",
 					"user",
 					"channel",
 					"session"
@@ -634,7 +652,7 @@
 						"type": "count",
 						"key": "channel",
 						"dims": {
-							"createtime":1
+							"createtime": 1
 						},
 						"val": "_id"
 					}
