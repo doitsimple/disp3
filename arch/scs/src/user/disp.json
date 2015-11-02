@@ -376,7 +376,7 @@
 					"schema": "smscode",
 					"where": "{phone: phone}",
 					"check": {
-						"!result||!result.valid": "非法注册"
+						"!smscode||!smscode.valid": "非法注册"
 					},
 					"result": "smscode"
 				}, {
