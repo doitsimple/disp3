@@ -126,7 +126,7 @@
 				}
 			},
 			"invite": {
-				"text":"邀请渠道",
+				"text": "邀请渠道",
 				"fields": {
 					"code": {
 						"type": "string",
@@ -156,6 +156,10 @@
 						"text": "设备token",
 						"type": "string"
 					},
+					"ip": {
+						"text": "首次使用时的IP",
+						"type": "string"
+					},
 					"time": {
 						"text": "时间",
 						"type": "string"
@@ -173,15 +177,15 @@
 			"idcard": {
 				"text": "已知身份证",
 				"fields": {
-          "realname": {
-            "text": "真实姓名",
-            "type": "string",
-            "basic": true
-          },
-          "idcard": {
-            "text": "身份证号",
-            "type": "string"
-          }
+					"realname": {
+						"text": "真实姓名",
+						"type": "string",
+						"basic": true
+					},
+					"idcard": {
+						"text": "身份证号",
+						"type": "string"
+					}
 				}
 			},
 			"user": {
@@ -207,19 +211,19 @@
 						"hidden": true
 					},
 					"realname": {
-            "text": "真实姓名",
-            "type": "string",
-            "basic": true
-          },
-          "idcard": {
-            "text": "身份证号",
-            "type": "string",
+						"text": "真实姓名",
+						"type": "string",
+						"basic": true
+					},
+					"idcard": {
+						"text": "身份证号",
+						"type": "string",
 						"ondemand": 1
-          },
+					},
 					"channel": {
-            "text": "下载渠道",
-            "type": "string"
-          },
+						"text": "下载渠道",
+						"type": "string"
+					},
 					"invite": {
 						"text": "邀请渠道",
 						"type": "string",
@@ -507,6 +511,13 @@
 					"pre": "invite.phone = phone;invite.password=password;;invite.token=libRandom.hat();",
 					"doc": "invite",
 					"do": "invite._id = result.insertedId; if(checkpoints.signup) checkpoints.signup(invite);",
+					"result": "invite"
+				}, {
+					"type": "db",
+					"method": "update",
+					"schema": "session",
+					"where": "{session: session}",
+					"set": "{userid: invite._id}",
 					"send": "invite"
 				}]
 			},
@@ -694,12 +705,12 @@
 				"midwares": ["auth"]
 			}
 		},
-		"uis":{			
+		"uis": {
 			"invite_list": {
 				"elements": {
 					"invite": {
 						"type": "table",
-            "withSchema": "invite",
+						"withSchema": "invite",
 						"insert": 1,
 						"update": 1,
 						"delete": 1
@@ -710,7 +721,7 @@
 				"elements": {
 					"invite": {
 						"type": "table",
-            "withSchema": "idcard",
+						"withSchema": "idcard",
 						"add": 1,
 						"delete": 1
 					}
@@ -718,9 +729,9 @@
 			},
 			"user_list": {
 				"elements": {
-          "user": {
-            "type": "table",
-            "withSchema": "user",
+					"user": {
+						"type": "table",
+						"withSchema": "user",
 						"sort": "{createtime:-1}",
 						"fields": {
 							"phone": {},
@@ -733,7 +744,7 @@
 							"email": {},
 							"modifytime": {},
 							"createtime": {},
-							"_id":{}
+							"_id": {}
 						}
 					}
 				}
@@ -782,7 +793,7 @@
 		"databases": {
 			"main": {
 				"withSchemas": [
-					"record_sms",					
+					"record_sms",
 					"record_sms_daily",
 					"smstpl",
 					"smscode",
