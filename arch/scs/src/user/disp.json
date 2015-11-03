@@ -510,8 +510,8 @@
 					"schema": "user",
 					"pre": "invite.phone = phone;invite.password=password;;invite.token=libRandom.hat();",
 					"doc": "invite",
-					"do": "invite._id = invite.insertedId; if(checkpoints.signup) checkpoints.signup(invite);",
-					"result": "invite"
+					"result": "userRes",
+					"do": "invite._id = userRes.insertedId; if(checkpoints.signup) checkpoints.signup(invite);"
 				}, {
 					"type": "db",
 					"method": "update",
