@@ -169,7 +169,7 @@ function receiveMsg(client, params) {
 	var messageObj = {
 		"time": new Date(),
 		"userid": user._id,
-		"status": 2,
+		"status": 1,
 		"type": 2,
 		"message": params.message
 	};
