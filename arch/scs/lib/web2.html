@@ -99,14 +99,14 @@
 <^^=addon.tag$$ ^^=attrstr$$ >^^=addon.text$$</^^=addon.tag$$>
  
 ^^}$$
-^^function makeitem(config, prefix){$$
+^^function makeitem(config, prefix, fieldsconfig){$$
   ^^for(var sname in config.fields){
    var f = config.fields[sname];
    if(f.hidden) continue;
    if(f.type == "func") continue;
   $$
 	<div class="col-sm-^^=12/config.perline$$" uib-tooltip="^^=f.text || f.name$$">
-		^^bytype(f, prefix+"."+f.name)$$
+		^^bytype(f, prefix+"."+f.name, fieldsconfig)$$
 	</div>
   ^^}$$
 ^^}$$
@@ -147,18 +147,27 @@
 ^^local.panel = function(config){
 if(!config.perline) config.perline = 3;
 if(!config.width) config.width = 12;
+var showstr="";
+var hidestr="ng-hide=1";
+if(config.show){
+			showstr = "ng-show=\"" + config.show +"\"";
+			hidestr = "ng-hide=\"" + config.show +"\"";
+}
 appendconfig(config);
 $$
 <div class="panel panel-primary">
 <div class="panel-heading">^^=config.text || config.name$$</div>
-<div class="panel-body">
+<div class="panel-body" ^^=hidestr$$>
+该项目未认证或未开通
+</div>
+<div class="panel-body" ^^=showstr$$>
 	<div class="col-sm-^^=config.width$$">
 		<div class="row">
  ^^if(!config.islist){
-  makeitem(config, "schemas."+config.withSchema)
+  makeitem(config, "schemas."+config.withSchema, "schemafields."+config.withSchema)
  }else{$$
  			<div class="row" ng-repeat="row in schemas.^^=config.withSchema$$">
-  ^^makeitem(config, "row");$$
+  ^^makeitem(config, "row", "schemafields."+config.withSchema);$$
 			</div>
  ^^}$$
 		</div>

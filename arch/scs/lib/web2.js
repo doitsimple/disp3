@@ -26,6 +26,9 @@ appendconfig(config);
 $$
 
 $scope["^^=config.name$$"] = {};
+if(!$scope.schemafields) $scope.schemafields = {};
+if(!$scope.schemafields["^^=config.withSchema$$"]) 
+	$scope.schemafields["^^=config.withSchema$$"] = ^^=$.stringify(global.proto.schemas[config.withSchema].fields)$$;
 if(!$scope.schemas) $scope.schemas = {};
 $scope["^^=config.name$$"].refresh = function(force){
 	if(!force && $scope.schemas["^^=config.withSchema$$"]) return;

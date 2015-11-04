@@ -105,7 +105,7 @@ sendJson(res, ^^=JSON.stringify(ctrl.sendJson)$$);
  var method = ctrl.method;
  var result= ctrl.result || "result";
 $$
-^^if(method == "update" || method == "bupdate" || method =="upsert" || method == "update2" || method == "bupdate2" || method == "sedate" || method == "sedate2"){
+^^if(method == "update" || method == "bupdate" || method =="upsert" || method == "update2" || method == "bupdate2" || method == "sedate" || method == "sedate2" || method =="upsert2"){
 $$
 db.getModel("^^=ctrl.schema$$").^^=ctrl.method$$(^^=ctrl.where$$, ^^=ctrl.set$$, function(err, ^^=result$$){
 ^^}else if(method == "bselect" || method == "bcolect"){

@@ -30,7 +30,6 @@ function reqAsync(params, asyncFn, fn) {
 	var Model = db.getModel(schema);
 	Model.select(params.info, function(err, result) {
 		if (err) return fn(err);
-		console.log(params);
 		if (result && result.status == 3 && !params.force) {
 			if (asyncFn) asyncFn(null, {
 				info: result
@@ -43,11 +42,12 @@ function reqAsync(params, asyncFn, fn) {
 			if (err) return fn(err);
 			var reqFn = function(err, result) {
 				if (err) return fn(err);
-				if (result.info)
+				if (result.info){
 					Model.upsert(params.info, result.info, function(err) {
 						if (err) return fn(err);
 						fn(null, result);
 					});
+				}
 				else
 					fn(null, result);
 			};

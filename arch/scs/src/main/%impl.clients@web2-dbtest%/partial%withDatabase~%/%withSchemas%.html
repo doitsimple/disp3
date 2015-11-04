@@ -18,7 +18,7 @@
 		<strong>默认值</strong>
 	</div>
 	<div class="col-sm-2">
-		<strong>枚举</strong>
+		<strong>枚举/引用</strong>
 	</div>
 </div>
 
@@ -48,6 +48,7 @@
 	</div>
 	<div class="col-sm-2">
 		^^if(f.enums){$$^^=$.stringify(f.enums)$$^^}$$
+		^^if(f.ref){$$^^=f.ref$$&nbsp;^^=f.reffield||""$$^^}$$
 	</div>
 </div>
 ^^}$$

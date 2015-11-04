@@ -74,7 +74,8 @@
 				"seed": [{
 					"email": "test",
 					"password": "test",
-					"token": "abcdef"
+					"token": "abcdef",
+					"admin":1
 				}, {
 					"email": "test1",
 					"password": "test1",

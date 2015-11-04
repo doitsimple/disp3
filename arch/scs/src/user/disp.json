@@ -157,7 +157,7 @@
 						"type": "string"
 					},
 					"ip": {
-						"text": "首次使用时的IP",
+						"text": "IP",
 						"type": "string"
 					},
 					"time": {
@@ -749,6 +749,15 @@
 					}
 				}
 			},
+			"session_list": {
+				"elements": {
+					"user": {
+						"type": "table",
+						"withSchema": "session",
+						"sort": "{time:-1}"
+					}
+				}
+			},
 			"smscode_list": {
 				"elements": {
 					"smscode": {
@@ -834,6 +843,7 @@
 					"record_sms_list",
 					"record_sms_daily_list",
 					"user_list",
+					"session_list",
 					"idcard_list"
 				]
 			}

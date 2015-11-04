@@ -355,8 +355,8 @@ function getModel(schemaname){
 			var args = parseArgs(schema, arguments, 1);
 			if(schema.formatInsertDoc)
 				args.where.forEach(function(doc){
-					schema.formatDoc(doc);
-					schema.formatInsertDoc(doc);
+					schema.formatDoc(doc, args.sp);
+					schema.formatInsertDoc(doc, args.sp);
 				});
 			model.binsert(args.where, args.callback);
 		};
