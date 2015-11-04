@@ -29,7 +29,8 @@ function readConfigs(){
 		return self.error("no disp.json");
 	}
 	self.global.bin = process.argv[1];
-	
+	self.global.pwd = process.env.PWD;
+
 
 	self.project = projectJson;
 	if(!projectJson.arch) projectJson.arch = "base";
