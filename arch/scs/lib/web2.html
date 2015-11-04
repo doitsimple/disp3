@@ -104,6 +104,12 @@
    var f = config.fields[sname];
    if(f.hidden) continue;
    if(f.type == "func") continue;
+   if(f.type == "row"){
+   		$$
+   		^^local.makefunc(f,'sm')$$
+   		^^
+   		continue;
+   }
   $$
 	<div class="col-sm-^^=12/config.perline$$" uib-tooltip="^^=f.text || f.name$$">
 		^^bytype(f, prefix+"."+f.name, fieldsconfig)$$
@@ -166,8 +172,18 @@ $$
  ^^if(!config.islist){
   makeitem(config, "schemas."+config.withSchema, "schemafields."+config.withSchema)
  }else{$$
- 			<div class="row" ng-repeat="row in schemas.^^=config.withSchema$$">
-  ^^makeitem(config, "row", "schemafields."+config.withSchema);$$
+  ^^
+  var repeat, fieldp;
+  if(!config.withSchema){
+  	repeat = config.repeat;
+  	fieldp = undefined;
+  }else{
+  	repeat = "schemas."+config.withSchema;
+  	fieldp = "schemafields."+config.withSchema;
+  }
+  $$
+ 			<div class="row" ng-repeat="row in ^^=repeat$$">
+  ^^makeitem(config, "row", fieldp);$$
 			</div>
  ^^}$$
 		</div>

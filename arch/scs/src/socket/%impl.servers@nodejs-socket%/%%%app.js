@@ -6,30 +6,30 @@ var interServerAddrs = ^^=$.stringify(servers)$$ || {};
 
 //用户在线补发离线消息时 data._id 存在
 function sendMsg(params) {
-	if(!params.type) params.type = 1;
+	if (!params.type) params.type = 1;
 	var userid = params.userid;
 	var Bridge = db.getModel("bridges");
 	if (!userid) return;
 	var Msg = db.getModel("messages");
 
-//服务器端人工回复消息时 params.replyuser为工作人员的id
-	if (params._id && params.replyuser) {
+	//服务器端人工回复消息时 params.adminid为工作人员的id
+	if (params._id && params.adminid) {
 		Bridge.update({
 			"userid": userid
 		}, {
-			update_time: new Date(),
-			update_user: params.replyuser
+			replytime: new Date(),
+			adminid: params.adminid
 		});
 	}
 	var success = false;
 	//online 尝试在线发送
 	var sendJson = {};
-	if(params.message) sendJson.message = params.message;
-	if(params.needCaptcha) sendJson.needCaptcha = params.needCaptcha;
-	if(params.updateUser) sendJson.updateUser = params.updateUser;
-	if(params.goto) sendJson.goto = params.goto;
-	if(params.next) sendJson.next = params.next;
-	if(clients[userid]){
+	if (params.message) sendJson.message = params.message;
+	if (params.needCaptcha) sendJson.needCaptcha = params.needCaptcha;
+	if (params.updateUser) sendJson.updateUser = params.updateUser;
+	if (params.goto) sendJson.goto = params.goto;
+	if (params.next) sendJson.next = params.next;
+	if (clients[userid]) {
 		var client = clients[userid];
 		try {
 			client.write(JSON.stringify(sendJson) + "\n");
@@ -39,33 +39,35 @@ function sendMsg(params) {
 			log.e(err);
 		}
 	}
-	log.i("send "+ userid + " " + JSON.stringify(sendJson) + ""
-				+ (success?"sync":"async"));
-	if(params._id) {
-		if(success){
+	log.i("send " + userid + " " + JSON.stringify(sendJson) + "" + (success ? "sync" : "async"));
+	if (params._id) {
+		if (success) {
 			params.status = 2;
 			params.time = new Date();
-		}else{
+		} else {
 			params.status = 1;
 		}
 		Msg.insert(params);
-	}else{
-		if(success)
-			Msg.update({_id: params._id}, {
+	} else {
+		if (success)
+			Msg.update({
+				_id: params._id
+			}, {
 				status: 2,
 				time: new Date()
 			});
 	}
 }
 module.exports.connection = connection;
+
 function connection(client) {
-//如果是来自server的连接
+	//如果是来自server的连接
 	if (interServerAddrs[client.remoteAddress]) {
 		client.on("data", function(params) {
 			try {
 				params = JSON.parse(params);
 			} catch (err) {
-				log.e("internal server send msg error "+params);
+				log.e("internal server send msg error " + params);
 				return;
 			}
 			sendMsg(params, true);
@@ -74,7 +76,7 @@ function connection(client) {
 		client.on("close", function() {
 			client.destroy();
 		});
-//默认为来自app的连接
+		//默认为来自app的连接
 	} else {
 		client.on("data", function(params) {
 			try {
@@ -108,12 +110,12 @@ function connectionClose(client) {
 	client.destroy();
 }
 
-function parseError(err){
+function parseError(err) {
 	log.e(err);
 }
 
 function firstConnect(client, params) {
-	if(!params.token)
+	if (!params.token)
 		return;
 	auth(params.token, function(err, user) {
 		if (err || !user) {
@@ -129,7 +131,7 @@ function firstConnect(client, params) {
 			realname: user.realname,
 			phone: user.phone
 		};
-		log.i("user: "+userid +" "+user.realname+ " connected at " + client.remoteAddress);
+		log.i("user: " + userid + " " + user.realname + " connected at " + client.remoteAddress);
 		sendNoneReceivedMsg(userid);
 	})
 }
@@ -149,11 +151,11 @@ function sendNoneReceivedMsg(userid) {
 }
 
 function receiveMsg(client, params) {
-	if(!params.message){
+	if (!params.message) {
 		log.e(params);
 		return;
 	}
-	if(!client.user){
+	if (!client.user) {
 		log.e("not authorised");
 		return;
 	}
@@ -164,7 +166,7 @@ function receiveMsg(client, params) {
 		"realname": user.realname,
 		"msg": params.message,
 		"last_time": new Date(),
-		"reply": 1
+		"status": 1
 	};
 	var messageObj = {
 		"time": new Date(),
@@ -180,7 +182,7 @@ function receiveMsg(client, params) {
 		Bridge.upsert({
 			"userid": user._id
 		}, bridgeObj, function(err, result) {
-			if(err) return log.e(err);
+			if (err) return log.e(err);
 		});
 	});
 }
