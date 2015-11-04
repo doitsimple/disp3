@@ -50,6 +50,7 @@ function Disp(){
 	self.prevFilelist = {};
 	self.filelist = {};
 	self.global.bin = process.argv[1];
+	self.global.pwd = process.env.PWD;
 	var dead = false;
 	self.error = function(){
 		dead = true;
