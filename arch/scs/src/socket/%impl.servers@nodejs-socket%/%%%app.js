@@ -1,11 +1,13 @@
-var auth = ^^=auth$$;
+var auth = ^^= auth$$;
 var db = require("../db");
 var log = require("../lib/log");
 var clients = {};
-var interServerAddrs = ^^=$.stringify(servers)$$ || {};
+var interServerAddrs = ^^= $.stringify(servers) $$ || {};
 
 //用户在线补发离线消息时 data._id 存在
 function sendMsg(params) {
+	log.i("sendMsg==============================");
+	log.i(params);
 	if (!params.type) params.type = 1;
 	var userid = params.userid;
 	var Bridge = db.getModel("bridges");
@@ -32,6 +34,7 @@ function sendMsg(params) {
 	if (clients[userid]) {
 		var client = clients[userid];
 		try {
+			log.i(sendJson);
 			client.write(JSON.stringify(sendJson) + "\n");
 			success = true;
 		} catch (err) {
