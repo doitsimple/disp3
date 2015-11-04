@@ -13,6 +13,11 @@
 						"text": "用户ID",
 						"type": "ObjectId"
 					},
+					"reply": {
+						"text": "回复的消息ID",
+						"type": "ObjectId",
+						"ref": "messages"
+					},
 					"status": {
 						"type": "发送状态",
 						"type": "int",
@@ -65,7 +70,7 @@
 						"type": "datetime",
 						"text": "最新回复时间"
 					},
-					"reply": {
+					"status": {
 						"type": "回复状态",
 						"type": "int",
 						"enums": {
