@@ -57,6 +57,7 @@ ide/vendor/js/angular.min.js
 script/add_gitignore.js
 script/lib/encrypt.js
 script/lib/file.js
+script/lib/log.js
 script/lib/prompt.js
 script/lib/req.js
 script/lib/webreq.js

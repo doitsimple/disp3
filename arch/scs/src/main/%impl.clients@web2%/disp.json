@@ -1,0 +1,19 @@
+{
+  "cssLibs": {
+    "/vendor/bootstrap/css/bootstrap.min.css": 1,
+    "/vendor/font-awesome/css/font-awesome.min.css": 1
+  },
+  "jsLibs": {
+    "/vendor/js/angular.min.js": 1,
+    "/vendor/bootstrap/js/bootstrap.min.js": 1,
+    "/vendor/js/ui-bootstrap-tpls.min.js": 1
+  },
+  "angularDeps": ["ui.bootstrap"],
+	"css": {
+		"main.css": 1
+	},
+	"js": {
+		"main.js": 1
+	}
+}
+

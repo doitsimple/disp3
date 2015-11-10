@@ -7,7 +7,14 @@ module.exports = {
 	extend: extend,
 	append: append,
 	readGlobal: readGlobal,
-	selectRoles: selectRoles
+	selectRoles: selectRoles,
+	checkName: checkName
+}
+function checkName(f){
+	if(f == "." || f.match(/~$/) || f[0] == '#' || f.match(/^disp/)){
+		return 0;
+	}
+	return 1;
 }
 function extend(config, config2){
 	if(!config) {config = config2; return; }
@@ -55,4 +62,5 @@ function selectRoles(env, fn){
 		fn(roles);
 	});
 }
+
 

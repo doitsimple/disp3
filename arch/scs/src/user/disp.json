@@ -2,85 +2,199 @@
 	"proto": {
 		"schemas": {
 			"record_sms": {
+				"text": "短信发送记录",
 				"fields": {
-          "phone": {
-						"type":"string",
+					"phone": {
+						"type": "string",
+						"text": "手机",
 						"index": 1
 					},
+					"platform": {
+						"type": "string",
+						"text": "平台"
+					},
 					"tplid": {
-						"type":"string"
+						"type": "string",
+						"text": "模板id",
+						"ref": "smstpl",
+						"reffield": "tplid"
 					},
 					"time": {
 						"type": "datetime",
+						"text": "发送时间",
 						"default": 0
+					},
+					"arrivedtime": {
+						"type": "datetime",
+						"text": "到达时间"
+					},
+					"status": {
+						"text": "状态",
+						"type": "int",
+						"enums": {
+							"1": "进行",
+							"2": "取消",
+							"3": "失败",
+							"4": "成功"
+						}
+					},
+					"message": {
+						"text": "消息",
+						"type": "string"
+					},
+					"refid": {
+						"text": "第三方ID",
+						"type": "string"
+					}
+				}
+			},
+			"record_sms_daily": {
+				"text": "每日每ip发送条数",
+				"fields": {
+					"ip": {
+						"text": "ip",
+						"type": "string"
+					},
+					"date": {
+						"text": "日期",
+						"type": "date"
+					},
+					"counts": {
+						"type": "int",
+						"text": "计数"
 					}
 				}
 			},
 			"smstpl": {
+				"text": "短信模板",
 				"fields": {
 					"tplid": {
-						"type":"string",
+						"type": "string",
+						"text": "模板ID",
 						"index": 1
 					},
 					"content": {
-						"type":"string",
-						"index": 1
+						"type": "string",
+						"text": "模板内容"
 					},
 					"time": {
 						"type": "datetime",
+						"text": "创建时间",
 						"default": 0
 					}
 				}
 			},
 			"smscode": {
+				"text": "短信验证码",
 				"fields": {
-          "phone": {
-						"type":"string",
+					"phone": {
+						"type": "string",
+						"text": "手机",
 						"index": 1
 					},
 					"code": {
-						"type":"string",
+						"type": "string",
+						"text": "验证码",
 						"index": 1
 					},
+					"valid": {
+						"type": "int",
+						"text": "是否认证"
+					},
 					"time": {
-						"type": "datetime"
+						"type": "datetime",
+						"text": "创建时间",
+						"default": 0
 					}
 				}
 			},
-			"record_user_signin": {
-				
+			"trylimit": {
+				"text": "密码/验证码尝试限制",
+				"count": {
+					"type": "int",
+					"text": "次数"
+				},
+				"date": {
+					"type": "date",
+					"text": "日期"
+				},
+				"key": {
+					"type": "ObjectId"
+				},
+				"method": {
+					"type": "string"
+				}
 			},
 			"invite": {
-			},
-			"channel": {				
+				"text": "邀请渠道",
+				"fields": {
+					"code": {
+						"type": "string",
+						"text": "邀请码",
+						"index": 1
+					},
+					"desc": {
+						"type": "string",
+						"text": "特征码",
+						"unique": 1
+					},
+					"comment": {
+						"type": "string",
+						"text": "描述"
+					}
+				}
 			},
 			"session": {
+				"text": "app行为记录",
 				"fields": {
-          "session": {
-            "text": "会话",
-            "type": "string",
+					"session": {
+						"text": "会话",
+						"type": "string",
 						"index": 1
-          },
-				  "device_token": {
-            "text": "设备token",
-            "type": "string"
-          },
-          "time": {
-            "text": "时间",
-            "type": "string"
-          },
+					},
+					"userid": {
+						"type": "ObjectId",
+						"ref": "user"
+					},
+					"device_token": {
+						"text": "设备token",
+						"type": "string"
+					},
+					"ip": {
+						"text": "IP",
+						"type": "string"
+					},
+					"time": {
+						"text": "时间",
+						"type": "datetime",
+						"default": 0
+					},
 					"channel": {
-            "text": "渠道",
-            "type": "string"
-          },
-          "version": {
-            "text": "版本号",
-            "type": "string"
-          }
+						"text": "渠道",
+						"type": "string"
+					},
+					"version": {
+						"text": "版本号",
+						"type": "string"
+					}
+				}
+			},
+			"idcard": {
+				"text": "已知身份证",
+				"fields": {
+					"realname": {
+						"text": "真实姓名",
+						"type": "string",
+						"basic": true
+					},
+					"idcard": {
+						"text": "身份证号",
+						"type": "string"
+					}
 				}
 			},
 			"user": {
-				"fields": {					
+				"fields": {
 					"phone": {
 						"type": "string",
 						"text": "手机号",
@@ -89,26 +203,48 @@
 					},
 					"password": {
 						"encrypt": "bcrypt",
+						"type": "string",
 						"hidden": true
 					},
 					"paypassword": {
 						"encrypt": "bcrypt",
+						"type": "string",
 						"hidden": true
 					},
 					"token": {
 						"type": "string",
 						"hidden": true
 					},
-					"invite": {
-						"text": "注册渠道",
+					"realname": {
+						"text": "真实姓名",
+						"type": "string",
+						"basic": true
+					},
+					"idcard": {
+						"text": "身份证号",
+						"type": "string",
+						"ondemand": 1
+					},
+					"channel": {
+						"text": "下载渠道",
 						"type": "string"
+					},
+					"invite": {
+						"text": "邀请渠道",
+						"type": "string",
+						"ref": "invite",
+						"reffield": "desc"
 					},
 					"inviteby": {
 						"text": "邀请人",
-						"type": "ObjectId"
+						"type": "ObjectId",
+						"ref": "user"
 					},
 					"invitecode": {
 						"text": "邀请码",
+						"type": "string"
+					},
+					"email": {
 						"type": "string"
 					},
 					"modifytime": {
@@ -119,8 +255,8 @@
 					},
 					"createtime": {
 						"text": "注册时间",
-						"type": "datetime", 
-						"default": 0 
+						"type": "datetime",
+						"default": 0
 					}
 				}
 			}
@@ -144,27 +280,24 @@
 						"text": "邀请码"
 					}
 				},
-				"controllers": [
-					{
-						"type": "db",
-						"method": "select",
-						"schema": "user",
-						"where": "{phone: phone}",
-						"result": "user",
-						"check": {
-							"user": {
-								"message": "用户名已注册", 
-								"code":1
-							}
+				"controllers": [{
+					"type": "db",
+					"method": "select",
+					"schema": "user",
+					"where": "{phone: phone}",
+					"result": "user",
+					"check": {
+						"user": {
+							"message": "用户名已注册",
+							"code": 1
 						}
-					},
-					{
-						"type": "async",
-						"method": "Invite.verify",
-						"params": "invitecode",
-						"send": "{success: true}"
-					}	
-				]
+					}
+				}, {
+					"type": "async",
+					"method": "Invite.verify",
+					"params": "invitecode",
+					"send": "{success: true}"
+				}]
 			},
 			"sms_send_signup": {
 				"text": "注册时发送验证码",
@@ -174,40 +307,35 @@
 						"required": true
 					}
 				},
-				"controllers": [
-					{
-						"type": "db",
-						"schema": "smscode",
-						"method": "select",
-						"where": "{phone: phone}",
-						"check": {
-							"result && new Date().getTime() - new Date(result.time).getTime() < 60000": "发送短信过于频繁"
-						},
-						"do": "var code = libRandom.genNum(4);"
+				"controllers": [{
+					"type": "db",
+					"schema": "smscode",
+					"method": "select",
+					"where": "{phone: phone}",
+					"check": {
+						"result && new Date().getTime() - new Date(result.time).getTime() < 60000": "发送短信过于频繁"
 					},
-					{
-						"type": "db",
-						"schema": "user",
-						"method": "select",
-						"where": "{phone: phone}",
-						"check": {
-							"result": "该号码已被注册"
-						}
-					},
-					{
-						"type": "async",
-						"method": "Sms.send",
-						"params": "{phone: phone, code: code, tplid: 'code'}"
-					},
-					{
-						"type": "db",
-						"schema": "smscode",
-						"method": "upsert",
-						"where": "{phone: phone}",
-						"set": "{code: code, time: new Date()}",
-						"send": "result"
+					"do": "var code = libRandom.genNum(4);"
+				}, {
+					"type": "db",
+					"schema": "user",
+					"method": "select",
+					"where": "{phone: phone}",
+					"check": {
+						"result": "该号码已被注册"
 					}
-				]
+				}, {
+					"type": "async",
+					"method": "Sms.send",
+					"params": "{phone: phone, code: code, tplid: 'code',ip:req.ip}"
+				}, {
+					"type": "db",
+					"schema": "smscode",
+					"method": "upsert",
+					"where": "{phone: phone}",
+					"set": "{code: code, time: new Date()}",
+					"send": "result"
+				}]
 			},
 			"sms_send_reg": {
 				"text": "已注册用户发送验证码",
@@ -216,40 +344,35 @@
 						"required": true
 					}
 				},
-				"controllers": [
-					{
-						"type": "db",
-						"schema": "smscode",
-						"method": "select",
-						"where": "{phone: phone}",
-						"check": {
-							"result && new Date().getTime() - new Date(result.time).getTime() < 60000": "发送短信过于频繁"
-						},
-						"do": "var code = libRandom.genNum(4);"
+				"controllers": [{
+					"type": "db",
+					"schema": "smscode",
+					"method": "select",
+					"where": "{phone: phone}",
+					"check": {
+						"result && new Date().getTime() - new Date(result.time).getTime() < 60000": "发送短信过于频繁"
 					},
-					{
-						"type": "db",
-						"schema": "user",
-						"method": "select",
-						"where": "{phone: phone}",
-						"check": {
-							"!result": "该号码未被注册"
-						}
-					},
-					{
-						"type": "async",
-						"method": "Sms.send",
-						"params": "{phone: phone, code: code, tplid: 'code'}"
-					},
-					{
-						"type": "db",
-						"schema": "smscode",
-						"method": "upsert",
-						"where": "{phone: phone}",
-						"set": "{code: code, time: new Date()}",
-						"send": "result"
+					"do": "var code = libRandom.genNum(4);"
+				}, {
+					"type": "db",
+					"schema": "user",
+					"method": "select",
+					"where": "{phone: phone}",
+					"check": {
+						"!result": "该号码未被注册"
 					}
-				]
+				}, {
+					"type": "async",
+					"method": "Sms.send",
+					"params": "{phone: phone, code: code, tplid: 'code',ip:req.ip}"
+				}, {
+					"type": "db",
+					"schema": "smscode",
+					"method": "upsert",
+					"where": "{phone: phone}",
+					"set": "{code: code, time: new Date()}",
+					"send": "result"
+				}]
 			},
 			"sms_verify": {
 				"text": "校验验证码",
@@ -261,68 +384,67 @@
 						"required": true
 					}
 				},
-				"controllers": [
-					{
-						"type": "db",
-						"method": "select",
-						"schema": "smscode",
-						"where": "{phone: phone, code: code}",
-						"result": "sms",
-						"check": {
-							"!sms": "验证码错误",
-							"new Date(sms.time).getTime() - new Date().getTime() > 60000*5": "验证码过期"
-						},
-						"send": "{success: true}"
-					}
-				]
+				"controllers": [{
+					"type": "async",
+					"method": "codeVerify.verify2",
+					"params": "{phone:phone,code:code}",
+					"send": "{success: true}"
+				}]
 			},
 			"session_add": {
 				"text": "用户上线时/进入app时调用, 原enter接口",
 				"params": {
-          "session": {
+					"session": {
 						"required": true
 					},
-          "device_token": {
-            "required": true
-          },
-					"channel": {
-            "text": "渠道",
-            "required": true
-          },
-          "version": {
-            "text": "版本号",
+					"device_token": {
 						"required": true
-          },
+					},
+					"channel": {
+						"text": "渠道",
+						"required": true
+					},
+					"version": {
+						"text": "版本号",
+						"required": true
+					},
 					"userid": {
-            "text": "用户id"
-          }
-				},
-				"controllers": [
-					{
-						"type": "db",
-						"schema": "session",
-						"method": "insert",
-						"doc": "{device_token: device_token, session: session, version: version, channel: channel, userid: userid}",
-						"send": "{success: true}"
+						"text": "用户id"
 					}
-				]
+				},
+				"controllers": [{
+					"type": "db",
+					"schema": "session",
+					"method": "insert",
+					"doc": "{device_token: device_token, ip: req.ip, agent: req.headers['user-agent'], session: session, version: version, channel: channel, userid: userid}",
+					"send": "{success: true}"
+				}]
 			},
 			"session_supp": {
-				"text": "发送用户体验数据, 原sendUserExp",
+				"text": "追加用户体验数据",
 				"params": {
-          "session": {
-            "required": true
-          },
-          "index": {
-            "required": true
-          },
-          "content": {
-            "required": true
-          },
-          "userid": {
-            "text": "用户id"
+					"session": {
+						"required": true
+					},
+					"index": {
+						"required": true
+					},
+					"content": {
+						"required": true
+					},
+					"userid": {
+						"text": "用户id"
+					},
+					"device_token": {
+						"required": true
 					}
-        }
+				},
+				"controllers": [{
+					"type": "async",
+					"method": "Session.supplementary",
+					"params": "{session: session, device_token: device_token, index:index, content:content, userid: userid}",
+					"send": "result"
+				}]
 			},
 			"user_signup": {
 				"text": "用户注册",
@@ -351,29 +473,36 @@
 						"text": "邀请码"
 					}
 				},
-				"controllers": [
-					{
-						"type": "db",
-						"method": "select",
-						"schema": "session",
-						"where": "{session: session, device_token: device_token}",
-						"result": "sessionres",
-						"check": {
-							"!sessionres": "非法注册"
-						}
+				"controllers": [{
+					"type": "db",
+					"method": "select",
+					"schema": "session",
+					"where": "{session: session, device_token: device_token}",
+					"result": "sessionres",
+					"check": {
+						"!sessionres": "为了保证安全，请退出app后再重试注册"
+					}
+				}, {
+					"type": "db",
+					"method": "select",
+					"schema": "smscode",
+					"where": "{phone: phone}",
+					"check": {
+						"!smscode||!smscode.valid": "为了保证安全，请退出app后再重试注册"
 					},
-					{
-						"type": "db",
-						"method": "select",
-						"schema": "user",
-						"where": "{phone: phone}",
-						"result": "user",
-						"check": {
-							"user": {
-								"message": "用户名已注册", 
-								"code":1
-							}
+					"result": "smscode"
+				}, {
+					"type": "db",
+					"method": "select",
+					"schema": "user",
+					"where": "{phone: phone}",
+					"result": "user",
+					"check": {
+						"user": {
+							"message": "用户名已注册",
+							"code": 1
 						}
+<<<<<<< HEAD
 					},
 					{
 						"type": "async",
@@ -392,6 +521,31 @@
 						"send": "invite"
 					}					
 				]
+=======
+					}
+				}, {
+					"type": "async",
+					"method": "Invite.verify",
+					"params": "invitecode",
+					"result": "invite",
+					"do": "invite.invitecode = libRandom.genNum(11);invite.channel=sessionres.channel;"
+				}, {
+					"type": "db",
+					"method": "insert",
+					"schema": "user",
+					"pre": "invite.phone = phone;invite.password=password;;invite.token=libRandom.hat();",
+					"doc": "invite",
+					"result": "userRes",
+					"do": "invite._id = userRes.insertedId; if(checkpoints.signup) checkpoints.signup(invite);"
+				}, {
+					"type": "db",
+					"method": "update",
+					"schema": "session",
+					"where": "{session: session}",
+					"set": "{userid: invite._id}",
+					"send": "invite"
+				}]
+>>>>>>> ae67bfe55eff412e69b51d760d807473862ac0f4
 			},
 			"user_signin": {
 				"text": "用户登陆",
@@ -416,71 +570,273 @@
 						"required": true
 					}
 				},
-				"controllers": [
-					{
-						"type": "db",
-						"method": "select",
-						"schema": "user",
-						"where": "{phone: phone}",
-						"result": "user",
-						"check": {
-							"!user": "用户名不存在",
-							"!libEncrypt.bcryptcompare(password, user.password)": "密码错误"
-						}
-					},
-					{
-						"type": "db",
-						"method": "update",
-						"schema": "session",
-						"where": "{session: session, device_token: device_token}",
-						"set": "{userid: user._id}",
-						"result": "sessionres",
-						"check": {
-							"!sessionres.n": "非法登陆"
-						}
-					},
-					{
-						"pre": "token = libRandom.hat();",
-						"type": "db",
-						"method": "update",
-						"schema": "user",
-						"where": "{_id: user._id}",
-						"set": "{token: token}",
-						"send": "{token: token, _id: user._id}"
+				"controllers": [{
+					"type": "db",
+					"method": "select",
+					"schema": "user",
+					"where": "{phone: phone}",
+					"result": "user",
+					"check": {
+						"!user": "用户名不存在"
 					}
-				]
+				}, {
+					"type": "db",
+					"method": "update",
+					"schema": "session",
+					"where": "{session: session, device_token: device_token}",
+					"set": "{userid: user._id}",
+					"result": "sessionres",
+					"check": {
+						"!sessionres.n": "为了保证安全，请退出app重进登录"
+					}
+				}, {
+					"type": "async",
+					"method": "codeVerify.verify",
+					"params": "password, user, 'password'"
+				}, {
+					"pre": "token = libRandom.hat();",
+					"type": "db",
+					"method": "update",
+					"schema": "user",
+					"where": "{_id: user._id}",
+					"set": "{token: token}",
+					"send": "{token: token, _id: user._id}"
+				}]
 			},
 			"user_get": {
 				"text": "获取用户信息",
-				"controllers": [
-					{
-						"type": "raw",
-						"do": "req.user.password = req.user.password?1:0;req.user.paypassword=req.user.paypassword?1:0;",
-						"send": "req.user"
-					}
-				],
+				"controllers": [{
+					"type": "raw",
+					"do": "req.user.password = req.user.password?1:0;req.user.paypassword=req.user.paypassword?1:0;",
+					"send": "req.user"
+				}],
 				"midwares": ["auth"]
 			},
 			"user_get_invites": {
-				"text": "获取用户邀请的用户列表"
+				"text": "获取用户邀请的用户列表",
+				"controllers": [{
+					"type": "raw",
+					"do": "req.user.password = req.user.password?1:0;req.user.paypassword=req.user.paypassword?1:0;"
+				}, {
+					"type": "db",
+					"method": "bselect",
+					"schema": "user",
+					"where": "{invite:req.user.invitecode}",
+					"op": "{$project:{_id:0,realname:1,phone:1} }",
+					"send": "result"
+				}],
+				"midwares": ["auth"]
 			},
 			"user_set_password": {
+				"text": "修改密码",
+				"params": {
+					"phone": {
+						"required": true,
+						"text": "手机号"
+					},
+					"code": {
+						"required": true,
+						"text": "验证码"
+					},
+					"newpassword": {
+						"required": true,
+						"text": "新密码"
+					}
+				},
+				"controllers": [{
+					"type": "async",
+					"method": "codeVerify.verify2",
+					"params": "{phone:phone,code:code}"
+				}, {
+					"type": "db",
+					"method": "update",
+					"schema": "user",
+					"where": "{phone:phone}",
+					"set": "{password: newpassword}",
+					"send": "{success: true}"
+				}]
+			},
+			"user_modify_paypassword": {
+				"text": "修改支付密码",
+				"params": {
+					"phone": {
+						"required": true
+					},
+					"code": {
+						"required": true
+					},
+					"newpaypassword": {
+						"required": true
+					}
+				},
+				"controllers": [{
+					"type": "async",
+					"method": "codeVerify.verify2",
+					"params": "{phone:phone,code:code}"
+				}, {
+					"type": "db",
+					"method": "update",
+					"schema": "user",
+					"where": "{phone:phone}",
+					"set": "{paypassword: newpaypassword}",
+					"send": "{success: true}"
+				}],
+				"midwares": ["auth"]
+			},
+			"user_verify_paypassword": {
+				"text": "校验支付密码",
+				"params": {
+					"paypassword": {
+						"required": true
+					}
+				},
+				"controllers": [{
+					"type": "db",
+					"method": "select",
+					"schema": "user",
+					"where": "{_id:req.user._id}",
+					"result": "user",
+					"check": {
+						"!user": "用户名不存在"
+					}
+				}, {
+					"type": "async",
+					"method": "codeVerify.verify",
+					"params": "paypassword, user, 'paypassword'",
+					"send": "{success: true}"
+				}],
+				"midwares": ["auth"]
 			},
 			"user_set_paypassword": {
+				"text": "设置支付密码",
+				"params": {
+					"paypassword": {
+						"required": true
+					}
+				},
+				"controllers": [{
+					"type": "async",
+					"method": "db.getModel('user').select",
+					"params": "{_id:req.user._id}",
+					"result": "result",
+					"do": "if(result.paypassword){return sendJson(res,'您已经设置过支付密码了')};"
+				}, {
+					"type": "db",
+					"method": "update",
+					"schema": "user",
+					"where": "{_id:req.user._id}",
+					"set": "{paypassword: paypassword}",
+					"send": "{success: true}"
+				}],
+				"midwares": ["auth"]
+			}
+		},
+		"uis": {
+			"invite_list": {
+				"elements": {
+					"invite": {
+						"type": "table",
+						"withSchema": "invite",
+						"insert": 1,
+						"update": 1,
+						"delete": 1
+					}
+				}
+			},
+			"idcard_list": {
+				"elements": {
+					"invite": {
+						"type": "table",
+						"withSchema": "idcard",
+						"add": 1,
+						"delete": 1
+					}
+				}
+			},
+			"user_list": {
+				"elements": {
+					"user": {
+						"type": "table",
+						"withSchema": "user",
+						"sort": "{createtime:-1}",
+						"fields": {
+							"phone": {},
+							"realname": {},
+							"idcard": {},
+							"channel": {},
+							"invite": {},
+							"inviteby": {},
+							"invitecode": {},
+							"email": {},
+							"modifytime": {},
+							"createtime": {},
+							"_id": {}
+						}
+					}
+				}
+			},
+			"session_list": {
+				"elements": {
+					"user": {
+						"type": "table",
+						"withSchema": "session",
+						"sort": "{time:-1}"
+					}
+				}
+			},
+			"smscode_list": {
+				"elements": {
+					"smscode": {
+						"type": "table",
+						"withSchema": "smscode",
+						"sort": "{time: -1}"
+					}
+				}
+			},
+			"smstpl_list": {
+				"elements": {
+					"smscode": {
+						"type": "table",
+						"insert": 1,
+						"update": 1,
+						"delete": 1,
+						"withSchema": "smstpl"
+					}
+				}
+			},
+			"record_sms_list": {
+				"elements": {
+					"smscode": {
+						"type": "table",
+						"withSchema": "record_sms",
+						"sort": "{time: -1}"
+					}
+				}
+			},
+			"record_sms_daily_list": {
+				"elements": {
+					"smscode": {
+						"type": "table",
+						"withSchema": "record_sms_daily",
+						"sort": "{date: -1}"
+					}
+				}
 			}
 		}
 	},
 	"impl": {
-		"databases":{
+		"databases": {
 			"main": {
 				"withSchemas": [
-					"record_user_signin",
 					"record_sms",
+					"record_sms_daily",
 					"smstpl",
 					"smscode",
+					"trylimit",
+					"invite",
 					"user",
-					"channel",
-					"session"
+					"session",
+					"idcard"
 				]
 			}
 		},
@@ -498,8 +854,38 @@
 					"user_get",
 					"user_get_invites",
 					"user_set_password",
-					"user_set_paypassword"
+					"user_set_paypassword",
+					"user_modify_paypassword",
+					"user_verify_paypassword"
 				]
+			}
+		},
+		"clients": {
+			"bclient": {
+				"withUis": [
+					"smscode_list",
+					"smstpl_list",
+					"invite_list",
+					"record_sms_list",
+					"record_sms_daily_list",
+					"user_list",
+					"session_list",
+					"idcard_list"
+				]
+			}
+		},
+		"stats": {
+			"stat_channel": {
+				"schemas": {
+					"user": {
+						"type": "count",
+						"key": "channel",
+						"dims": {
+							"createtime": 1
+						},
+						"val": "_id"
+					}
+				}
 			}
 		}
 	}

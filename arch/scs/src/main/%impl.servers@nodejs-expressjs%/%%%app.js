@@ -8,24 +8,28 @@ var libFile = require("../lib/file");
 var libRes = require("./response");
 var log= require("../lib/log");
 var path = require("path");
+var common = require("./common");
 var sendErr = libRes.sendErr;
 var sendFile = libRes.sendFile;
 var sendJson = libRes.sendJson;
 var db = require("../db");
+var localAddr = "^^=protocol$$://^^=global.project.ip$$:^^=port$$/api/";
 ^^=require$$
 var checkpoints = require("./checkpoints");
 ^^=config$$
 ^^=method$$
 var app = express();
+
 app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(bodyParser.json());
 
+^^=use$$
 ^^for(var key in statics){$$
 app.use("^^=key$$", express.static(__dirname + '/^^=statics[key]$$'));
 ^^}$$
 
 ^^=logger$$
-^^=route$$
+^^=routemain$$
 module.exports = app;

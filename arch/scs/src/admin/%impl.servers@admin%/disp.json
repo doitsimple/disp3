@@ -1,0 +1,13 @@
+{
+	"withApis": [
+		"upload",
+		"access",
+		"stat",
+		"admin_signin",
+		"admin_get",
+		"admin_get_querys",
+		"admin_save_query",
+		"admin_get_stats",
+		"admin_save_stat"
+	]
+}

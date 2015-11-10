@@ -12,14 +12,22 @@ schemas["^^=schema.name$$"].autoinc = "^^=schema.fields._id.autoinc$$";
 schemas["^^=schema.name$$"].formatDoc = function(json){
 	/*^^for(var fieldname in schema.fields){var field = schema.fields[fieldname];$$*/
 	 ^^if(field.type == "ObjectId"){$$
-	if(json.hasOwnProperty("^^=field.name$$")){
-		try{
-			json["^^=field.name$$"] = new mongodb.ObjectId(json["^^=field.name$$"]);
-		}catch(e){
-			log.e(e);
+	if(json.hasOwnProperty("^^=field.name$$") && json["^^=field.name$$"] != undefined){
+		if(json["^^=field.name$$"]){
+			try{
+				json["^^=field.name$$"] = new mongodb.ObjectId(json["^^=field.name$$"]);
+			}catch(e){
+				if(typeof json["^^=field.name$$"] == "object" && 
+					 Object.keys(json["^^=field.name$$"]).length){
+					
+				}else{
+					json["^^=field.name$$"] = "";
+					log.e(e);
+				}
+			}
+		}else{
+			if(!json["^^=field.name$$"]) json["^^=field.name$$"] = "";
 		}
-	  if(!json["^^=field.name$$"])
-			delete json["^^=field.name$$"]
 	}
    ^^}$$
 	/*^^}$$*/
@@ -73,7 +81,12 @@ function getModel(cname){
 	model.upsert2 = function(criteria, updateParam, fn){
 		origin.updateOne(criteria, updateParam, {upsert:true}, function(err, result){
 			var rtn;
-			if(result) rtn = result.result;
+			if(result && result.result){
+				rtn = {};
+				if(result.result.upserted && result.result.upserted.length)
+					rtn.insertedId = result.result.upserted[0]._id;
+				rtn.n = result.result.n;
+			}
 			else rtn = {n: 0};
 			if(fn) fn(err, rtn);
 		});
@@ -123,11 +136,6 @@ function getModel(cname){
 		if(!criteria) return fn("no criteria");
 		origin.deleteOne(criteria, fn);
 	};
-	model.select = function(criteria, fn){
-		//fn: function(err, result)
-		//result: doc
-		origin.findOne(criteria, fn);
-	};
 	model.bupdate = function(criteria, doc, fn){
 		origin.updateMany(criteria, {$set: doc}, function(err, result){
 			var rtn;
@@ -165,9 +173,21 @@ function getModel(cname){
 	model.each = function(fn, fnfinal){
 		origin.find().each(function(err, doc){
 			if(!doc) return fnfinal();
-			else fn(err, doc);
+			fn(err, doc);
 		});
 	};
+	model.eachSeries = function(fn, fnfinal){
+		var c = origin.find();
+		var nextFn = function(err, doc){
+			if(err) return fnfinal(err);
+			if(!doc) return fnfinal();
+			fn(err, doc, function(err2){
+				if(err2) return fnfinal(err2);
+				c.next(nextFn);
+			});
+		};
+		c.next(nextFn);
+	}
 	model.bcolect = function(criteria, selectOptions, fn){
 		if(!fn){
 			fn = selectOptions; 

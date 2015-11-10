@@ -1,0 +1,56 @@
+^^=name$$<span>^^=text$$</span>
+<div style="width:100%;padding:20px;border:1px solid;border-radius:4px;text-align:center;">
+<div style="padding:10px">
+<div class="row">
+	<div class="col-sm-2">
+		<strong>字段名</strong>
+	</div>
+	<div class="col-sm-2">
+		<strong>描述</strong>
+	</div>
+	<div class="col-sm-2">
+		<strong>类型</strong>
+	</div>
+	<div class="col-sm-2">
+		<strong>属性</strong>
+	</div>
+	<div class="col-sm-2">
+		<strong>默认值</strong>
+	</div>
+	<div class="col-sm-2">
+		<strong>枚举/引用</strong>
+	</div>
+</div>
+
+^^for(var fname in fields){var f=fields[fname];$$
+<div class="row">
+	<div class="col-sm-2">
+	^^=fname$$
+	</div>
+	<div class="col-sm-2">
+	^^=f.text$$
+	</div>
+	<div class="col-sm-2">
+	^^=f.type$$
+	</div>
+	<div class="col-sm-2">
+		^^if(f.index){$$索引^^}$$
+		^^if(f.unique){$$唯一^^}$$
+	</div>
+	<div class="col-sm-2">
+		^^if(f.hasOwnProperty('default')){$$
+     ^^if(f.type == "datetime" && f.default == 0){$$
+		当前时间
+     ^^}else{$$
+		^^=f.default$$
+     ^^}$$
+		^^}$$
+	</div>
+	<div class="col-sm-2">
+		^^if(f.enums){$$^^=$.stringify(f.enums)$$^^}$$
+		^^if(f.ref){$$^^=f.ref$$&nbsp;^^=f.reffield||""$$^^}$$
+	</div>
+</div>
+^^}$$
+</div>
+</div>

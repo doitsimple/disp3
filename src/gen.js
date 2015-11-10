@@ -97,15 +97,31 @@ function genFiles(){
 		}
 
 		var tenv = libObject.copy1(env);
-		tenv.origin = env;
+//		tenv.origin = env;
 		env = tenv;
 		env.global = globalEnv;
+
+		if(partConfig.lib){
+			var mss = partConfig.lib.split(/[-,]/);
+			for(var i in mss){
+				var fname =  self.libs[mss[i]];
+				if(!fname)
+					return self.error("no library named "+mss[i]);
+				render({file: self.libs[mss[i]]}, env);
+			}
+		}
+
 		var ms;
 		var keys = Object.keys(partConfig).sort().reverse();
 		for(var i in keys){
 			var key = keys[i];
 			if(!env[key]) env[key] = "";
 			if(!reservedKey[key] && !key.match("main") ){
+				if(!libObject.isArray(partConfig[key])) {
+					log.i(partConfig);
+					log.e(key + " is not array");
+					return 1;
+				}
 				partConfig[key].forEach(function(file){
 					env[key] += render({file: file}, env);
 				});

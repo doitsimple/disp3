@@ -12,31 +12,36 @@ var genModelFuncList = {};
 var connectFuncs = [];
 var initFuncs = [];
 function formatString(json, key){
-	if(json.hasOwnProperty(key))
+	if(json.hasOwnProperty(key) && json[key] != undefined)
 		if(typeof json[key] == "object"){
-			for(var key2 in json[key]){
-				if(typeof json[key][key2] != "object")
-					json[key][key2] = json[key][key2].toString();
-			}
+			// for(var key2 in json[key]){
+			// 	if(typeof json[key][key2] != "object")
+			// 		try{						
+			// 			json[key][key2] = json[key][key2].toString();
+			// 		}catch(e){
+			// 			log.i(json[key][key2]);
+			// 			log.e(e);						
+			// 		}
+			// }
 		}else{
 			json[key] = json[key].toString();
 		}
 }
 function formatInt(json, key){
-	if(json.hasOwnProperty(key))
+	if(json.hasOwnProperty(key) && json[key] != undefined)
 		if(typeof json[key] != "object"){
 			json[key] = parseInt(json[key].toString());
 		}
 }
 function formatFloat(json, key){
-	if(json.hasOwnProperty(key))
+	if(json.hasOwnProperty(key) && json[key] != undefined)
 		if(typeof json[key] != "object"){
 			json[key] = parseFloat(json[key].toString());
 		}
 }
 function formatDate(json, key){
 	var val;
-	if(json.hasOwnProperty(key))
+	if(json.hasOwnProperty(key) && json[key] != undefined)
 		if(typeof json[key] == "object" && Object.keys(json[key]).length){
 			for(var key2 in json[key]){
 				if(typeof json[key][key2] == "string" && json[key][key2].length == 8){
@@ -59,7 +64,7 @@ function formatDate(json, key){
 		}
 }
 function formatDatetime(json, key){
-	if(json.hasOwnProperty(key))
+	if(json.hasOwnProperty(key) && json[key] != undefined)
 		if(typeof json[key] == "object" && Object.keys(json[key]).length){
 			for(var key2 in json[key]){		
 				json[key][key2] = new Date(json[key][key2]);
@@ -79,13 +84,13 @@ $$
 dbs["^^=dbname$$"] = require("./^^=dbname$$");
 dbs["^^=dbname$$"].initSchemas = function(){
  ^^for(var i in db.withSchemas){var schema = global.proto.schemas[db.withSchemas[i]];$$
-if(schemas["^^=schema.name$$"]) log.e("same schema for two db");
+if(schemas["^^=schema.name$$"]) log.e("same schema for two db ^^=schema.name$$");
 schemas["^^=schema.name$$"] = {};
 for(var key in dbs["^^=dbname$$"].schemas["^^=schema.name$$"]){
 	schemas["^^=schema.name$$"][key+"Spec"] = dbs["^^=dbname$$"].schemas["^^=schema.name$$"][key];
 }
 schemas["^^=schema.name$$"].db = "^^=dbname$$";
-schemas["^^=schema.name$$"].formatUpdateDoc = function(json){
+schemas["^^=schema.name$$"].formatUpdateDoc = function(json, sp){
   ^^for(var fieldname in schema.fields){var field = schema.fields[fieldname];$$
    ^^if(!field.setonmodify) continue;$$
 	 ^^if(field.hasOwnProperty("default")){$$
@@ -99,9 +104,9 @@ schemas["^^=schema.name$$"].formatUpdateDoc = function(json){
     ^^}$$
 	 ^^}$$
 	^^}$$
-	if(schemas["^^=schema.name$$"].formatUpdateDocSpec) schemas["^^=schema.name$$"].formatUpdateDocSpec(json);
+	if(schemas["^^=schema.name$$"].formatUpdateDocSpec) schemas["^^=schema.name$$"].formatUpdateDocSpec(json, sp);
 }
-schemas["^^=schema.name$$"].formatDoc = function(json){
+schemas["^^=schema.name$$"].formatDoc = function(json, sp){
   ^^for(var fieldname in schema.fields){var field = schema.fields[fieldname];$$
  	 ^^if(field.type == "string"){$$
 		formatString(json, "^^=field.name$$");
@@ -115,17 +120,17 @@ schemas["^^=schema.name$$"].formatDoc = function(json){
  		formatDatetime(json, "^^=field.name$$");
 	 ^^}$$
 	 ^^if(field.encrypt){$$
-	if(json.hasOwnProperty("^^=field.name$$"))
+	if(json.hasOwnProperty("^^=field.name$$") && !sp.$encrypt_disabled)
     ^^if(!field.encryptParams){$$
 		json["^^=field.name$$"] = libEncrypt["^^=field.encrypt$$"](json["^^=field.name$$"]);
     ^^}else{$$
-		json["^^=field.name$$"] = libEncrypt["^^=field.encrypt$$"](json["^^=field.name$$"], ^^=encryptParams.join(",")$$);
+		json["^^=field.name$$"] = libEncrypt["^^=field.encrypt$$"](json["^^=field.name$$"], ^^=field.encryptParams.join(",")$$);
 	  ^^}$$
 	 ^^}$$
 	^^}$$
-	if(schemas["^^=schema.name$$"].formatDocSpec) schemas["^^=schema.name$$"].formatDocSpec(json);
+	if(schemas["^^=schema.name$$"].formatDocSpec) schemas["^^=schema.name$$"].formatDocSpec(json, sp);
 }
-schemas["^^=schema.name$$"].formatInsertDoc = function(json){
+schemas["^^=schema.name$$"].formatInsertDoc = function(json, sp){
   ^^for(var fieldname in schema.fields){var field = schema.fields[fieldname];$$
 	 ^^if(field.hasOwnProperty("default")){$$
 		if(!json.hasOwnProperty("^^=field.name$$"))
@@ -138,8 +143,7 @@ schemas["^^=schema.name$$"].formatInsertDoc = function(json){
     ^^}$$
 	 ^^}$$
 	^^}$$
-	if(schemas["^^=schema.name$$"].formatInsertDocSpec) schemas["^^=schema.name$$"].formatInsertDocSpec(json);
-	schemas["^^=schema.name$$"].formatDoc(json);
+	if(schemas["^^=schema.name$$"].formatInsertDocSpec) schemas["^^=schema.name$$"].formatInsertDocSpec(json, sp);
 };
 	^^if(schema.init && schema.init.length){schema.seed = schema.init;console.log("schema init depleted, please change to seed");}$$
 	^^if(schema.seed && schema.seed.length){$$
@@ -194,6 +198,78 @@ module.exports.connect = function (){
 		});
 	});
 };
+function parseArgs(schema, args, notformat){
+	var pargs = {sp:{}};
+	if(args.length == 3){
+		pargs.where = args[0] || {};
+		pargs.options = args[1] || {};
+		if(args[2]){
+			if(typeof args[2] != "function") {
+				log.i("callback is not function!"); 
+				log.e(args[2]); 
+				pargs.callback = function(){};		
+			}else{
+				pargs.callback = args[2];
+			}
+		}else{
+			pargs.callback = function(){};
+		}
+	}else if(args.length == 2){
+		pargs.where = args[0] || {};
+		if(typeof args[1] == "function"){
+			pargs.options = {};
+			pargs.callback = args[1];
+		}else{
+			pargs.options = args[1] || {};
+			pargs.callback = function(){};
+		}
+	}else if(args.length == 1){
+		if(typeof args[0] == "function"){
+			pargs.where = {};
+			pargs.options = {};
+			pargs.callback = args[0];
+		}else{
+			pargs.where = args[0] || {};
+			pargs.options = {};
+			pargs.callback = function(){};
+		}
+	}else{
+		log.e("args error");
+		return;
+	}
+	if(pargs.options.$encrypt_disabled){
+		pargs.sp.$encrypt_disabled = 1;
+		delete pargs.options.$encrypt_disabled;
+	}
+	if(schema.formatDoc && !notformat)
+		schema.formatDoc(pargs.where, pargs.sp);
+	return pargs;
+}
+function formatInsertArgs(schema, args){
+	if(schema.formatInsertDoc)
+		schema.formatInsertDoc(args.where, args.sp);
+}
+function formatUpdateArgs(schema, args){
+	if(!args.options.$set) args.options.$set = {};
+	if(schema.formatDoc){
+		schema.formatDoc(args.options.$set, args.sp);
+	}
+	if(schema.formatUpdateDoc){
+		schema.formatUpdateDoc(args.options.$set, args.sp);
+	}
+}
+function formatUpsertArgs(schema, args){
+	formatUpdateArgs(schema, args);
+	if(!args.options.$setOnInsert) args.options.$setOnInsert = {};
+	if(schema.formatInsertDoc)
+		schema.formatInsertDoc(args.options.$setOnInsert, args.sp);
+	for(var key in args.options.$inc){
+		delete args.options.$setOnInsert[key];
+	}
+	for(var key in args.options.$set){
+		delete args.options.$setOnInsert[key];
+	}
+}
 module.exports.getModel = getModel;
 function getModel(schemaname){
 	if(!isConnected) return log.e("not connected");
@@ -213,62 +289,42 @@ function getModel(schemaname){
 		var std = {
 			origin: model.origin,
 			bselect: function(){
-				var where, op, cb;
-				if(arguments.length == 2){
-					where = arguments[0];
-					op = {};
-					cb = arguments[1];
-				}else if(arguments.length == 3){
-					where = arguments[0];
-					op = arguments[1];
-					cb = arguments[2];
-				}else{
-					return log.e("wrong args for bselect " + arguments.join(","));
-				}
-				if(schema.formatDoc)
-					schema.formatDoc(where);
-				model.bselect(where, op, cb);
+				var args = parseArgs(schema, arguments);
+				model.bselect(args.where, args.options, args.callback);
 			},
-			insert: function(doc, cb){
-				if(!doc) return cb("no doc");
-				if(schema.formatInsertDoc)
-					schema.formatInsertDoc(doc);
-				model.insert(doc, function(err, result){
-					if(err) cb(err);
-					cb(null, {insertedId: result.insertedId});
+			insert: function(){
+				var args = parseArgs(schema, arguments);
+				if(!args.where) return args.callback("no doc");
+				formatInsertArgs(schema, args);
+
+				model.insert(args.where, function(err, result){
+					if(err) return args.callback(err);
+					return args.callback(null, {insertedId: result.insertedId});
 				});
 			},
-			delete: model.delete,
-			update2: function(where, doc, cb){
-				if(!doc.$set) doc.$set = {};
-				if(schema.formatDoc){
-					schema.formatDoc(doc.$set);
-					schema.formatDoc(where);
-				}
-				if(schema.formatUpdateDoc){
-					schema.formatDoc(doc.$set);
-				}
-				model.update2(where, doc, cb);
+			delete: function(){
+				var args = parseArgs(schema, arguments);
+				model.delete(args.where, args.callback);
 			},
-			upsert2: function(where, doc, cb){
-				if(!doc.$set) doc.$set = {};
-				if(!doc.$setOnInsert) doc.$setOnInsert = {};
-				if(schema.formatInsertDoc)
-					schema.formatInsertDoc(doc.$setOnInsert);
-				if(schema.formatDoc){
-					schema.formatDoc(where);
-					schema.formatDoc(doc.$set);
-				}
-				if(schema.formatUpdateDoc){
-					schema.formatDoc(doc.$set);
-				}
-				for(var key in doc.$inc){
-					delete doc.$setOnInsert[key];
-				}
-				model.upsert2(where, doc, cb);
+			update2: function(){
+				var args = parseArgs(schema, arguments);
+				formatUpdateArgs(schema, args);
+				model.update2(args.where, args.options, args.callback);
 			},
-			sedate2: model.sedate2,
-			count: model.count
+			upsert2: function(){
+				var args = parseArgs(schema, arguments);
+				formatUpsertArgs(schema, args);
+				model.upsert2(args.where, args.options, args.callback);
+			},
+			sedate2: function(){
+				var args = parseArgs(schema, arguments);
+				formatUpdateArgs(schema, args);
+				model.sedate2(args.where, args.options, args.callback);
+			},
+			count: function(){
+				var args = parseArgs(schema, arguments);
+				model.count(args.where, {}, args.callback);
+			}
 		}
 		std.update = function(where, doc, cb){
 			std.update2(where, {$set: doc}, cb);
@@ -280,19 +336,106 @@ function getModel(schemaname){
 			std.sedate2(where, {$set: doc}, cb);
 		}
 
-		if(model.select) std.select = function(where, cb){
-			if(schema.formatDoc)
-				schema.formatDoc(where);
-			model.select(where, cb);
-		}
-		if(model.binsert) std.binsert = function(docs, cb){
-			if(schema.formatInsertDoc)
-				docs.forEach(function(doc){
-					schema.formatInsertDoc(doc);
+		if(model.select){
+			std.select = function(){
+				var args = parseArgs(schema, arguments);
+				model.select(args.where, args.options, args.callback);
+			}
+		}else{
+			std.select = function(){
+				var args = parseArgs(schema, arguments);
+				args.options.$limit = 1;
+				std.bselect(args.where, args.options, function(err, docs){
+					if(err) return args.callback(err);
+					args.callback(undefined, docs[0]);
 				});
-			model.binsert(docs, cb);
+			}
+		}
+		if(model.binsert) std.binsert = function(){
+			var args = parseArgs(schema, arguments, 1);
+			if(schema.formatInsertDoc)
+				args.where.forEach(function(doc){
+					schema.formatDoc(doc, args.sp);
+					schema.formatInsertDoc(doc, args.sp);
+				});
+			model.binsert(args.where, args.callback);
 		};
+		if(model.bdelete) std.bdelete = function(){
+			var args = parseArgs(schema, arguments);
+			model.bdelete(args.where, args.callback);
+		}
+		if(model.bupdate2) {
+			std.bupdate2 = function(){
+				var args = parseArgs(schema, arguments);
+				formatUpdateArgs(schema, args);
+				model.bupdate2(args.where, args.options, args.callback);
+			}
+			std.bupdate = function(where, doc, cb){
+				std.bupdate2(where, {$set: doc}, cb);
+			}
+		}
+		if(model.bsedate2) {
+			std.bsedate2 = function(){
+				var args = parseArgs(schema, arguments);
+				formatUpdateArgs(schema, args);
+				model.bsedate2(args.where, args.options, args.callback);
+			}
+			std.bsedate = function(where, doc, cb){
+				std.bsedate2(where, {$set: doc}, cb);
+			}
+		}
+
+		std.bcolect = function(){
+			var args = parseArgs(schema, arguments);
+			model.count(args.where, function(err, count){
+				if(err) return args.callback(err);
+				model.bselect(args.where, args.options, function(err, data){
+					if(err) return args.callback(err);
+					args.callback(err, {
+						data: data,
+						count: count
+					});
+				});
+			});
+		}
 		if(model.each) std.each = model.each;
+		if(model.eachSeries) std.eachSeries = model.eachSeries;
+		if(model.freq) std.freq = model.freq;
+		else if(std.each){
+			std.freq2d = function(){
+				var args = parseArgs(schema, arguments);
+				if(!args.options.$dim1 || !args.options.$dim2 || !args.options.$sum)
+					return args.callback("params error");
+				var hash = {};
+				std.each(function(err, doc){
+					var key = doc[args.options.$dim1]+"\t"+doc[args.options.$dim2];
+					var val = doc[args.options.$sum];
+					if(typeof val != "float" && typeof val !="int")
+						val = 1;
+					if(!hash[key]) hash[key] = val;
+					else hash[key] += val;
+				}, function(){
+					args.callback(null, hash);
+				});
+			}
+			std.freq = function(){
+				var args = parseArgs(schema, arguments);
+				if(!args.options.$dim || !args.options.$sum)
+					return args.callback("params error");
+				var hash = {};
+				std.each(function(err, doc){
+					var key = doc[args.options.$dim];
+					var val = doc[args.options.$sum];
+					if(typeof val != "float" && typeof val !="int")
+						val = 1;
+					if(!hash[key]) hash[key] = val;
+					else hash[key] += val;
+				}, function(){
+					args.callback(null, hash);
+				});
+			}
+		}
+/*
 		if(model.leftjoin) std.leftjoin = model.leftjoin;
 		else if(std.each) std.leftjoin = function(rschema, key, left, right, fn){
 			var rtn = {};
@@ -315,38 +458,7 @@ function getModel(schemaname){
 				});
 			});
 		};
-		if(model.bdelete) std.bdelete = model.bdelete;
-
-		if(model.bupdate) std.bupdate = model.bupdate;
-		if(model.bupdate2) std.bupdate2 = model.bupdate2;
-		if(model.bsedate) std.bsedate = model.bsedate;
-		if(model.bsedate2) std.bsedate2 = model.bsedate2;
-
-		std.bcolect = function(){
-			var where, op, cb;
-			if(arguments.length == 2){
-				where = arguments[0];
-				op = {};
-				cb = arguments[1];
-			}else if(arguments.length == 3){
-				where = arguments[0];
-				op = arguments[1];
-				cb = arguments[2];
-			}else{
-				return log.e("wrong args for bcolect " + arguments.join(","));
-			}
-				
-			model.count(where, function(err, count){
-				if(err) return cb(err);
-				model.bselect(where, op, function(err, data){
-					if(err) return cb(err);
-					cb(err, {
-						data: data,
-						count: count
-					});
-				});
-			});
-		}
+*/
 		modelCache[schemaname] = std;		
 
 	}

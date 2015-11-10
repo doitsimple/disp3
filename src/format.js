@@ -4,6 +4,9 @@ var libString = require("../lib/js/string");
 var libArray = require("../lib/js/array");
 var libObject = require("../lib/js/object");
 var libFile = require("../lib/nodejs/file");
+var utils =require("./utils");
+var tmpl = require("./tmpl");
+var checkName = require("./utils").checkName;
 var log = require("./log");
 module.exports = {
 	readConfigs: readConfigs,
@@ -25,7 +28,9 @@ function readConfigs(){
 	}else{
 		return self.error("no disp.json");
 	}
-	
+	self.global.bin = process.argv[1];
+	self.global.pwd = process.env.PWD;
+
 
 	self.project = projectJson;
 	if(!projectJson.arch) projectJson.arch = "base";
@@ -66,7 +71,7 @@ function readConfigs(){
 
 //extend global if task is not main
   if(self.task != "main")
-    libObject.extend(self.global, libFile.readJSON(self.task + ".json"));
+    utils.extend(self.global, libFile.readJSON(self.task + ".json"));
 
 //format target path
   projectJson.target = path.relative(".", projectJson.target);
@@ -97,14 +102,14 @@ function extendConfigs(){
 	log.i(self.navpaths);
 //extend global again (because walk may overwrite global)
   if(self.task != "main")
-    libObject.extend(self.global, libFile.readJSON(self.task + ".json"));
+    utils.extend(self.global, libFile.readJSON(self.task + ".json"));
 //format twice
 	if(format.call(self, "global", self, self.formats)) return 1;
 	mountJSON(self.global);
 	mountString(self.global);
 	if(!fs.existsSync(self.global.project.target))
 		libFile.mkdirpSync(self.global.project.target);
-	fs.writeFileSync(self.global.project.target + "/disp.global.json", JSON.stringify(self.global, undefined, 2));
+	fs.writeFileSync(self.global.project.target + "/disp.global.json", libObject.stringify(self.global, undefined, 2));
 	return 0;
 }
 function readConfigsSub(arch){
@@ -136,6 +141,17 @@ function readConfigsSub(arch){
 		archJson = {};
 	}
 	self.archs[arch] = archJson;
+
+	if(fs.existsSync(archDir + "/lib")){
+		var arr = libFile.readdirNotDirSync(archDir + "/lib");
+		for(var i in arr){
+			var fname = arr[i];
+			if(!checkName(fname)) continue;
+			var ms = fname.replace(/\./g, "");
+			self.libs[ms] = archDir + "/lib/" + fname;
+		}
+	}
+
 	if(archJson.deps){
 		for(var dep in archJson.deps){
 			readConfigsSub.call(self, dep);
@@ -198,31 +214,25 @@ function mountString(config){
       e = itConfig[key];
     else
       e = itConfig[key][i];
-		if(typeof e != "string") return;
-		e = e.replace(/#([^#]+)#/g, function(match, p1) {
-			if(!p1.match(/\(/)){
-				return libObject.getByKey(config, p1);
-			}else{
-				return eval(p1);
-			}
-		});
-		if(key.match(/#([^#]+)#/)){
-			var tmpkey = key.replace(/#([^#]+)#/g, function(match, p1) {
-				if(!p1.match(/\(/)){
-					return libObject.getByKey(config, p1);
-				}else{
-					return eval(p1);
-				}
-			});
+		var setnew = 0;
+		if(typeof e == "string" && e.match(/\^\^.+\$\$/)){
+			e = tmpl.render(e, itConfig, true);
+			setnew = 1;
+		}
+		if(key.match(/\^\^.+\$\$/)){
+			var tmpkey = tmpl.render(key, itConfig, true);
 			delete itConfig[key];
 			if(i!=undefined && !itConfig[tmpkey]) itConfig[tmpkey] = [];
 			key = tmpkey;
+			setnew = 1;
 		}
-    if(i==undefined)
-      itConfig[key] = e;
-    else
-      itConfig[key][i] = e;
-  });
+		if(setnew){
+			if(i==undefined)
+				itConfig[key] = e;
+			else
+				itConfig[key][i] = e;
+		}
+	});
 }
 function format(key1, parent, formatJson){
 	var self = this;
@@ -232,8 +242,9 @@ function format(key1, parent, formatJson){
 			$default: formatJson
 		}
 	}
-	if(typeof parent != "object")
+	if(typeof parent != "object"){
 		return self.error(parent + " is not object");
+	}
 	// assume both json and formatJson are ensured not null
 	if(formatJson.$required && !parent.hasOwnProperty(key1)) 
 		return self.error(key1 + " required" + "\n" + JSON.stringify(formatJson));

@@ -4,7 +4,7 @@ var libString = require("../lib/js/string");
 var libArray = require("../lib/js/array");
 var libObject = require("../lib/js/object");
 var libFile = require("../lib/nodejs/file");
-
+var utils =require("./utils");
 var format = require("./format");
 var nav = require("./nav");
 var walk = require("./walk");
@@ -41,12 +41,14 @@ function Disp(){
 	self.formats = {};
 	self.froms = {};
 	self.tmpls = {};
+	self.libs = {};
+
+	self.srcs = {};
 
 	self.archs = {};
 	self.navpaths = {};
 	self.prevFilelist = {};
 	self.filelist = {};
-	self.global.bin = process.argv[1];
 	var dead = false;
 	self.error = function(){
 		dead = true;
@@ -68,6 +70,10 @@ function Disp(){
 		log.i(step);
 		if(!steps[step].apply(self))
 			log.i("->success");
+		else{
+			log.i("->error");
+			return;
+		}
 	}
 }
 
@@ -81,7 +87,7 @@ function run(){
 	configCache.env.rootDir = rootDir;
 	var formatCache = cache.format;
 	if(task && task != "main"){
-		libObject.extend(configCache, libFile.readJSON(task + ".json"));
+		utils.extend(configCache, libFile.readJSON(task + ".json"));
 	}
 	configCache.project.bin = path.resolve(__dirname + "/../bin/disp3");
 	configCache.project.target = path.relative(".", configCache.project.target);
@@ -103,7 +109,7 @@ function run(){
 	}
 //extend twice
 	if(task && task != "main"){
-		libObject.extend(configCache, libFile.readJSON(task + ".json"));
+		utils.extend(configCache, libFile.readJSON(task + ".json"));
 	}
 	
 	if(!tmpl.generate(genFileList, configCache)){

@@ -12,6 +12,7 @@ libObject.extend1(methods, libObject);
 libObject.extend1(methods, libFile);
 var reservedKey = {
 	"$": 1,
+	"lib": 1,
 	"name": 1,
 	"env": 1,
 	"src": 1,
@@ -25,7 +26,7 @@ var reservedKey = {
 module.exports.reservedKey = reservedKey;
 var tmplCache = {};
 module.exports.render = render;
-function render(config, data){
+function render(config, data, clearflag){
 	if(!data){
 		log.e("render with undefined data");
 		return "";
@@ -78,23 +79,28 @@ function render(config, data){
 		//			replace(/\s*(\^\^[^=]((?!\$\$).)*\$\$)\s*/g, "$1");
 		//replace multiple line [\s but not \n]* [^^] [not =] [not $$]* [$$] [\s*\n] 
 
-		originstr.split("\^\^").forEach(function(sub, i){
+		originstr.split(/[\t ]*\^\^(?!=)|\^\^(?==)/).forEach(function(sub, i){
 			if(i==0){
 				win = "";
 				wout = sub || "";
 			}else{
-				var subs = sub.split("\$\$");
+				var subs;
+				if(sub[0] == '=')
+					subs = sub.split(/\$\$/);
+				else
+					subs = sub.split(/\$\$[ \t]*/);
 				win = subs[0];
 				wout = subs[1] || "";
+				if(!win || win[0] != '=') 
+					if(wout[0] == '\n')
+						wout = wout.substr(1);
 			}
-
 			wout = wout
-				.replace(/\n[\t ]+$/, "\n") //remove \s after last \n
-				.replace(/^[\t ]*\n/, "") // remove \s before/and first \n
-				.replace(/\\([\[\]\{\}a-zA-Z0-9\+'])/g, "\\\\$1")
-				.replace(/\n/g, "\\n")
-				.replace(/'/g, "\\'")
-				.replace(/\\([\"\?\*\/])/g, "\\\\\\$1");
+				.replace(/\\([\$\^])/g, "$1")
+				.replace(/\\/g, "\\\\")
+				.replace(/([\[\]\{\}'])/g, "\\$1")
+				.replace(/\n/g, "\\n");
+
 
 			if(win && win[0] == '='){
 				var ms;
@@ -123,5 +129,9 @@ function render(config, data){
 	}
 	var rtstr = data.p.join('');
 	delete(data.p);
+	delete(data.$);	
+	if(clearflag){
+		delete(data.local);
+	}
 	return rtstr;
 }

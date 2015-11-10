@@ -1,6 +1,7 @@
 {
 	"project": {
 		"navspaces": ["impl.clients.*","impl.databases.*","impl.servers.*", "impl.scripts.*","impl.modules.*"],
+		"ip": "127.0.0.1",
 		"roles": {
 			"$default": {
 				"uis": ["proto.uis"],
@@ -18,8 +19,9 @@
 					},
 					"$default": {
 						"_id": {
-							"text": "ID",
+							"text": "数据库ID",
 							"ondemand": true,
+							"nomanual": 1,
 							"type": "ObjectId"
 						}
 					}
@@ -60,6 +62,16 @@
 						},
 						"fields": {
 							"$list": {
+								"elements": {
+									"$list": {}
+								}
+							}
+						},
+						"addons": {
+							"$list": {
+								"elements": {
+                  "$list": {}
+                }
 							}
 						}
 					}
@@ -129,6 +141,10 @@
 					"$type": "string",
 					"$from": "impl.servers"
 				},
+				"withDatabase": {
+					"$type": "string",
+					"$from": "impl.databases"
+				},
 				"withServers": {
 					"$multi": true,
 					"$type": "string",
@@ -138,7 +154,14 @@
 		},
 		"crons": {
 			"$list":{
-				"type": "cron"
+			}
+		},
+		"scripts": {
+			"$list": {
+			}
+		},
+		"stats": {
+			"$list": {
 			}
 		}
 	}
