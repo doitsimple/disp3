@@ -152,6 +152,10 @@
 						"type": "string",
 						"index": 1
 					},
+					"userid": {
+						"type": "ObjectId",
+						"ref": "user"
+					},
 					"device_token": {
 						"text": "设备token",
 						"type": "string"
@@ -162,7 +166,8 @@
 					},
 					"time": {
 						"text": "时间",
-						"type": "string"
+						"type": "datetime",
+						"default": 0
 					},
 					"channel": {
 						"text": "渠道",
@@ -475,7 +480,7 @@
 					"where": "{session: session, device_token: device_token}",
 					"result": "sessionres",
 					"check": {
-						"!sessionres": "非法注册"
+						"!sessionres": "为了保证安全，请退出app后再重试注册"
 					}
 				}, {
 					"type": "db",
@@ -483,7 +488,7 @@
 					"schema": "smscode",
 					"where": "{phone: phone}",
 					"check": {
-						"!smscode||!smscode.valid": "非法注册"
+						"!smscode||!smscode.valid": "为了保证安全，请退出app后再重试注册"
 					},
 					"result": "smscode"
 				}, {
@@ -561,7 +566,7 @@
 					"set": "{userid: user._id}",
 					"result": "sessionres",
 					"check": {
-						"!sessionres.n": "非法登录"
+						"!sessionres.n": "为了保证安全，请退出app重进登录"
 					}
 				}, {
 					"type": "async",

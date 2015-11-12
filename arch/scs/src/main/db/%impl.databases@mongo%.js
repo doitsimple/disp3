@@ -1,7 +1,7 @@
 var mongodb = require("mongodb");
 var MongoClient = require('mongodb').MongoClient;
+var sync = require("../lib/sync");
 var log = require("../lib/log");
-
 var db;
 var schemas = {};
 /*^^for(var si=0; si<withSchemas.length;si++){var schema = global.proto.schemas[withSchemas[si]];$$*/
@@ -9,6 +9,33 @@ schemas["^^=schema.name$$"] = {};
 ^^if(schema.fields._id && schema.fields._id.autoinc){$$
 schemas["^^=schema.name$$"].autoinc = "^^=schema.fields._id.autoinc$$";
 ^^}$$
+schemas["^^=schema.name$$"].ensure = function(env, fn){
+	^^
+	var indexJson = [];
+	var uniqueJson = [];
+	for(var fieldname in schema.fields){
+		var field = schema.fields[fieldname];
+		if(field.index){
+			var tmp = {};
+			tmp[field.name] = 1;
+			indexJson.push(tmp);
+		}
+		if(field.unique){
+			var tmp = {};
+			tmp[field.name] = 1;
+			uniqueJson.push(tmp);
+		}
+	^^}$$
+	var c = db.collection("^^=schema.name$$");
+	sync.each(^^=$.stringify(indexJson)$$, function(el, cb){
+		c.createIndex(el, cb);
+	}, function(err){
+		if(err) return cb(err);
+		sync.each(^^=$.stringify(uniqueJson)$$, function(el, cb){
+			c.createIndex(el, {unique: true}, cb);
+		}, fn);
+	});
+}
 schemas["^^=schema.name$$"].formatDoc = function(json){
 	/*^^for(var fieldname in schema.fields){var field = schema.fields[fieldname];$$*/
 	 ^^if(field.type == "ObjectId"){$$

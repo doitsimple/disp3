@@ -14,15 +14,6 @@ var initFuncs = [];
 function formatString(json, key){
 	if(json.hasOwnProperty(key) && json[key] != undefined)
 		if(typeof json[key] == "object"){
-			// for(var key2 in json[key]){
-			// 	if(typeof json[key][key2] != "object")
-			// 		try{						
-			// 			json[key][key2] = json[key][key2].toString();
-			// 		}catch(e){
-			// 			log.i(json[key][key2]);
-			// 			log.e(e);						
-			// 		}
-			// }
 		}else{
 			json[key] = json[key].toString();
 		}
@@ -156,6 +147,12 @@ schemas["^^=schema.name$$"].seed = function(env, cb){
 	});
 };
 	^^}$$
+schemas["^^=schema.name$$"].ensure = function(env, cb){
+	if(schemas["^^=schema.name$$"].ensureSpec) 
+		schemas["^^=schema.name$$"].ensureSpec(env, cb);
+	else
+		cb();
+}
  ^^}$$
 }
 ^^}$$
@@ -192,9 +189,12 @@ module.exports.connect = function (){
 		for(var key in fdbs)
 			fdbs[key].initSchemas();
 		isConnected = true;
-		sync.doKeySeries(schemas, "seed", function(err){
+		sync.doKeySeries(schemas, "ensure", function(err){
 			if(err) return cb(err);
-			cb();
+			sync.doKeySeries(schemas, "seed", function(err){
+				if(err) return cb(err);
+				cb();
+			});
 		});
 	});
 };

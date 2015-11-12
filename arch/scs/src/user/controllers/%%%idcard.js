@@ -10,15 +10,17 @@ module.exports.verify = verify;
 
 function verify(params, fn) {
 	var platform = params.platform || defaultPlatform;
-	if (!platform) fn("no platform!");
+	if (!platform) return fn("no platform!");
 	var Model = db.getModel("idcard");
 	Model.select({
 		idcard: params.idcard,
 		realname: params.realname
 	}, function(err, result) {
 		if (err) return fn(err);
-		if (result) fn(null, {
-			success: true
+		if (result) return fn(null, {
+			weibopayid: "jac" + params.idcard,
+			idcard: params.idcard,
+			realname: params.realname
 		});
 		var p;
 		try {

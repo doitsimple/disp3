@@ -1,10 +1,12 @@
 var fs = require("fs");
 var log = require("../lib/log");
+var libString = require("../lib/string");
+var libObject = require("../lib/object");
 module.exports.sendErr = function(res, msg, code){
 	if(res.sent) return;
 	if(typeof msg == "object"){
 		if(msg.message) msg = msg.message;
-		else msg = JSON.stringify(msg, undefined);
+		else msg = libObject.stringifySimple(msg);
 	}
 ///////
 	var logx = "\x1b[1;35m";
@@ -27,7 +29,7 @@ module.exports.sendJson = function(res, json){
 	if(res.sent) return;
 ////////////
 	var logx = "\x1b[1;32m";
-	logx += JSON.stringify(json, undefined);
+	logx += libObject.stringifySimple(json, undefined);
 	logx += "\x1b[0m";
   log.i(logx);
 ////////////

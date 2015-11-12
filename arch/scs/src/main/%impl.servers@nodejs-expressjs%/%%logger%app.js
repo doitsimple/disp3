@@ -5,7 +5,7 @@ app.use(function(req, res, next){
 	if(req.method != "GET" && req.method != "DELETE"){
 		var bodystr = JSON.stringify(req.body,undefined);
 		if(bodystr != "{}")
-			logx+=JSON.stringify(req.body,undefined)+"\n";
+			logx+=libObject.stringifySimple(req.body)+"\n";
 	}
 	logx+=req.headers['user-agent'];
 	logx+="\x1b[0m";

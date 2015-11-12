@@ -17,7 +17,11 @@ function prelisten(cb){
 	var fnarr = [^^=addons.join(",")$$];
 	sync.doAll(fnarr, cb);
 }
-db.connect(function(){
+db.connect(function(err){
+	if(err){
+		log.e(err);
+		return;
+	}
 	prelisten(function(){
 		server.listen(^^=port$$, function(){
 			log.i('Express server listening on port: ^^=port$$, pid: '+process.pid);

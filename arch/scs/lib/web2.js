@@ -453,8 +453,9 @@ rootApp.factory("ui", function($uibModal, req, ^^=angularCtrlDeps.join(', ')$$){
 		self.showdelete = function(id){
 			self.fields.showrow_id = true;
 			methods.openConfirmModal("确定要删除"+id+"吗", function(){
-				access.delete(config.schema, id);
-				self.refresh();
+				access.delete(config.schema, id, function(){
+					self.refresh();
+				});
 			});
 		}
 	}
