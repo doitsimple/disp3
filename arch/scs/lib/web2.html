@@ -186,12 +186,18 @@ $$
 				^^=ch.text$$
 				</div>
 				<div class="col-sm-9">
-					<div class="list-group">
-					^^=md$$,^^=conf$$
-						^^for(var key in ch.fields){$$
-							<!-- <div class="col-sm-1">^^=conf$$</div> -->
-						^^}$$
-					</div>
+					<ul class="list-group">
+						<li class="list-group-item"
+							^^for(var key in ch.fields){$$
+								<div class="col-sm-1">^^=ch.fields[key].text$$</div>
+							^^}$$
+						</li>
+						<!-- <li class="list-group-item row" ng-repeat="row in ^^=model$$">
+							^^for(var key in ch.fields){$$
+								<div class="col-sm-1">{{row.^^=key$$}}</div>
+							^^}$$
+						</li> -->
+					</ul>
 	 			</div>
 	 	^^}else{
 	 	$$
