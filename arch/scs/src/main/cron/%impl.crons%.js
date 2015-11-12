@@ -1,6 +1,6 @@
 var log = require("../lib/log");
 var libDate = require("../lib/date");
-log.setOutfile("log/"+libDate.getDate(new Date()) + "-cron.log");
+log.setOutfile(__dirname+"/../log/"+libDate.getDate(new Date()) + "-cron.log");
 var db= require("../db");
 log.i("run ^^=name$$");
 db.connect(function(){

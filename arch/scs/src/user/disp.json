@@ -865,6 +865,27 @@
 						"val": "_id"
 					}
 				}
+			},
+			"stat_invite": {
+				"schemas": {
+					"user": {
+						"type": "count",
+						"key": "invite",
+						"dims": {
+							"createtime": 1
+						},
+						"val": "_id"
+					}
+				}
+			},
+			"stat_pot": {
+				"schemas": {
+					"pot": {
+						"type": "sum",
+						"key": "status",
+						"val": "potamount"
+					}
+				}
 			}
 		}
 	}

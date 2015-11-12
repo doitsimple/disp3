@@ -29,6 +29,8 @@ function sendMsg(params) {
 	if (params.message) sendJson.message = params.message;
 	if (params.needCaptcha) sendJson.needCaptcha = params.needCaptcha;
 	if (params.updateUser) sendJson.updateUser = params.updateUser;
+	if (params.updatePot) sendJson.updatePot = params.updatePot;
+	if (params.updateLoan) sendJson.updateLoan = params.updateLoan;
 	if (params.goto) sendJson.goto = params.goto;
 	if (params.next) sendJson.next = params.next;
 	if (clients[userid]) {
