@@ -187,16 +187,16 @@ $$
 				</div>
 				<div class="col-sm-9">
 					<ul class="list-group">
-						<li class="list-group-item"
+						<li class="list-group-item row">
 							^^for(var key in ch.fields){$$
-								<div class="col-sm-1">^^=ch.fields[key].text$$</div>
+								<div class="col-sm-^^=parseInt(12/Object.keys(ch.fields).length)$$">　^^=ch.fields[key].text$$</div>
 							^^}$$
 						</li>
-						<!-- <li class="list-group-item row" ng-repeat="row in ^^=model$$">
+						<li class="list-group-item row" ng-repeat="row in ^^=md$$">
 							^^for(var key in ch.fields){$$
-								<div class="col-sm-1">{{row.^^=key$$}}</div>
+								<div class="col-sm-^^=parseInt(12/Object.keys(ch.fields).length)$$">{{row.^^=key$$}}</div>
 							^^}$$
-						</li> -->
+						</li> 
 					</ul>
 	 			</div>
 	 	^^}else{
