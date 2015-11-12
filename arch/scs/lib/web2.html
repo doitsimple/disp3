@@ -14,8 +14,8 @@
 	}
 }$$
 
- ^^function bytype(f, model, fields){
-  var type = f.type;
+ ^^function bytype(f, model, fields){$$
+ ^^ var type = f.type;
 	^^if(type == "date"){$$
  			{{^^=model$$ | stddate}}
 	^^}else if(type == "datetime"){$$
@@ -110,6 +110,16 @@
    		^^
    		continue;
    }
+   if(f.type == "jsonrow"){
+   		$$
+   		<div class="col-sm-^^=12/config.perline$$" uib-tooltip="^^=f.text || f.name$$">
+   		 <ul class="list-group">
+   		^^local.makejson(f, prefix+"."+f.name, fieldsconfig)$$
+   		</ul>
+   		</div>
+   		^^
+   		continue;
+   }
   $$
 	<div class="col-sm-^^=12/config.perline$$" uib-tooltip="^^=f.text || f.name$$">
 		^^bytype(f, prefix+"."+f.name, fieldsconfig)$$
@@ -149,6 +159,59 @@
     ^^}$$
    ^^}$$
 ^^}$$
+^^local.makejson = function(col, model, fieldsconfig){
+	var fconfig = fieldsconfig+"."+col.name;
+	var mdconfig = model;
+$$
+	 ^^for(var key in col.fields){$$
+			<li class="list-group-item row">
+	 	^^var ch = col.fields[key];
+		var md = mdconfig+"."+ key;
+		var conf = fconfig+".fields."+ key;
+	 	if(ch.type=="json"){
+	 	ch.name = key;
+		$$
+	 		<!-- <div class="row">
+	 			^^=md$$|^^=conf$$,
+			</div> -->
+	 			<div class="col-sm-3">^^=ch.text$$</div>
+	 			<div class="col-sm-9">
+		 			<ul class="list-group">
+		 				^^makejson(ch,md,conf)$$
+		 			</ul>
+	 			</div>
+	 	^^}else if(ch.type=="jsonlist"){
+	 	$$
+				<div class="col-sm-3">
+				^^=ch.text$$
+				</div>
+				<div class="col-sm-9">
+					<div class="list-group">
+					^^=md$$,^^=conf$$
+						^^for(var key in ch.fields){$$
+							<!-- <div class="col-sm-1">^^=conf$$</div> -->
+						^^}$$
+					</div>
+	 			</div>
+	 	^^}else{
+	 	$$
+			<div class="col-sm-6">
+			^^=ch.text$$
+			</div>
+			<div class="col-sm-6">
+				^^
+				var fields = fieldsconfig+".fields."+key;
+				if(ch.type=="int" && ch.enums){$$
+				{{^^=model+"."+key$$ | fenums:^^=fields$$.enums}}
+				^^}else{$$
+					{{^^=model+"."+key$$}}
+				^^}
+				$$
+			</div>
+	 	^^}$$
+	 	</li>
+	^^}$$ 
+^^}$$
 
 ^^local.panel = function(config){
 if(!config.perline) config.perline = 3;
@@ -168,10 +231,11 @@ $$
 </div>
 <div class="panel-body" ^^=showstr$$>
 	<div class="col-sm-^^=config.width$$">
+ ^^if(!config.islist){$$
 		<div class="row">
- ^^if(!config.islist){
-  makeitem(config, "schemas."+config.withSchema, "schemafields."+config.withSchema)
- }else{$$
+  ^^makeitem(config, "schemas."+config.withSchema, "schemafields."+config.withSchema)$$
+		</div>
+ ^^}else{$$
   ^^
   var repeat, fieldp;
   if(!config.withSchema){
@@ -183,18 +247,17 @@ $$
   }
   $$
  			<div class="row" ng-repeat="row in ^^=repeat$$">
-  ^^makeitem(config, "row", fieldp);$$
+  ^^makeitem(config, "row", fieldp)$$
 			</div>
  ^^}$$
-		</div>
 		<div class="row text-center" style="padding:10px">
   ^^for(var sname in config.fields){
    var f = config.fields[sname];
    if(f.hidden) continue;
    if(f.type != "func") continue;
   $$
-	 ^^local.makefunc(f, 'md');$$
-  ^^}$$	 
+	 ^^local.makefunc(f, 'md')$$
+  ^^}$$
 		</div>
 	</div>
 	<div class="col-sm-^^=12-config.width$$">
