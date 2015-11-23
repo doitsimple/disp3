@@ -4,6 +4,7 @@
 			"$list": {"$type": "boolean"}
 		},
 		"arch": "base",
+		"seq": ["js","nodejs", "expressjs", "c", "cpp", "py", "pl", "php"],
 		"addons": {
 			"$type": "string",
 			"$multi": true

@@ -10,10 +10,21 @@ libObject.extend1(methods, libString);
 libObject.extend1(methods, libArray);
 libObject.extend1(methods, libObject);
 libObject.extend1(methods, libFile);
+module.exports.extendMethods = extendMethods;
+function extendMethods(name, fn){
+	methods[name] = fn;
+}
 var reservedKey = {
 	"$": 1,
+	"local": 1,
+	"origin": 1,
+	"p": 1,
+	"key": 1,
 	"lib": 1,
 	"name": 1,
+	"parent": 1,
+	"global": 1,
+	"inherents": 1,
 	"env": 1,
 	"src": 1,
 	"srclink": 1,
@@ -43,12 +54,13 @@ function render(config, data, clearflag){
 		if(tmplCache[config.file]){
 			originstr = tmplCache[config.file];
 		}else{
-			if(config.str && config.file) {
-				originstr = config.str;
+			if(config.file){
+				if(config.str){
+					originstr = config.str;
+				}else{
+					originstr = libFile.readString(config.file);
+				}
 				tmplCache[config.file] = originstr;
-			}
-			else if(config.file){
-				originstr = libFile.readString(config.file);
 			}
 			else if(config.str){
 				originstr = config.str;
@@ -57,17 +69,19 @@ function render(config, data, clearflag){
 				return "";
 			}
 		}
+		if(config.pre)
+			originstr = config.pre + originstr;
+		if(config.post)
+			originstr += config.post;
+		
 	}
 	data.local = data;
 	data.$ = methods;
-	data.$.getInserted = function(){
-		var json = {};
-		for(var key in data.local){
-			if(reservedKey[key]) continue;
-			if(typeof data.local[key] == "string")
-				json[key] = data.local[key];
-		}
-		return json;
+
+	data.origin = {};
+	for(var key in data.local){
+		if(reservedKey[key]) continue;
+		data.origin[key] = data.local[key];
 	}
 	data.p=[];
 
@@ -119,7 +133,7 @@ function render(config, data, clearflag){
 		try{
 			eval(evalstr);
 		}catch(e){
-			console.log(evalstr);
+			log.i(evalstr);
 			log.e(config);
 			log.e(e.stack);
 			eval(evalstr);

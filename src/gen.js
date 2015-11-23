@@ -5,6 +5,7 @@ var libArray = require("../lib/js/array");
 var libObject = require("../lib/js/object");
 var libFile = require("../lib/nodejs/file");
 var log = require("./log");
+var concept = require("./concept");
 var render = require("./tmpl").render;
 var reservedKey = require("./tmpl").reservedKey;
 module.exports = {
@@ -15,6 +16,7 @@ function genFiles(){
 	var self = this;
 	var fileList = self.filelist;
 	var globalEnv = self.global;
+	concept.setEnv(self.global);
 /* check fsconfigs */
 	var fsconfigs = globalEnv.project.fsconfigs;
 	var	target = globalEnv.project.target;

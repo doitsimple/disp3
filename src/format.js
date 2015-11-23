@@ -30,7 +30,7 @@ function readConfigs(){
 	}
 	self.global.bin = process.argv[1];
 	self.global.pwd = process.env.PWD;
-
+	self.global.rootDir = self.rootDir;
 
 	self.project = projectJson;
 	if(!projectJson.arch) projectJson.arch = "base";
