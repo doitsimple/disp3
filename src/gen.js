@@ -141,6 +141,11 @@ function genFiles(){
 		partConfig.main.forEach(function(file){
       str += render({file: file}, env);
     });
+
+		if(env.requires){
+			str = concept.genRequires(env.requires) + str;
+		}
+
 		if(partConfig.tmpl){
 			var tmplPath;
 			if(env.tmpls){

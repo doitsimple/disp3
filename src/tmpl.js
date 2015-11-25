@@ -17,13 +17,13 @@ function extendMethods(name, fn){
 var reservedKey = {
 	"$": 1,
 	"local": 1,
+	"global": 1,
 	"origin": 1,
 	"p": 1,
 	"key": 1,
 	"lib": 1,
 	"name": 1,
 	"parent": 1,
-	"global": 1,
 	"inherents": 1,
 	"env": 1,
 	"src": 1,
@@ -134,8 +134,7 @@ function render(config, data, clearflag){
 			eval(evalstr);
 		}catch(e){
 			log.i(evalstr);
-			log.e(config);
-			log.e(e.stack);
+			log.e(e);
 			eval(evalstr);
 			return "";
 

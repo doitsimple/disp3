@@ -9,6 +9,7 @@ var utils = require("./utils");
 var checkName = utils.checkName;
 var log = require("./log");
 var regex = /%(~?)([^%@~]+)?(~?)(?:@([^%@~]+))?(?:%([a-zA-Z0-9_-]+)?(?:@([^%@~]+))?)?(?:%([^%]+))?%/;
+var replaceRegex = /%\S*%/;
 module.exports = {
 	regex: regex,
 	walk: walk,
@@ -126,7 +127,7 @@ function walk(params, addgenflag){
 					if(params.selector &&
 						 !matchEnv(params.env[key], params.selector))
 						continue;
-					var tmpname = params.tname.replace(/%\S+%/, key);
+					var tmpname = params.tname.replace(replaceRegex, key);
 					if(walk.call(self, {
 						name: subname,
 						dir: params.dir?params.dir + "/" + params.name:params.name,
@@ -217,7 +218,7 @@ function walkFile(params){
 			if(params.selector &&
 				 !matchEnv(params.env[key], params.selector))
 				continue;
-			var tmpname = params.tname.replace(/%\S+%/, key);
+			var tmpname = params.tname.replace(replaceRegex, key);
 			var rt1 = params.tdir?params.tdir + "/" + tmpname:tmpname;
 
 			if(addGenFileList.call(self, {
@@ -319,9 +320,9 @@ function matchName(params){
 
 			if(typeof val != "object"){
 				if(params.nullval) 
-					params.tname = params.name.replace(/%\S+%/, "");
+					params.tname = params.name.replace(replaceRegex, "");
 				else
-					params.tname = params.name.replace(/%\S+%/, val);
+					params.tname = params.name.replace(replaceRegex, val);
 			}
 			var endenvkey = envkey.match(/([^\.]+)$/)[1];
 			if(self.froms[endenvkey]){
@@ -341,7 +342,7 @@ function matchName(params){
 				params.multi = true;				
 			}
 		}else{
-			params.tname = params.name.replace(/%\S+%/, "");
+			params.tname = params.name.replace(replaceRegex, "");
 		}
 	}
 	if(typeof params.env != "object")
