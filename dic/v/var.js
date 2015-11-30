@@ -1,6 +1,6 @@
 ^^
-if(!global.vars[params]){
-	console.log("!!!no var "+ params);
+if(!global.vars[args]){
+	console.log("!!!no var "+ args);
 }
-return "V"+params;$$
+return "V"+args;$$
 $$

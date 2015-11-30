@@ -16,28 +16,29 @@ function extendMethods(name, fn){
 }
 var reservedKey = {
 	"$": 1,
-	"local": 1,
+	"env": 1,
+	"file": 1,
 	"global": 1,
-	"origin": 1,
-	"p": 1,
+	"inherents": 1,
 	"key": 1,
 	"lib": 1,
+	"local": 1,
 	"name": 1,
+	"origin": 1,
+	"p": 1,
 	"parent": 1,
-	"inherents": 1,
-	"env": 1,
-	"src": 1,
-	"srclink": 1,
 	"selflink": 1,
 	"self": 1,
-	"tmpl": 1
+	"src": 1,
+	"srclink": 1,
+	"type": 1
 }
 
 
 module.exports.reservedKey = reservedKey;
 var tmplCache = {};
 module.exports.render = render;
-function render(config, data, clearflag){
+function render(config, data){
 	if(!data){
 		log.e("render with undefined data");
 		return "";
@@ -76,13 +77,21 @@ function render(config, data, clearflag){
 		
 	}
 	data.local = data;
-	data.$ = methods;
-
 	data.origin = {};
 	for(var key in data.local){
 		if(reservedKey[key]) continue;
 		data.origin[key] = data.local[key];
 	}
+	data.$ = methods;
+	if(config.file)
+		data.file = config.file;
+
+	if(!data.type){
+		var m = data.file.match(/([^\.]+)$/);
+		if(m) 
+			data.type = m[1];
+	}
+
 	data.p=[];
 
 	var win, wout;
@@ -143,7 +152,7 @@ function render(config, data, clearflag){
 	var rtstr = data.p.join('');
 	delete(data.p);
 	delete(data.$);	
-	if(clearflag){
+	if(config.clear){
 		delete(data.local);
 	}
 	return rtstr;

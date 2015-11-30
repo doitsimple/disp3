@@ -8,7 +8,6 @@ var log = require("./log");
 module.exports = {
 	getNavPaths: getNavPaths
 }
-
 function getNavPaths(){
 	var self = this;
 	self.navpaths = {};
@@ -41,7 +40,8 @@ function getNavPaths(){
 						}
 				}
 			}
-		addPath.call(self, archSrc + "/main");
+		addPath.call(self, archSrc);
+/*
 		for(var i in project.addons){
 			addPath.call(self, archSrc + "/"+ project.addons[i]);
 		}
@@ -57,7 +57,9 @@ function getNavPaths(){
 			project.navpaths.forEach(function(navpath){
 				addPath.call(self, navpath);
 			});
+*/
 	}
+
 	if(fs.existsSync(self.projectDir + "/kits")){
 		var dirlist = libFile.readdirNotFileSync(self.projectDir + "/kits");
 		for(var i in dirlist){
@@ -65,6 +67,7 @@ function getNavPaths(){
 		}
 	}
 	addPath.call(self, ".");
+	log.i(self.navpaths);
 }
 function addPath(p){
 	var self = this;

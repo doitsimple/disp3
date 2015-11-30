@@ -1,1 +1,4 @@
-console.log(^^=params$$);
+^^if(typeof args != "object"){$$
+console.log(^^=args$$);
+^^}else{$$
+^^}$$

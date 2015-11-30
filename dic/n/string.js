@@ -1,1 +1,1 @@
-var V^^=name$$ = "^^=params$$";
+var V^^=name$$ = "^^=args";

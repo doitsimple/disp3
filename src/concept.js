@@ -2,11 +2,11 @@ module.exports = {
 	invoke: invoke,
 	define: define,
 	eval: _eval,
-	setEnv: setEnv,
-	parseParams: parseParams,
-	genRequires: genRequires
+	initConcept: initConcept,
+	parseArgs: parseArgs
 }
 var libObject = require("../lib/js/object");
+var libArray = require("../lib/js/array");
 var fs = require("fs");
 var tmpl = require("./tmpl");
 var libFile = require("../lib/nodejs/file");
@@ -16,59 +16,67 @@ var cache = {};
 var vcache = {};
 var ncache = {};
 var acache = {};
+var words = {};
 var env;
-function setEnv(_env){
-	env = _env;
+var langs;
+var types;
+function readCache(dir, _cache){
 	var list;
-	list = libFile.readdirNotDirSync(env.rootDir + "/dic/v");
+	list = libFile.readdirNotDirSync(env.rootDir + dir);
 	for(var i in list){
 		if(!utils.checkName(list[i])) continue;
 		var m = list[i].match(/^(\S+)\.([^\.]+)$/);
 		if(!m) continue;
-		if(!vcache[m[1]])
-			vcache[m[1]] = {};
-		vcache[m[1]][m[2]] = 1;
-	}
-	list = libFile.readdirNotDirSync(env.rootDir + "/dic/n");
-	for(var i in list){
-		if(!utils.checkName(list[i])) continue;
-		var m = list[i].match(/^(\S+)\.([^\.]+)$/);
-		if(!m) continue;
-		if(!ncache[m[1]])
-			ncache[m[1]] = {};
-		ncache[m[1]][m[2]] = 1;
-	}
-	list = libFile.readdirNotDirSync(env.rootDir + "/dic/a");
-	for(var i in list){
-		if(!utils.checkName(list[i])) continue;
-		var m = list[i].match(/^(\S+)\.([^\.]+)$/);
-		if(!m) continue;
-		if(!acache[m[1]])
-			acache[m[1]] = {};
-		acache[m[1]][m[2]] = 1;
-	}
+		if(!_cache[m[1]])
+			_cache[m[1]] = {};
+		if(m[2] == "json"){
+			if(words[m[1]]) log.e("already exists "+list[i]);
+			words[m[1]] = env.rootDir+dir+"/"+list[i];
+		}else{
+			if(_cache[m[1]][m[2]]) log.e("already exists " + list[i]);
+			_cache[m[1]][m[2]] = 1;
+		}
+	}	
+}
+function initConcept(){
+	var self = this;
+	env = self.global;
+	langs = self.langs;
+	types = self.types;
+	readCache("/dic/v", vcache);
+	readCache("/dic/n", ncache);
+	readCache("/dic/a", acache);
 	env.vars = {};
 	tmpl.extendMethods("define", define);
 	tmpl.extendMethods("invoke", invoke);
 	tmpl.extendMethods("require", _require);
 	tmpl.extendMethods("eval", _eval);
-	tmpl.extendMethods("parseParams", parseParams);
+	tmpl.extendMethods("parseArgs", parseArgs);
 	tmpl.extendMethods("createInstances", createInstances);
+	return 0;
 }
-function get(name){
+function get(name, local){
 	var self = this;
-	if(cache[name])
-		return cache[name];
+	if(typeof words[name] == "string")
+		words[name] = libFile.readJson(words[name]);
+	var type = local.type;
+	if(!type) return {};
+	if(!cache[type]) 
+		cache[type] = {}; 
+	if(cache[type][name])
+		return {};
 	var tmp;
-	var seq = env.project.seq;
+	var seq = libArray.copy(types[type]);
+	seq.unshift("disp");
+// need optimaztion
 	if(vcache[name]){
 		tmp = vcache[name];
 		for(var i in seq){
 			if(tmp[seq[i]])
 				return tmpl.render({
 					file:env.rootDir+"/dic/v/"+name+"."+seq[i], 
-					pre: "^^$.define('"+name+"', function(local, params){with(local){params = $.parseParams(params, local);$$",
-					post: "^^}})$$"
+					pre: "^^$.define('"+name+"', function(local, args){with(local){args = $.parseArgs(args, local);$$",
+					post: "^^}}, local)$$"
 				}, {
 					global:env
 				});
@@ -80,8 +88,8 @@ function get(name){
 			if(tmp[seq[i]])
 				return tmpl.render({
 					file:env.rootDir+"/dic/n/"+name+"."+seq[i], 
-					pre: "^^$.define('"+name+"', function(local, params){with(local){$.createInstances(params, function(name, params){$$",
-					post: "^^}, local)}})$$"
+					pre: "^^$.define('"+name+"', function(local, args){with(local){$.createInstances(args, function(name, args){$$",
+					post: "^^}, local)}}, local)$$"
 				}, {
 					global:env
 				});
@@ -93,8 +101,8 @@ function get(name){
 			if(tmp[seq[i]])
 				return tmpl.render({
 					file:env.rootDir+"/dic/a/"+name+"."+seq[i], 
-					pre: "^^$.define('"+name+"', function(local, params){with(local){$$",
-					post: "^^}})$$"
+					pre: "^^$.define('"+name+"', function(local, args){with(local){$$",
+					post: "^^}}, local)$$"
 				}, {
 					global:env
 				});
@@ -102,45 +110,54 @@ function get(name){
 	}
 	log.e(name+": file not exists");
 }
-function define(name, fn){
-	if(!cache[name]){
-		cache[name] = fn;
+function define(name, fn, local){
+	var type = local.type;
+	if(!cache[type]) cache[type] = {};
+	if(!cache[type][name]){
+		cache[type][name] = fn;
 	}
 	else
 		log.e(name + " already defined");
 }
-function invoke(name, params, local){
+function invoke(name, args, local){
+	var type = local.type;
 	var self = this;
-	if(!cache[name]) get(name);
-	if(!cache[name]) return log.e(name + ": load failed");
-	return cache[name](local, params);
+	get(name, local);
+	if(!cache[type][name]) return log.e(name + ": load failed");
+	return cache[type][name](local, args);
 }
-function _eval(params, local){
-	for(var key in params){
+function _eval(args, local){
+	for(var key in args){
 		if(key == "name") continue;
-		return invoke(key, params[key], local);
+		return invoke(key, args[key], local);
 	}
 }
-function _require(){
+function _require(str, type, local){
+	local.requires[str] = type || 1;
 }
-function genRequires(){
-}
-function parseParams(params, local){
-	if(libObject.isArray(params)){
-		for(var i in params){
-			if(typeof params[i] == "object")
-				params[i] = _eval(params[i], local);
+function parseArgs(args, local){
+	if(libObject.isArray(args)){
+		for(var i in args){
+			if(typeof args[i] == "object")
+				args[i] = _eval(args[i], local);
 		}
-	}else if(typeof params == "object"){
-		params = _eval(params, local);
+	}else if(typeof args == "object"){
+		args = _eval(args, local);
 	}
-	return params;
+	return args;
 }
-function createInstances(params, fn, local){
-	for(var key in params){
+function createInstance(subargs, local){
+	for(var key in subargs){
 		if(key == "name") continue;
-		params[key] = parseParams(params[key], local);
-		env.vars[key] = params.name;
-		fn(key, params[key]);
+		subargs[key] = parseArgs(subargs[key], local);
+	}
+	return subargs;
+}
+function createInstances(args, fn, local){
+	for(var key in args){
+		if(key == "name") continue;
+		args[key] = createInstance(args[key], local);
+		env.vars[key] = args.name;
+		fn(key, args[key]);
 	}
 }

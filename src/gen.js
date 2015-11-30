@@ -16,42 +16,21 @@ function genFiles(){
 	var self = this;
 	var fileList = self.filelist;
 	var globalEnv = self.global;
-	concept.setEnv(self.global);
+
 /* check fsconfigs */
 	var fsconfigs = globalEnv.project.fsconfigs;
 	var	target = globalEnv.project.target;
 
 	target = target || ".";
-
 	var fileListModified = fileList;
-/*
-	var fileListModified = {};
-	for (var filename in fileList){
-		var tmpFilename = filename;
-		if(fsconfigs && fsconfigs[filename] && fsconfigs[filename].mv)
-			tmpFilename = fsconfigs[filename].mv;
-		if(fileListModified[tmpFilename]){
-			if(!fileList[filename].self && !fileListModified[tmpFilename].self){
-				log.e("duplicate generated "+tmpFilename);
-				log.e(fileListModified[tmpFilename]);
-				log.e(fileList[filename]);
-				return false;
-			}else if(!fileList[filename].self){
-				fileListModified[tmpFilename] = fileList[filename];
-			}
-		}else{
-			fileListModified[tmpFilename] = fileList[filename];
-		}
-	}
-*/
 	if(!fs.existsSync(target))
 		libFile.mkdirpSync(target);
+	fs.writeFileSync(target + "/disp.global.json", libObject.stringify(self.global, undefined, 2));
 	fs.writeFileSync(target + "/disp.filelist.json", JSON.stringify(self.filelist, undefined, 2));
 
 
 /* generate file */
 	for (var orifilename in fileListModified){
-
 		var partConfig = fileListModified[orifilename];
 		var filename = target + "/" + orifilename;
 		libFile.mkdirpSync(path.dirname(filename)); // should have a more efficient way
@@ -85,6 +64,7 @@ function genFiles(){
 		if(!partConfig.main){
 			return self.error(filename + "\nno main in "+JSON.stringify(partConfig));
 		}
+// gen env //
 		var env = globalEnv;
 		if(partConfig.env){
 			env = libObject.getByKey(globalEnv, partConfig.env);
@@ -97,19 +77,30 @@ function genFiles(){
 					val: env
 				};
 		}
-
 		var tenv = libObject.copy1(env);
-//		tenv.origin = env;
 		env = tenv;
 		env.global = globalEnv;
 
+// get type
+		var type;
+		if(env.type){
+			type = env.type;
+		}else{
+			var m = filename.match(/\.([^.+]+)$/);
+			if(m)
+				type = m[1];
+			else
+				type = "js";
+		}
+
+// get lib
 		if(partConfig.lib){
 			var mss = partConfig.lib.split(/[-,]/);
 			for(var i in mss){
 				var fname =  self.libs[mss[i]];
 				if(!fname)
 					return self.error("no library named "+mss[i]);
-				render({file: self.libs[mss[i]]}, env);
+				render({file: self.libs[mss[i]], type: type}, env);
 			}
 		}
 
@@ -125,7 +116,7 @@ function genFiles(){
 					return 1;
 				}
 				partConfig[key].forEach(function(file){
-					env[key] += render({file: file}, env);
+					env[key] += render({file: file, type: type}, env);
 				});
 			}
 		}
@@ -133,37 +124,24 @@ function genFiles(){
 			var key = keys[i];
 			if(key.match("main") && key!== "main")
 				partConfig[key].forEach(function(file){
-					env[key] += render({file: file}, env);
+					env[key] += render({file: file, type: type}, env);
 				});
 		}
 
 		var str = "";
 		partConfig.main.forEach(function(file){
-      str += render({file: file}, env);
+      str += render({file: file, type: type}, env);
     });
 
-		if(env.requires){
-			str = concept.genRequires(env.requires) + str;
+/*
+		env.main = str;
+		var typefile = self.rootDir + "/lang/" + type;
+		if(fs.existsSync(typefile)){
+			str = render({file: type, type: type}, env);
+		}else{
+			log.e(type  + "not defined");
 		}
-
-		if(partConfig.tmpl){
-			var tmplPath;
-			if(env.tmpls){
-				tmplPath = env.tmpls[partConfig.tmpl];
-			}
-			if(!tmplPath && globalEnv.tmpls)
-				tmplPath = globalEnv.tmpls[partConfig.tmpl];
-			if(!tmplPath){
-				return self.error("no tmpl " + partConfig.tmpl);
-			}
-			if(fs.existsSync(tmplPath)){	
-				env.main = str;
-				str = render({file: tmplPath}, env);
-			}else{
-				return self.error("template file: " + tmplPath + " not exist!!!");
-			}
-		}
-
+*/
 
 		if(fs.existsSync(filename))
 			fs.unlinkSync(filename);

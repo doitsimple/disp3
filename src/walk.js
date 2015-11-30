@@ -172,7 +172,7 @@ function readDispJson(params){
 			log.e("parse " + dir + "/disp.render.json error");
 			return 1;
 		}
-		if(extendDispJson.call(self, params, params.env, json))
+		if(appendDispJson.call(self, params, params.env, json))
 			return 1;
 	}
 	if(fs.existsSync(dir + "/disp.render.global.json")){
@@ -187,18 +187,18 @@ function readDispJson(params){
 			return 1;
 		}
 
-		if(extendDispJson.call(self, params, self.global, json))
+		if(appendDispJson.call(self, params, self.global, json))
 			return 1;
 	}
 	if(fs.existsSync(dir + "/disp.json")){
-		if(extendDispJson.call(
+		if(appendDispJson.call(
 			self, params, params.env,
 			libFile.readJSON(dir + "/disp.json")))
 			return 1;
 	}
 	return 0;
 }
-function extendDispJson(params, env, dispJson){
+function appendDispJson(params, env, dispJson){
 	var self = this;
 	var dir = params.dirpath;
 	if(!dispJson) return self.error("no disp json");
@@ -209,7 +209,7 @@ function extendDispJson(params, env, dispJson){
 			self.global.tmpls[tmplKey] = p;
 		}
 	}
-	utils.extend(env, dispJson);
+	utils.append(env, dispJson);
 }
 function walkFile(params){
 	var self = this;
@@ -352,14 +352,14 @@ function matchName(params){
 		};
 	
 
-	var fsconfig = self.fsconfigs[params.relativepath];
+	var fsconfig = self.project.fsconfigs[params.relativepath];
 	if(fsconfig)
 		libObject.append1(params, fsconfig);
 	return 0;
 }
 function addGenFileList(params){
 	var self = this;
-	var fsconfig = self.fsconfigs[params.tfullpath];
+	var fsconfig = self.project.fsconfigs[params.tfullpath];
 	var rt;
 	if(fsconfig && fsconfig.mv)
 		rt = fsconfig.mv;
