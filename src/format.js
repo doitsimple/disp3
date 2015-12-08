@@ -7,7 +7,7 @@ var libFile = require("../lib/nodejs/file");
 var utils =require("./utils");
 var tmpl = require("./tmpl");
 var checkName = require("./utils").checkName;
-var log = require("./log");
+var log = require("../lib/nodejs/log");
 module.exports = {
 	format: format
 }
@@ -31,6 +31,7 @@ function format(key1, parent, formatJson){
 		else if(!formatJson.$type)
 			parent[key1] = {};		
 	}
+
 	if(formatJson.$type){
 // leaf
 		var f = formatJson;
@@ -51,7 +52,6 @@ function format(key1, parent, formatJson){
 		}
 		return 0;
 	}	
-
 	if(formatJson.$list){
 		if(formatJson.$multi) return self.error("$multi and $list should not used together");
 		if(formatJson.$default){

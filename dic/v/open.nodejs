@@ -1,5 +1,0 @@
-^^
-if(params.out-file){
-	return "fs.createWriteStream("+params.out-file+")";
-}
-$$

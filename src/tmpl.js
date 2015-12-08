@@ -4,7 +4,7 @@ var libString = require("../lib/js/string");
 var libArray = require("../lib/js/array");
 var libObject = require("../lib/js/object");
 var libFile = require("../lib/nodejs/file");
-var log = require("./log");
+var log = require("../lib/nodejs/log");
 var methods = {};
 libObject.extend1(methods, libString);
 libObject.extend1(methods, libArray);

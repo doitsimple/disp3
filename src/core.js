@@ -4,63 +4,77 @@ var libString = require("../lib/js/string");
 var libArray = require("../lib/js/array");
 var libObject = require("../lib/js/object");
 var libFile = require("../lib/nodejs/file");
+var sync = require("../lib/js/sync");
 var utils =require("./utils");
-var nav = require("./nav");
-var walk = require("./walk");
-var arch = require("./arch");
-var lang = require("./lang");
-var tmpl = require("./tmpl");
-var env = require("./env");
-var concept = require("./concept");
+var log = require("../lib/nodejs/log");
+
+var itp = require("./itp");
 var gen = require("./gen");
-var post = require("./post");
-var log = require("./log");
 
 module.exports = Disp;
-function Disp(){
-	var config, errorFn;
-	switch(arguments.length){
-		case 0:
-		config = {}, errorFn = function(err){ log.e(err); return 1;};
-		break;
-		case 1:
-		config = {}, errorFn = arguments[0];
-		break;
-		case 2:
-		config = arguments[0], errorFn = arguments[1];
-		break;
-		default:
-		log.e("Disp with wrong args");
-	}
+function Disp(config, fn){
 	var self = this;
 	self.config = config;
 	var dead = false;
-	self.error = function(){
-		dead = true;
-		errorFn.apply(self, arguments);
-		return 1;
-	};
-	var steps = {
-		"initGlobal": env.initGlobal, //generate global
-		"readLangs": lang.readLangs, //read all archs
-		"readArchs": arch.readArchs, //read all archs
-		"formatGlobal": env.formatGlobal, //format global
-		"getNavPaths": nav.getNavPaths, //get navpaths
-		"readDispJsons": walk.readDispJsons, //read all disp.json
-		"readFileList": walk.readFileList, //read all file list
-		"initConcept": concept.initConcept, //init concept
-		"genFiles": gen.genFiles, //generate all files,
-		"postRun": post.run //execute script 
-	}
-	for(var step in steps){
-		if(dead) break;
-		log.i(step);
-		if(!steps[step].apply(self))
-			log.i("->success");
-		else{
-			log.i("->error");
-			return;
-		}
-	}
+	var steps = [
+		init,
+		itp.itpSrc,
+		gen.genFiles
+	]
+	sync.doEach3(steps, self, function(err, result){
+		if(err) log.e(err);
+		else log.i("done");
+		return;
+	});
 }
 
+function init(fn){
+	var self = this;
+	var config = self.config;
+	//init global
+	self.global = {};
+	self.global.nodeBin = process.argv.shift();
+	self.global.dispBin = process.argv.shift();
+	self.global.argv = process.argv;
+	var ParamsHelp = {
+		"p": "project path, default '.'",
+		"t": "target path, default '.', can be configured in disp.json",
+		"v": "verbose mode"
+	}
+	var op = process.argv.shift();
+	var projectDir;
+	while(op){
+		switch(op){
+			case "-p":
+			projectDir = path.resolve(process.argv.shift());
+			break;
+			case "-t":
+			self.global.targetDir = path.resolve(process.argv.shift());
+			break;
+			case "-v":
+			log.setLevel(3);
+			log.v("verbose mode enabled");
+			break;
+			default:
+			return fn(libString.makeArgvHelp(ParamsHelp));
+		}
+		op = process.argv.shift();
+	}
+	if(!projectDir) projectDir = path.resolve(".");
+	self.global.projectDir = projectDir;
+	self.global.dispDir = path.resolve(__dirname + "/..");
+	self.global.dicDir = path.resolve(__dirname + "/../dic");
+
+	//init previous file list
+	if(fs.existsSync(self.global.projectDir + "/disp.filelist.json"))
+		self.prevFilelist = libFile.readJSON(self.global.projectDir + "/disp.filelist.json");
+	else
+		self.prevFilelist = {};
+	self.filelist = {};
+	//init src
+	if(!fs.existsSync(self.global.projectDir + "/disp.json"))
+		return fn("no disp.json");
+	self.src = libFile.readJSON2(self.global.projectDir + "/disp.json");
+	log.v("init success");
+	fn();
+}

@@ -7,50 +7,29 @@ var libFile = require("../lib/nodejs/file");
 var tmpl = require("./tmpl");
 var utils = require("./utils");
 var checkName = utils.checkName;
-var log = require("./log");
+var log = require("../lib/nodejs/log");
 var regex = /%(~?)([^%@~]+)?(~?)(?:@([^%@~]+))?(?:%([a-zA-Z0-9_-]+)?(?:@([^%@~]+))?)?(?:%([^%]+))?%/;
 var replaceRegex = /%\S*%/;
 module.exports = {
 	regex: regex,
 	walk: walk,
-	readFileList: readFileList,
-	readDispJsons: readDispJsons,
 	checkName: checkName
 }
-function readDispJsons(){
+
+function walk(srcdir, tardir){
 	var self = this;
-	for(var navpath in self.navpaths){
-		// then iterate file		
-		if(walk.call(self, {
-			name: "",
-			dir: "",
-			basedir: navpath,
-			tname: "",
-			tdir: "",
-			env: self.global, 
-			envkey: ""
-		})) return 1;
-	}
+	if(walkDir.call(self, {
+		name: "",
+		dir: "",
+		basedir: srcdir,
+		tname: "",
+		tdir: tardir || "",
+		env: self.global, 
+		envkey: ""
+	})) return 1;
 	return 0;
 }
-function readFileList(){
-	var self = this;
-	for(var navpath in self.navpaths){
-		// then iterate file		
-		if(walk.call(self, {
-			name: "",
-			dir: "",
-			basedir: navpath,
-			tname: "",
-			tdir: "",
-			env: self.global, 
-			envkey: ""
-		}, 1)) return 1;
-	}
-	log.v("success");
-	return 0;
-}
-function walk(params, addgenflag){
+function walkDir(params){
 	var self = this;
 	if(params.dir && params.dir != "."){
 		params.fullpath = params.basedir +"/"+ params.dir+"/"+params.name;
@@ -65,61 +44,19 @@ function walk(params, addgenflag){
 		params.dirpath = params.basedir;
 	}
 	params.relativepath = path.relative(".", params.fullpath);
-	if(!addgenflag)
-		if(readDispJson.call(self, params)) return 1;
 	if(!checkName(params.name)) return 0;
 	// get all name info
 	if(matchName.call(self, params)) return 1;
 	if(params.ignore)
 		return 0;
-	/*
-	 if(params.mv){
-	 params.tname = path.basename(params.mv);
-	 params.tdir = path.dirname(params.mv);
-	 }
-	 */
+
 	if(isGenFile.call(self, params)){
 		log.v("skip "+ params.fullpath);
 		return 0;
 	}
 
 	if(params.isdir){
-		if(params.lib){
-			var rt;
-			if(params.tdir && params.tname)
-				rt = params.tdir + "/" + params.tname;
-			else if(params.tdir)
-				rt = params.tdir;
-			else if(params.tname)
-				rt = params.tname;
-			else
-				rt = "";
-			var mss = params.lib.split(/[-,]/);
-			for(var k=0; k<mss.length; k++){
-				var srcDir = path.relative(".", __dirname + "/../lib/" + mss[k]);
-				if(fs.existsSync(srcDir)){
-					var list = libFile.readdirNotDirRecSync(srcDir);
-					for(var i in list){
-						var f2 = list[i];
-						if(checkName(f2)){
-							var fullpath = path.relative(".", srcDir + "/" + f2);
-							if(addGenFileList.call(self, {
-								fullpath: fullpath,
-								tfullpath: rt + "/" + f2,
-								static: {src: fullpath}
-							})) return 1;
-						}
-					};
-				}
-			}
-			return 0;
-		}
 		var subnames = fs.readdirSync(params.fullpath);
-		/*
-		 if(self.addFiles[params.relativepath]){
-		 subnames = subnames.concat(self.addFiles[params.relativepath]);
-		 }
-		 */
 		for(var i=0; i<subnames.length; i++){
 			var subname = subnames[i];
 			if(params.multi){
@@ -128,7 +65,7 @@ function walk(params, addgenflag){
 						 !matchEnv(params.env[key], params.selector))
 						continue;
 					var tmpname = params.tname.replace(replaceRegex, key);
-					if(walk.call(self, {
+					if(walkDir.call(self, {
 						name: subname,
 						dir: params.dir?params.dir + "/" + params.name:params.name,
 						basedir: params.basedir,
@@ -136,10 +73,10 @@ function walk(params, addgenflag){
 						tdir: params.tdir?params.tdir + "/" + tmpname:tmpname,
 						env: params.env[key],
 						envkey: params.envkey?params.envkey + "." + key:key
-					}, addgenflag)) return 1;
+					})) return 1;
 				}
 			}else{
-				if(walk.call(self, {
+				if(walkDir.call(self, {
 					name: subname,
 					dir: params.dir?params.dir + "/" + params.name:params.name,
 					basedir: params.basedir,
@@ -147,70 +84,15 @@ function walk(params, addgenflag){
 					tdir: params.tdir?params.tdir + "/" + params.tname:params.tname,
 					env: params.env,
 					envkey: params.envkey
-				}, addgenflag)) return 1;
+				})) return 1;
 			}
 		}
 	}else{
-		if(addgenflag)
-			if(walkFile.call(self, params)) return 1;
+		if(walkFile.call(self, params)) return 1;
 	}
 	return 0;
 }
 
-function readDispJson(params){
-	var self = this;
-	var dir = params.dirpath;
-	if(!path.relative(".",dir)) return 0;
-	if(fs.existsSync(dir + "/disp.render.json")){
-		var json;
-		try{
-      json = JSON.parse(
-				tmpl.render({
-					file: dir + "/disp.render.json"
-				}, params.env, true));
-		}catch(e){
-			log.e("parse " + dir + "/disp.render.json error");
-			return 1;
-		}
-		if(appendDispJson.call(self, params, params.env, json))
-			return 1;
-	}
-	if(fs.existsSync(dir + "/disp.render.global.json")){
-		var json;
-		try{
-      json = JSON.parse(
-				tmpl.render({
-					file: dir + "/disp.render.global.json"
-				}, params.env, true));
-		}catch(e){
-			log.e("parse " + dir + "/disp.render.global.json error");
-			return 1;
-		}
-
-		if(appendDispJson.call(self, params, self.global, json))
-			return 1;
-	}
-	if(fs.existsSync(dir + "/disp.json")){
-		if(appendDispJson.call(
-			self, params, params.env,
-			libFile.readJSON(dir + "/disp.json")))
-			return 1;
-	}
-	return 0;
-}
-function appendDispJson(params, env, dispJson){
-	var self = this;
-	var dir = params.dirpath;
-	if(!dispJson) return self.error("no disp json");
-	if(dispJson.tmpls){
-		for(var tmplKey in dispJson.tmpls){
-			var p = path.resolve(dir + "/" + dispJson.tmpls[tmplKey]);
-			dispJson.tmpls[tmplKey] = p;
-			self.global.tmpls[tmplKey] = p;
-		}
-	}
-	utils.append(env, dispJson);
-}
 function walkFile(params){
 	var self = this;
 	if(params.multi){
@@ -351,19 +233,22 @@ function matchName(params){
 			val: params.env
 		};
 	
-
+/*
 	var fsconfig = self.project.fsconfigs[params.relativepath];
 	if(fsconfig)
 		libObject.append1(params, fsconfig);
+*/
 	return 0;
 }
 function addGenFileList(params){
 	var self = this;
-	var fsconfig = self.project.fsconfigs[params.tfullpath];
+//	var fsconfig = self.project.fsconfigs[params.tfullpath];
 	var rt;
+/*
 	if(fsconfig && fsconfig.mv)
 		rt = fsconfig.mv;
 	else
+*/
 		rt = params.tfullpath;
 	if(!self.filelist[rt]) self.filelist[rt] = {};
 	var fileparams = self.filelist[rt];

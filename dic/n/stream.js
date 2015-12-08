@@ -1,1 +1,0 @@
-var V^^=name$$ = ^^=args$$;

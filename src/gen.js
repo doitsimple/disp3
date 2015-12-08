@@ -4,22 +4,21 @@ var libString = require("../lib/js/string");
 var libArray = require("../lib/js/array");
 var libObject = require("../lib/js/object");
 var libFile = require("../lib/nodejs/file");
-var log = require("./log");
-var concept = require("./concept");
+var log = require("../lib/nodejs/log");
 var render = require("./tmpl").render;
 var reservedKey = require("./tmpl").reservedKey;
 module.exports = {
 	genFiles: genFiles
 }
 
-function genFiles(){
+function genFiles(fn){
 	var self = this;
 	var fileList = self.filelist;
 	var globalEnv = self.global;
 
 /* check fsconfigs */
-	var fsconfigs = globalEnv.project.fsconfigs;
-	var	target = globalEnv.project.target;
+//	var fsconfigs = globalEnv.project.fsconfigs;
+	var	target = globalEnv.target;
 
 	target = target || ".";
 	var fileListModified = fileList;
@@ -62,14 +61,14 @@ function genFiles(){
 			continue;
 		}
 		if(!partConfig.main){
-			return self.error(filename + "\nno main in "+JSON.stringify(partConfig));
+			return fn(filename + "\nno main in "+JSON.stringify(partConfig));
 		}
 // gen env //
 		var env = globalEnv;
 		if(partConfig.env){
 			env = libObject.getByKey(globalEnv, partConfig.env);
 			if(!env){
-				return self.error("envkey not existed: " + partConfig.env);
+				return fn("envkey not existed: " + partConfig.env);
 			}
 			if(typeof env != "object")
 				env = {
@@ -99,7 +98,7 @@ function genFiles(){
 			for(var i in mss){
 				var fname =  self.libs[mss[i]];
 				if(!fname)
-					return self.error("no library named "+mss[i]);
+					return fn("no library named "+mss[i]);
 				render({file: self.libs[mss[i]], type: type}, env);
 			}
 		}
@@ -112,8 +111,7 @@ function genFiles(){
 			if(!reservedKey[key] && !key.match("main") ){
 				if(!libObject.isArray(partConfig[key])) {
 					log.i(partConfig);
-					log.e(key + " is not array");
-					return 1;
+					return fn(key + " is not array");
 				}
 				partConfig[key].forEach(function(file){
 					env[key] += render({file: file, type: type}, env);
@@ -148,5 +146,6 @@ function genFiles(){
 		fs.writeFileSync(filename, str, {mode: 0444});
 
 	}
-	return 0;
+	log.v("gen success");
+	fn();
 }
