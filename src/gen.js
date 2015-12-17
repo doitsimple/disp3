@@ -10,11 +10,13 @@ var concept = require("./concept");
 module.exports = {
 	genFiles: genFiles
 }
-function getSrc(src, impls){
+function getSrc(partConfig){
 	var self = this;
+	var src = partConfig.src;
+	var impls = partConfig.impls || self.global.impls;
 	var str = "";
 	for(var key in src){
-		str += concept.eval.call(self, src[key], impls);
+		str += concept.eval.call(self, src[key], impls, partConfig);
 	}
 	return str;
 }
@@ -26,9 +28,11 @@ function gen(filelist, target, global){
 		libFile.mkdirpSync(path.dirname(filename)); // should have a more efficient way
 /*todo sync*/
 /**/
+		if(!partConfig.lib)
+			partConfig.lib = {};
 		var str = "";
 		if(partConfig.src){
-			str += getSrc.call(self, partConfig.src, partConfig.impls || self.global.impls);
+			str += getSrc.call(self, partConfig);
 		}
 		if(fs.existsSync(filename))
 			fs.unlinkSync(filename);

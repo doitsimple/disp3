@@ -1,0 +1,5 @@
+^^
+global.lib["stringify"] = 1;
+$.extend(env.pre, {require: ""});
+$$
+lib.stringify(^^=params$$);

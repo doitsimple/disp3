@@ -12,7 +12,7 @@ function implGlobal(fn){
 	var self = this;
 	var implCache = self.implCache;
 	if(!self.global.impls)
-		self.global.impls = ["js", "nodejs"];
+		self.global.impls = ["basic", "js", "nodejs"];
 	log.v("implement success");
 	fn();
 }

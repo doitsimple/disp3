@@ -24,10 +24,16 @@ function get(name, impls){
 		}
 	}
 }
-function _eval(json, impls){
+function _eval(json, impls, fenv){
 	var self = this;
+	if(typeof json != "object")
+		return libObject.stringify(json);
 	var name = Object.keys(json)[0];
-	if(!name)
-		log.e(libObject.stringify(json) + " cannot be evaled");
-	return tmpl.render(get.call(self, name, impls), {params: json[name]});
+	if(!name || name == "0")
+		return json;
+	return tmpl.render(get.call(self, name, impls), {
+		params: _eval.call(self, json[name], impls, fenv),
+		env: fenv,
+		global: self.global
+	});
 }
