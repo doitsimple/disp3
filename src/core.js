@@ -9,6 +9,7 @@ var utils =require("./utils");
 var log = require("../lib/nodejs/log");
 
 var itp = require("./itp");
+var impl = require("./impl");
 var gen = require("./gen");
 
 module.exports = Disp;
@@ -19,7 +20,9 @@ function Disp(config, fn){
 	var steps = [
 		init,
 		itp.itpSrc,
-		gen.genFiles
+		impl.implGlobal,
+		gen.genFiles,
+		finish
 	]
 	sync.doEach3(steps, self, function(err, result){
 		if(err) log.e(err);
@@ -35,7 +38,7 @@ function init(fn){
 	self.global = {};
 	self.global.nodeBin = process.argv.shift();
 	self.global.dispBin = process.argv.shift();
-	self.global.argv = process.argv;
+	self.global.argv = [];
 	var ParamsHelp = {
 		"p": "project path, default '.'",
 		"t": "target path, default '.', can be configured in disp.json",
@@ -55,8 +58,12 @@ function init(fn){
 			log.setLevel(3);
 			log.v("verbose mode enabled");
 			break;
+			case "-h":
+			log.i(libString.makeArgvHelp(ParamsHelp));
+			return fn("break");
+			break;
 			default:
-			return fn(libString.makeArgvHelp(ParamsHelp));
+			self.global.argv.push(op);
 		}
 		op = process.argv.shift();
 	}
@@ -64,6 +71,7 @@ function init(fn){
 	self.global.projectDir = projectDir;
 	self.global.dispDir = path.resolve(__dirname + "/..");
 	self.global.dicDir = path.resolve(__dirname + "/../dic");
+	self.global.implDir = path.resolve(__dirname + "/../impl");
 
 	//init previous file list
 	if(fs.existsSync(self.global.projectDir + "/disp.filelist.json"))
@@ -75,6 +83,13 @@ function init(fn){
 	if(!fs.existsSync(self.global.projectDir + "/disp.json"))
 		return fn("no disp.json");
 	self.src = libFile.readJSON2(self.global.projectDir + "/disp.json");
+
+	self.itpCache = {};
+	self.implCache = {};
 	log.v("init success");
+	fn();
+}
+function finish(fn){
+	log.v("finish success");
 	fn();
 }

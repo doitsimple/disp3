@@ -8,22 +8,24 @@ var sync = require("../lib/js/sync");
 var utils =require("./utils");
 var log = require("../lib/nodejs/log");
 
+var tmpl = require("./tmpl");
 module.exports  ={
-	getPr: getPr
+	get: get
 }
-var cache = {};
-function getPr(word, scope){
+function get(word, scope, json){
 	var self = this;
+	var cache = self.itpCache;
 	var dicDir = self.global.dicDir;
 	for(var i = 0; i<=scope.length*2; i++){
 		var scopePath = makePath(scope, i);
-		if(!scopePath || fs.existsSync(scopePath)){
+		var wordPath = scopePath + "/" + word;
+		if(fs.existsSync(dicDir + wordPath)){
 // get the word
-			if(!cache[scopePath])
-				cache[scopePath] = readPrs(dicDir + "/pr" + scopePath);
-			if(cache[scopePath][word]){
-				return cache[scopePath][word];
-			}
+			if(cache[wordPath])
+				return cache[wordPath];
+			var config = readWord.call(self, wordPath, json);
+			cache[wordPath] = config;
+			return config;
 		}
 	}
 }
@@ -37,18 +39,32 @@ function makePath(scope, i){
 		arr = scope.slice(i-scope.length, scope.length);
 	var str = "";
 	arr.forEach(function(e){
-		str += "/"+e+"/pr";
+		str += "/"+e+"";
 	});
 	return str;
 }
-function readPrs(dir){
-	var list = libFile.readdirNotFileSync(dir);
-	var dirCache = {};
-	for(var i in list){
-		var name = list[i];
-		if(!utils.checkName(name)) 
-			continue;
-		dirCache[name] = dir;
-	}
-	return dirCache;
+function readWord(dir, json){
+	var self = this;
+	var formatCache = self.formatCache;
+	var dicDir = self.global.dicDir;
+	var config = {};
+	if(fs.existsSync(dicDir + dir + "/format.json"))
+		config.format = libFile.readJSON(dicDir + dir +"/format.json");
+	else
+		config.format = {};
+	if(fs.existsSync(dicDir + dir + "/extend.json"))
+		try{
+      config.extend = JSON.parse(
+        tmpl.render({
+          file: dicDir + dir +"/extend.json"
+        }, {
+					json: json
+				}, true));
+    }catch(e){
+      log.e("parse " + dir + "/disp.render.json error");
+      return 1;
+    }
+	else
+		config.extend = {};	
+	return config;
 }

@@ -86,11 +86,6 @@ function render(config, data){
 	if(config.file)
 		data.file = config.file;
 
-	if(!data.type){
-		var m = data.file.match(/([^\.]+)$/);
-		if(m) 
-			data.type = m[1];
-	}
 
 	data.p=[];
 

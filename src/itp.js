@@ -14,9 +14,9 @@ var walk = require("./walk");
 var dic = require("./dic");
 module.exports  ={
 	itpSrc: itpSrc,
-	itpConfig: itpConfig
+	_eval: _eval
 }
-function itpConfig(){
+function _eval(json, config){
 	
 }
 // intepret src
@@ -28,29 +28,21 @@ function itpSrc(fn){
 scope is originally []
 
 */
-var formatCache = {};
 
 function itp(src, scope, fn){
 	var self = this;
 	for(var key in src){
-		var scopeDir = dic.getPr.call(self, key, scope);
-		scope.push(key);
-		var wordDir = scopeDir + "/" + key;
-		var json = src[key];
-		if(!formatCache[wordDir]){
-			if(fs.existsSync(wordDir + "/format.json"))
-				formatCache[wordDir] = libFile.readJSON(wordDir+"/format.json");
-			else
-				formatCache[wordDir] = {};
-		}
-		if(format.format.call(self, key, src, formatCache[wordDir]))
-			return fn("format failed");
-		if(getArch.call(self, wordDir, json))
-			return fn("read arch failed");
+		var config = dic.get.call(self, key, scope, src[key]);
+		if(!config)
+			return fn("itp failed: " + key);
+		if(format.format.call(self, key, src, config.format))
+			return log.e("format failed");
+		utils.extend(self, config.extend);		
 	}
 	log.v("interpret success");
 	fn();
 }
+
 function getArch(dir, json){
 	var self = this;
 	for(var key in json.arch){		
