@@ -1,0 +1,13 @@
+{
+	"main.js": {
+		"name": "main",
+		"deps": ["lib"],
+		"lang": "nodejs",
+		"content": "stepA"
+	},
+	"lib.js": {
+		"name": "lib",
+		"lang": "nodejs",
+		"content": "libL"
+	}
+}

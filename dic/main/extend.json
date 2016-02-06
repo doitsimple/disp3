@@ -1,7 +1,0 @@
-{
-	"filelist": {
-		"main.js": {
-			"src": ^^=$.stringify(json)$$
-		}
-	}
-}

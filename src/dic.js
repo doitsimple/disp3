@@ -9,26 +9,37 @@ var utils =require("./utils");
 var log = require("../lib/nodejs/log");
 
 var tmpl = require("./tmpl");
-module.exports  ={
-	get: get
-}
-function get(word, scope, json){
+module.exports = Dic;
+function Dic(paths){
 	var self = this;
-	var cache = self.itpCache;
-	var dicDir = self.global.dicDir;
-	for(var i = 0; i<=scope.length*2; i++){
-		var scopePath = makePath(scope, i);
-		var wordPath = scopePath + "/" + word;
-		if(fs.existsSync(dicDir + wordPath)){
-// get the word
-			if(cache[wordPath])
-				return cache[wordPath];
-			var config = readWord.call(self, wordPath, json);
-			cache[wordPath] = config;
-			return config;
-		}
+	self.paths = paths;
+	self.cache = {};
+}
+Dic.prototype.get = function(key, scope){
+	var self = this;
+	for(var i in self.paths){
+		var dicDir = self.paths[i];
+		for(var i = 0; i<=scope.length*2; i++){
+			var scopePath = makePath(scope, i);
+			var wordPath = scopePath + "/" + key;
+			if(fs.existsSync(dicDir + wordPath + "/define.js")){
+				// get the word
+				if(self.cache[wordPath])
+					return self.cache[wordPath];
+				var configFunc;
+				try{
+					configFunc = require(dicDir + wordPath +"/define.js");
+					self.cache[wordPath] = configFunc;
+				}catch(e){
+					log.e(dicDir+wordPath + "/define.js error");
+					return null;
+				}
+				return configFunc;
+			}
+		}		
 	}
 }
+
 function makePath(scope, i){
 	if(i == scope.length)
 		return "";
@@ -43,28 +54,4 @@ function makePath(scope, i){
 	});
 	return str;
 }
-function readWord(dir, json){
-	var self = this;
-	var formatCache = self.formatCache;
-	var dicDir = self.global.dicDir;
-	var config = {};
-	if(fs.existsSync(dicDir + dir + "/format.json"))
-		config.format = libFile.readJSON(dicDir + dir +"/format.json");
-	else
-		config.format = {};
-	if(fs.existsSync(dicDir + dir + "/extend.json"))
-		try{
-      config.extend = JSON.parse(
-        tmpl.render({
-          file: dicDir + dir +"/extend.json"
-        }, {
-					json: json
-				}, true));
-    }catch(e){
-      log.e("parse " + dir + "/disp.render.json error");
-      return 1;
-    }
-	else
-		config.extend = {};	
-	return config;
-}
+

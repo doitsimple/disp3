@@ -1,5 +1,0 @@
-{
-	"project":{
-		"posts": ["node script/add_gitignore.js"]
-	}
-}

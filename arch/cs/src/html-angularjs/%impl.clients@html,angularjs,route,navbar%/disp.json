@@ -1,9 +1,0 @@
-{
-		"cssLibs": {
-				"vendor/font-awesome/css/font-awesome.min.css": 1,
-				"vendor/metisMenu/metisMenu.min.css":1
-		},
-		"jsLibs": {
-				"vendor/metisMenu/metisMenu.min.js":1
-		}
-}

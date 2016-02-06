@@ -1,6 +1,0 @@
-{
-	"jsLibs": {
-    "/vendor/js/angular-cookies.min.js": 1
-	},
-  "angularDeps": ["ngCookies"]	
-}

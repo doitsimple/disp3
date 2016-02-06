@@ -1,16 +1,6 @@
 #!/usr/bin/env node
-var fs = require("fs");
-var path = require("path");
-var Disp = require("../src/core");
+var Disp = require("../src/disp");
 var log = require("../lib/nodejs/log");
-var libFile = require("../lib/nodejs/file");
 log.setLevel(2);
-var config = {};
-new Disp(config, function(err, result){
-	if(err){
-		log.e(err);
-		process.exit(1);
-	}
-	log.i(result);
-	process.exit();
-});
+var disp = new Disp();
+disp.run();

@@ -1,7 +1,0 @@
-img, obj {
-		max-width: 100%;
-		border: none !important;
-		outline: none !important;
-}
-.full{display:block;float:left;width:100% !important;margin-left:0 !important}
-.inline-block{display: inline-block;}
