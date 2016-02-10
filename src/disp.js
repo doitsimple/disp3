@@ -27,7 +27,6 @@ Disp.prototype.run = function(){
 	self.parseArgv();
 	self.readJson();
 	self.setGlobal();
-//	self.setContent();
 	self.readPrev();
 	self.setFilelist();
 	self.genCode();
@@ -98,13 +97,11 @@ Disp.prototype.readJson = function(){
 	self.dispJson = libFile.readJSON(self.env.projectDir + "/disp.json");
 	log.v("read json success");
 	log.v(self.dispJson);
-	
 }
 Disp.prototype.setGlobal = function(){
 	var self = this;
 	self.global = {
 		entityL: {
-			stepA: []
 		}
 	};
 	var dic = new Dic([self.env.dicDir]);
@@ -118,30 +115,11 @@ Disp.prototype.setGlobal = function(){
 		self.global.arch = "raw";
 	if(!self.global.impl)
 		self.global.impl = "nodejs";
-//	self.readImplDeps();
+
 	log.v(self.global);
 }
-Disp.prototype.readImplDeps = function(){
-	var self = this;
-	var implPath = self.env.implDir + "/" + self.global.impl;
-	if(fs.existsSync(implPath + "/define.js")){
-		var config = require(implPath + "/define.js");
-		
-	}
-}
-Disp.prototype.setContent = function(){
-	var self = this;
-	self.content = {};
-	var dic = new Dic([self.env.implDir + "/" + self.global.impl]);
-	var tree = new Tree("disp", self.global.entityL, self.content, self.content);
-	try {
-		tree.parse(dic);
-	}catch(e){
-		return self.callback(e);
-	}
-	
-	
-}
+
+
 Disp.prototype.setFilelist = function(){
 	var self = this;
 	var configFile = self.env.archDir + "/" + self.global.arch + "/" + self.global.impl;
@@ -151,6 +129,15 @@ Disp.prototype.setFilelist = function(){
 	}catch(e){
 		self.callback(e);
 	}
+// make content link for lib func
+/////////////////////
+	self.contentLinks = {};
+	for(var key in tmpFileList){
+		var content = tmpFileList[key].content;
+		self.contentLinks[content] = key;
+	}
+/////////////////////
+	log.v(tmpFileList);
 	self.filelist = tmpFileList;
 }
 Disp.prototype.genCode = function(){
@@ -163,12 +150,42 @@ Disp.prototype.genCode = function(){
 /*todo sync*/
 /**/
     var str = "";
+		var deps = {};
     if(partConfig.content){
 			var c = self.global.entityL[partConfig.content];
-			for(var i in c){
-				str += self.eval(c[i], partConfig.lang);
+			if(libObject.isArray(c)){
+				for(var i in c){
+					str += self.eval(c[i], partConfig.lang, deps);
+				}
+			}else{
+				str += self.eval(c, partConfig.lang, deps);
 			}
     }
+//parse deps
+/////////////////////////////////
+		if(partConfig.lib){
+// if has lib, require lib and add func to lib
+			var requires = {};
+			for(var key in deps){
+				if(!self.global.entityL[partConfig.lib])
+					self.global.entityL[partConfig.lib] = {};
+				var libs = self.global.entityL[partConfig.lib];
+				if(!libs.exports)
+					libs.exports = {};
+				if(!libs.exports[key]) libs.exports[key] = 1;
+				requires[deps[key]]++;
+			}
+			for(var key in requires){
+				str = self.eval({"require": {name: key, file: self.contentLinks[partConfig.lib]}}, partConfig.lang, deps) + str;
+			}
+		}else{
+// else add func in this file
+			for(var key in deps){
+				str = self.eval(key + ".lib", partConfig.lang, deps) + str;
+			}
+		}
+//////////////////////////////
+
     if(fs.existsSync(filename))
       fs.unlinkSync(filename);
     fs.writeFileSync(filename, str, {mode: 0444});
@@ -177,12 +194,65 @@ Disp.prototype.genCode = function(){
 Disp.prototype.dispose = function(){
 	log.v("dispose success");
 }
-Disp.prototype.eval = function(json, lang){
-	var self = this;
-	var name = Object.keys(json)[0];
-	var file = self.env.langDir + "/" + lang + "/" + name;
-	return tmpl.render({file: file}, {
-		"argv": json[name]
-	});
+// simple methods
+var cache = {};
 
+Disp.prototype.getLangConfig = function(lang){
+	var self = this;
+	var configFile = self.env.langDir + "/" + lang + "/define.json";
+	if(cache[lang])
+		return cache[lang];
+	var config;
+	try {
+		config = require(configFile);
+	}catch(e){
+		self.callback(e);
+	}
+	cache[lang] = config;
+	return config;
+}
+
+Disp.prototype.getLangFile = function(name, lang){
+	var self = this;
+	var langConfig = self.getLangConfig(lang);
+	var file = self.env.langDir + "/" + lang + "/" + name;
+	var resultFile;
+	if(fs.existsSync(file)){
+		return file;
+	}else{
+		for(var key in langConfig.deps){
+			var tmpfile = self.getLangFile(name, key);
+			if(tmpfile)
+				return tmpfile;
+		}
+	}
+}
+
+Disp.prototype.eval = function(json, lang, deps){
+	var self = this;
+	if(typeof json == "string"){
+		var tmp = {};
+		tmp[json] = 1;
+		json = tmp;
+	}
+	var name = Object.keys(json)[0];
+	var file = self.getLangFile(name, lang);
+	if(!file){
+		self.callback(lang + " " + name + " not exist");
+	}
+	if(json[name].eval || json[name].init || json[name].get){
+		var str = self.eval(json[name], lang, deps);
+		json[name] = str;
+	}
+	tmpl.extendMethods("eval", function(json){
+		return self.eval(json, lang, deps);
+	});
+	var data = {
+		argv: json[name],
+		deps: deps,
+		parent: json,
+		global: self.global
+	}
+	
+	return tmpl.render({file: file}, data);
 }

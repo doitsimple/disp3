@@ -1,0 +1,6 @@
+^^for(var key in argv){
+deps[key] = 1;
+$$
+module.exports.^^=key$$ = ^^=key$$;
+^^
+}$$

@@ -8,6 +8,7 @@ module.exports = {
 	}
 }
 function parse(b, l, gl){
+	gl.entityL.stepA = [];
 	for(var i in b.code){
 		gl.entityL.stepA.push(b.code[i]);
 	}

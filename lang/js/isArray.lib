@@ -1,0 +1,10 @@
+^^var func = 
+{
+	name: "isArray",
+	args: {"obj": "var"},
+	content: {
+		"raw": "return Object.prototype.toString.call( obj ) === '[object Array]';"
+	}
+};
+$$
+^^=$.eval({function: func})$$

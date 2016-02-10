@@ -39,15 +39,6 @@ module.exports.reservedKey = reservedKey;
 var tmplCache = {};
 module.exports.render = render;
 function render(config, data){
-	if(!data){
-		log.e("render with undefined data");
-		return "";
-	};
-	if(data.p || data.originstr || data.evalstr){
-		log.e(config);
-		log.e("variable p, originstr, evalstr is not allowed!!!!");
-		return "";
-	}
 	var originstr;
 	if(typeof config == "string"){
 		originstr = config;
@@ -76,6 +67,18 @@ function render(config, data){
 			originstr += config.post;
 		
 	}
+
+
+// init data
+	if(!data){
+		log.e("render with undefined data");
+		return "";
+	};
+	if(data.p || data.originstr || data.evalstr){
+		log.e(config);
+		log.e("variable p, originstr, evalstr is not allowed!!!!");
+		return "";
+	}
 	data.local = data;
 	data.origin = {};
 	for(var key in data.local){
@@ -85,9 +88,8 @@ function render(config, data){
 	data.$ = methods;
 	if(config.file)
 		data.file = config.file;
-
-
 	data.p=[];
+///////////
 
 	var win, wout;
 	var evalstr = "p.push('";

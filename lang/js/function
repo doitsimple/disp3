@@ -1,0 +1,3 @@
+function ^^=argv.name$$(^^=$.eval({makeArgs: argv.args})$$){
+	^^=$.eval(argv.content)$$
+}
