@@ -22,16 +22,16 @@ Dic.prototype.get = function(key, scope){
 		for(var i = 0; i<=scope.length*2; i++){
 			var scopePath = makePath(scope, i);
 			var wordPath = scopePath + "/" + key;
-			if(fs.existsSync(dicDir + wordPath + "/define.js")){
+			if(fs.existsSync(dicDir + wordPath + ".js")){
 				// get the word
 				if(self.cache[wordPath])
 					return self.cache[wordPath];
 				var configFunc;
 				try{
-					configFunc = require(dicDir + wordPath +"/define.js");
+					configFunc = require(dicDir + wordPath +".js");
 					self.cache[wordPath] = configFunc;
 				}catch(e){
-					log.e(dicDir+wordPath + "/define.js error");
+					log.e(dicDir+wordPath + ".js error");
 					return null;
 				}
 				return configFunc;

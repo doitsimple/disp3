@@ -1,11 +1,11 @@
 {
 	"main.js": {
-		"lib": "libL",
+		"lib": "lib",
 		"lang": "nodejs",
-		"content": "stepA"
+		"content": "step"
 	},
 	"lib.js": {
 		"lang": "nodejs",
-		"content": "libL"
+		"content": "lib"
 	}
 }

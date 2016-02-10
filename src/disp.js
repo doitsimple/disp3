@@ -101,7 +101,7 @@ Disp.prototype.readJson = function(){
 Disp.prototype.setGlobal = function(){
 	var self = this;
 	self.global = {
-		entityL: {
+		entity: {
 		}
 	};
 	var dic = new Dic([self.env.dicDir]);
@@ -152,7 +152,7 @@ Disp.prototype.genCode = function(){
     var str = "";
 		var deps = {};
     if(partConfig.content){
-			var c = self.global.entityL[partConfig.content];
+			var c = self.global.entity[partConfig.content];
 			if(libObject.isArray(c)){
 				for(var i in c){
 					str += self.eval(c[i], partConfig.lang, deps);
@@ -167,9 +167,9 @@ Disp.prototype.genCode = function(){
 // if has lib, require lib and add func to lib
 			var requires = {};
 			for(var key in deps){
-				if(!self.global.entityL[partConfig.lib])
-					self.global.entityL[partConfig.lib] = {};
-				var libs = self.global.entityL[partConfig.lib];
+				if(!self.global.entity[partConfig.lib])
+					self.global.entity[partConfig.lib] = {};
+				var libs = self.global.entity[partConfig.lib];
 				if(!libs.exports)
 					libs.exports = {};
 				if(!libs.exports[key]) libs.exports[key] = 1;

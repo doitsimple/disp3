@@ -7,7 +7,11 @@ var libFile = require("../lib/nodejs/file");
 var sync = require("../lib/js/sync");
 var utils =require("./utils");
 var log = require("../lib/nodejs/log");
-
+var methods = {};
+libObject.extend1(methods, libString);
+libObject.extend1(methods, libArray);
+libObject.extend1(methods, libObject);
+libObject.extend1(methods, libFile);
 var tmpl = require("./tmpl");
 /*
 var format = require("./format");
@@ -26,7 +30,7 @@ Tree.prototype.parse = function(dic){
 	var self = this;
 	var def = dic.get(self.key, []);
 	if(def.parse){
-		def.parse(self.branch, self.local, self.global);
+		def.parse(self.branch, self.local, self.global, methods);
 	}	
 	if(def.extendGlobal){
 		utils.extend(self.global, def.extendGlobal);
