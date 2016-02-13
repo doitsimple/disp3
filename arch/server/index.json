@@ -1,0 +1,15 @@
+{
+	"config": {
+		"parser": {
+			"json": 1,
+			"form": 1,
+			"query": 1
+		},		
+		"http": {
+			"port": 80
+		},
+		"https": {
+			"port": 443
+		}
+	}
+}

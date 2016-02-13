@@ -1,0 +1,19 @@
+{
+	"server.js": {
+		"lib": "lib",
+		"lang": "expressjs",
+		"tmpl": "server.js",
+		"env": "config"
+	},
+	"app.js": {
+		"lib": "lib",
+		"lang": "expressjs",
+		"tmpl": "app.js",
+		"env": "config"		
+	},
+	"lib.js": {
+		"lang": "nodejs",
+		"content": "lib"
+	}
+
+}

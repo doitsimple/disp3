@@ -1,0 +1,21 @@
+function callSeries(fnarr, fn){
+	var runner = {};
+	runner.nexti = 0;
+	runner.fnarr = fnarr;
+	_callSeries(runner, fn);
+}
+function _callSeries(runner, fn){
+	if(runner.fnarr.length == runner.nexti) {
+		fn(null);
+		return;
+	}
+	var func = runner.fnarr[runner.nexti];
+	func(function(err, result){
+		if(err){
+			fn(err, runner.nexti);
+			return;
+		}
+		runner.nexti += 1;
+		_callSeries(runner, fn);
+	});
+}

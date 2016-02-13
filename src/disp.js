@@ -28,7 +28,7 @@ Disp.prototype.run = function(){
 	self.readJson();
 	self.setGlobal();
 	self.readPrev();
-	self.setFilelist();
+	self.readArch();
 	self.genCode();
 	self.dispose();
 }
@@ -101,8 +101,8 @@ Disp.prototype.readJson = function(){
 Disp.prototype.setGlobal = function(){
 	var self = this;
 	self.global = {
-		entity: {
-		}
+		entity: {},
+		config: {}
 	};
 	var dic = new Dic([self.env.dicDir]);
 	var tree = new Tree("disp", self.dispJson, self.global, self.global);
@@ -120,25 +120,37 @@ Disp.prototype.setGlobal = function(){
 }
 
 
-Disp.prototype.setFilelist = function(){
+Disp.prototype.readArch = function(){
 	var self = this;
+	//file struct
 	var configFile = self.env.archDir + "/" + self.global.arch + "/" + self.global.impl;
-	var tmpFileList;
+	//global
+	var configFile2 = self.env.archDir + "/" + self.global.arch;
+	var tmp, tmp2;
 	try {
-		tmpFileList = require(configFile);
+		tmp = require(configFile);
 	}catch(e){
 		self.callback(e);
+	}
+	try {
+		tmp2 = require(configFile2);
+	}catch(e){
+		self.callback(e);
+	}
+	if(tmp2){
+		utils.append(self.global, tmp2);
 	}
 // make content link for lib func
 /////////////////////
 	self.contentLinks = {};
-	for(var key in tmpFileList){
-		var content = tmpFileList[key].content;
+	for(var key in tmp){
+		var content = tmp[key].content;
 		self.contentLinks[content] = key;
 	}
 /////////////////////
-	log.v(tmpFileList);
-	self.filelist = tmpFileList;
+	log.v(tmp);
+	self.filelist = tmp;
+	self.fileroot = configFile;
 }
 Disp.prototype.genCode = function(){
 	var self = this;
@@ -151,16 +163,36 @@ Disp.prototype.genCode = function(){
 /**/
     var str = "";
 		var deps = {};
-    if(partConfig.content){
-			var c = self.global.entity[partConfig.content];
+		var c;
+		if(partConfig.code || partConfig.content){
+			if(partConfig.code)
+				c = partConfig.code;
+			if(partConfig.content)
+				c = self.global.entity[partConfig.content];
 			if(libObject.isArray(c)){
 				for(var i in c){
 					str += self.eval(c[i], partConfig.lang, deps);
 				}
-			}else{
+			}else if(c){
 				str += self.eval(c, partConfig.lang, deps);
 			}
     }
+		if(partConfig.tmpl){
+			var env;
+			if(!partConfig.env) env = self.global;
+			else{
+				env = libObject.getByKey(self.global, partConfig.env);
+				env.global = self.global;
+				env.main = str;
+			}
+			tmpl.extendMethods("eval", function(json){
+				return self.eval(json, partConfig.lang, deps);
+			});
+			str = tmpl.render({
+				file: self.fileroot + "/" + partConfig.tmpl
+			}, env);
+		}
+
 //parse deps
 /////////////////////////////////
 		if(partConfig.lib){
@@ -199,10 +231,10 @@ var cache = {};
 
 Disp.prototype.getLangConfig = function(lang){
 	var self = this;
-	var configFile = self.env.langDir + "/" + lang + "/define.json";
+	var configFile = self.env.langDir + "/" + lang;
 	if(cache[lang])
 		return cache[lang];
-	var config;
+	var config = {};
 	try {
 		config = require(configFile);
 	}catch(e){
@@ -235,6 +267,7 @@ Disp.prototype.eval = function(json, lang, deps){
 		tmp[json] = 1;
 		json = tmp;
 	}
+	console.log(json);
 	var name = Object.keys(json)[0];
 	var file = self.getLangFile(name, lang);
 	if(!file){
