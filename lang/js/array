@@ -1,5 +1,5 @@
-^^if(parent.init){$$
-var ^^=argv$$ = ^^=$.stringify(parent.init)$$;
+^^if(parent.val){$$
+var ^^=argv$$ = ^^=$.stringify(parent.val)$$;
 ^^}else{$$
 var ^^=argv$$;
 ^^}$$

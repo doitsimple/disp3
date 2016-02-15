@@ -7,9 +7,6 @@ var libFile = require("../lib/nodejs/file");
 var sync = require("../lib/js/sync");
 var utils =require("./utils");
 var log = require("../lib/nodejs/log");
-//var dic = require("./dic");
-var Tree = require("./tree");
-var Dic = require("./dic");
 
 var tmpl = require("./tmpl");
 module.exports = Disp;
@@ -69,7 +66,7 @@ Disp.prototype.parseArgv = function(){
 	if(!projectDir) projectDir = path.resolve(".");
 	env.projectDir = projectDir;
 	env.dispDir = path.resolve(__dirname + "/..");
-	env.dicDir = path.resolve(__dirname + "/../dic");
+//	env.dicDir = path.resolve(__dirname + "/../dic");
 	env.implDir = path.resolve(__dirname + "/../impl");
 	env.archDir = path.resolve(__dirname + "/../arch");
 	env.langDir = path.resolve(__dirname + "/../lang");
@@ -100,17 +97,17 @@ Disp.prototype.readJson = function(){
 }
 Disp.prototype.setGlobal = function(){
 	var self = this;
-	self.global = {
-		entity: {},
-		config: {}
-	};
-	var dic = new Dic([self.env.dicDir]);
-	var tree = new Tree("disp", self.dispJson, self.global, self.global);
+//	var dic = new Dic([self.env.dicDir]);
+//	var tree = new Tree("disp", self.dispJson, self.global, self.global);
+/*
 	try {
 		tree.parse(dic);
 	}catch(e){
 		return self.callback(e);
 	}
+*/
+	self.global = {};
+	utils.extend(self.global, self.dispJson);
 	if(!self.global.arch)
 		self.global.arch = "raw";
 	if(!self.global.impl)
@@ -168,14 +165,8 @@ Disp.prototype.genCode = function(){
 			if(partConfig.code)
 				c = partConfig.code;
 			if(partConfig.content)
-				c = self.global.entity[partConfig.content];
-			if(libObject.isArray(c)){
-				for(var i in c){
-					str += self.eval(c[i], partConfig.lang, deps);
-				}
-			}else if(c){
-				str += self.eval(c, partConfig.lang, deps);
-			}
+				c = self.global[partConfig.content];
+			str += self.eval(c, partConfig.lang, deps);
     }
 		if(partConfig.tmpl){
 			var env;
@@ -199,9 +190,10 @@ Disp.prototype.genCode = function(){
 // if has lib, require lib and add func to lib
 			var requires = {};
 			for(var key in deps){
-				if(!self.global.entity[partConfig.lib])
-					self.global.entity[partConfig.lib] = {};
-				var libs = self.global.entity[partConfig.lib];
+//TODO mutilayer support
+				if(!self.global[partConfig.lib]) //init
+					self.global[partConfig.lib] = {};
+				var libs = self.global[partConfig.lib];
 				if(!libs.exports)
 					libs.exports = {};
 				if(!libs.exports[key]) libs.exports[key] = 1;
@@ -262,21 +254,46 @@ Disp.prototype.getLangFile = function(name, lang){
 
 Disp.prototype.eval = function(json, lang, deps){
 	var self = this;
-	if(typeof json == "string"){
+	var type = typeof json;
+	var str = "";
+	if(type === "string"){
 		var tmp = {};
 		tmp[json] = 1;
 		json = tmp;
+	}else if(type == "number"){
+		return json;
+	}else if(type == "object"){
+		if(libObject.isArray(json)){
+			for(var i in json){
+				json[i].index = i;
+				str += self.eval(json[i], lang, deps);
+			}
+			return str;
+		}
 	}
 	console.log(json);
 	var name = Object.keys(json)[0];
+	if(name[0] == "L"){
+		for(var key in json){
+			var truename = name.substr(1);
+			var tmpjson = {};
+			tmpjson[truename] = json[key];
+			tmpjson.name = truename;
+			str += self.eval(tmpjson, lang, deps);
+		}
+		return str;
+	}
+//begin eval
 	var file = self.getLangFile(name, lang);
 	if(!file){
 		self.callback(lang + " " + name + " not exist");
 	}
-	if(json[name].eval || json[name].init || json[name].get){
+/*
+	if(json[name].eval || json[name].val || json[name].get){
 		var str = self.eval(json[name], lang, deps);
 		json[name] = str;
 	}
+*/
 	tmpl.extendMethods("eval", function(json){
 		return self.eval(json, lang, deps);
 	});

@@ -1,26 +1,6 @@
 var express = require('express');
 var bodyParser = require('body-parser');
-/*
-var libReq = require("../lib/req");
-var libDate = require("../lib/date");
-var libEncrypt = require("../lib/encrypt");
-var libRandom = require("../lib/random");
-var libString = require("../lib/string");
-var libObject = require("../lib/object");
-var libFile = require("../lib/file");
-var libRes = require("./response");
-var log= require("../lib/log");
-var path = require("path");
-var common = require("./common");
-var sendErr = libRes.sendErr;
-var sendFile = libRes.sendFile;
-var sendJson = libRes.sendJson;
-var db = require("../db");
-^^=require$$
-var checkpoints = require("./checkpoints");
-^^=config$$
-^^=method$$
-*/
+var router = require("./router");
 var app = express();
 ^^if(parser.form){$$
  ^^if(parser.query){$$
@@ -36,4 +16,7 @@ app.use(bodyParser.json());
 app.use("^^=key$$", express.static(__dirname + '/'));
 */
 ^^=main$$
+for(var key in router){
+	app.use(key, router[key]);
+}
 module.exports = app;

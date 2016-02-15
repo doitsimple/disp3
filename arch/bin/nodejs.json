@@ -2,7 +2,7 @@
 	"main.js": {
 		"lib": "lib",
 		"lang": "nodejs",
-		"content": "step"
+		"content": "main"
 	},
 	"lib.js": {
 		"lang": "nodejs",

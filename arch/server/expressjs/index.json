@@ -11,9 +11,30 @@
 		"tmpl": "app.js",
 		"env": "config"		
 	},
-	"lib.js": {
+	"router.js": {
+		"lib": "lib",
+		"lang": "expressjs",
+		"tmpl": "route.js",
+		"env": "router"
+	},
+	"model.js": {
+		"lib": "lib",
+		"lang": "expressjs",
+		"tmpl": "model.js",
+		"env": "config"
+	},
+	"db.js": {
+		"lib": "lib",
 		"lang": "nodejs",
+		"tmpl": "db.js",
+		"env": "config"		
+	},
+	"lib.js": {
+		"lang": "expressjs",
 		"content": "lib"
+	},
+	"ctrl": {
+		"lang": "bash",
+		"content": "ctrl"
 	}
-
 }
