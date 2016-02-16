@@ -1,2 +1,2 @@
 ^^deps.callSeries = "Sync";$$
-Sync.callSeries(^^=argv$$, ^^=$.eval(parent.callback)$$);
+Sync.callSeries(^^=~argv$$, ^^=~parent.callback$$);

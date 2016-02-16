@@ -1,0 +1,19 @@
+{
+	"^^=argv$$": [
+		{
+			"arch": "server",
+			"impl": "expressjs",
+			"envkey": "servers"
+		},
+		{
+			"arch": "client",
+			"impl": "angulerjs",
+			"envkey": "clients"
+		},
+		{
+			"arch": "web-container",
+			"impl": "nginx",
+			"envkey": "containers"
+		}
+	]
+}

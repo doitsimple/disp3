@@ -1,4 +1,5 @@
 var fs = require("fs");
+
 var path = require("path");
 var libString = require("../lib/js/string");
 var libArray = require("../lib/js/array");
@@ -17,8 +18,10 @@ function Disp(config, fn){
 		else log.i("done");
 	}
 	self.callback = fn;
+	self.global = {
+		isGlobal: true
+	};
 
-	self.global = {};
 	if(config)
 		utils.extend(self, config);
 	if(!self.projectDir)
@@ -48,8 +51,8 @@ Disp.prototype.extendEnv = function(){
 Disp.prototype.readPrev = function(){
 	var self = this;
 	var prev = {};
-	if(fs.existsSync(self.env.projectDir + "/disp.filelist.json"))
-		prev.filelist = libFile.readJSON(self.env.projectDir + "/disp.filelist.json");
+	if(fs.existsSync(self.projectDir + "/disp.filelist.json"))
+		prev.filelist = libFile.readJSON(self.projectDir + "/disp.filelist.json");
 	else
 		prev.filelist = {};
 	log.v(prev);
@@ -59,7 +62,7 @@ Disp.prototype.readPrev = function(){
 Disp.prototype.extendGlobal = function(){
 	var self = this;
 
-	if(fs.existsSync(self.projectDir + "/disp.json")){
+	if(fs.existsSync(self.projectDir + "/disp.json") && !self.ignoreDispJson){
 		var dispJson = libFile.readJSON(self.projectDir + "/disp.json");
 		log.v("read json success");
 		log.v(dispJson);
@@ -112,37 +115,51 @@ Disp.prototype.genProj = function(){
 	var filelist = self.filelist;
   for (var orifilename in filelist){
     var partConfig = filelist[orifilename];
-		//target filename
-		if(orifilename.match(/\^\^.*\$\$/)){
-			var env;
-			if(partConfig.envkey){
-				env = libObject.getByKey(self.global, partConfig.envkey);
-				partConfig.env = env;
-			}
-			else if(partConfig.env)
-				env = partConfig.env;
-			else
-				env = self.global;
-			var tfilename;
-			if(typeof env != "object"){
-				tfilename = self.targetDir + "/" + tmpl.render(orifilename, {argv: env});
-				self.genFile(partConfig, tfilename);
-			}else{
-				for(var key in env){
-					tfilename = self.targetDir + "/" + 
-								tmpl.render(orifilename, {argv: key, env: env[key]});
-					var newPartConfig = libObject.copy1(partConfig);
-					newPartConfig.env = partConfig.env[key];
-					self.genFile(newPartConfig, tfilename);
-				}
+		if(libObject.isArray(partConfig)){
+			for(var i in partConfig){
+				self.genFilePre(orifilename, partConfig[i]);
 			}
 		}else{
-			self.genFile(partConfig, self.targetDir + "/" + orifilename);
+			self.genFilePre(orifilename, partConfig);
 		}
   }
 }
 Disp.prototype.dispose = function(){
 	log.v("dispose success");
+}
+Disp.prototype.getEnv = function(partConfig){
+	var self = this;
+	var env;
+	if(partConfig.envkey){
+		env = libObject.getByKey(self.global, partConfig.envkey);
+		partConfig.env = env;
+	}
+	else if(partConfig.env)
+		env = partConfig.env;
+	else
+		env = self.global;
+	if(!env) env = {};
+	return env;
+}
+Disp.prototype.genFilePre = function(orifilename, partConfig){
+	var self = this;
+	if(orifilename.match(/\^\^.*\$\$/)){
+		var env = self.getEnv(partConfig);
+		var tfilename;
+		if(typeof env != "object"){
+			tfilename = tmpl.render(orifilename, {argv: env});
+			self.genFile(partConfig, tfilename);
+		}else{
+			for(var key in env){
+				tfilename = tmpl.render(orifilename, {argv: key, env: env[key]});
+				var newPartConfig = libObject.copy1(partConfig);
+				newPartConfig.env = partConfig.env[key];
+				self.genFile(newPartConfig, tfilename);
+			}
+		}
+	}else{
+		self.genFile(partConfig, orifilename);
+	}
 }
 Disp.prototype.genFile = function(partConfig, filename){
 	var self = this;
@@ -154,16 +171,19 @@ Disp.prototype.genFile = function(partConfig, filename){
 				arch: partConfig.arch
 			}
 		}
+		if(partConfig.ignoreDispJson)
+			config.ignoreDispJson = 1;
 		if(partConfig.impl)
 			config.global.impl = partConfig.impl;
-		if(partConfig.env)
-			utils.extend(config.global, partConfig.env);
-		console.log(config.global);
+		var tmpenv = self.getEnv(partConfig);
+		
+		if(tmpenv && !tmpenv.isGlobal)
+			utils.extend(config.global, tmpenv);
 		var newDisp = new Disp(config, self.callback);
 		newDisp.run();
 		return;
 	}
-  libFile.mkdirpSync(path.dirname(filename)); //to be acc
+
 	/*todo sync*/
 	/**/
   var str = "";
@@ -177,17 +197,12 @@ Disp.prototype.genFile = function(partConfig, filename){
 		if(c)
 			str += self.eval(c, partConfig.lang, deps);
   }
-	var env;
-	if(partConfig.envkey || partConfig.env){
-		if(partConfig.env){
-			env = partConfig.env;
-		}else	if(partConfig.envkey){
-			env = libObject.getByKey(self.global, partConfig.envkey);
-		}
+	var env = self.getEnv(partConfig);
+
+	if(env.isGlobal){
 		env.global = self.global;
 		env.main = str;
 	}
-	if(!env) env = self.global;
 	if(partConfig.raw){
 		str += tmpl.render(partConfig.raw, env);
 	}
@@ -230,10 +245,11 @@ Disp.prototype.genFile = function(partConfig, filename){
 		}
 	}
 	//////////////////////////////
-
-  if(fs.existsSync(filename))
-    fs.unlinkSync(filename);
-  fs.writeFileSync(filename, str, {mode: 0444});
+	var tfilename = self.targetDir + "/" + filename;
+  libFile.mkdirpSync(path.dirname(tfilename)); //to be acc
+  if(fs.existsSync(tfilename))
+    fs.unlinkSync(tfilename);
+  fs.writeFileSync(tfilename, str, {mode: 0444});
 }
 
 // simple methods
@@ -288,7 +304,6 @@ Disp.prototype.eval = function(json, lang, deps){
 			return str;
 		}
 	}
-	console.log(json);
 	var name = Object.keys(json)[0];
 	if(name[0] == "L"){
 		for(var key in json){

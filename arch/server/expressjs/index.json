@@ -3,31 +3,31 @@
 		"lib": "lib",
 		"lang": "expressjs",
 		"tmpl": "server.js",
-		"env": "config"
+		"envkey": "config"
 	},
 	"app.js": {
 		"lib": "lib",
 		"lang": "expressjs",
 		"tmpl": "app.js",
-		"env": "config"		
+		"envkey": "config"		
 	},
 	"router.js": {
 		"lib": "lib",
 		"lang": "expressjs",
-		"tmpl": "route.js",
-		"env": "router"
+		"tmpl": "router.js",
+		"envkey": "router"
 	},
 	"model.js": {
 		"lib": "lib",
 		"lang": "expressjs",
 		"tmpl": "model.js",
-		"env": "config"
+		"envkey": "config"
 	},
 	"db.js": {
 		"lib": "lib",
 		"lang": "nodejs",
 		"tmpl": "db.js",
-		"env": "config"		
+		"envkey": "config"		
 	},
 	"lib.js": {
 		"lang": "expressjs",
