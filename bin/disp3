@@ -1,6 +1,43 @@
 #!/usr/bin/env node
+var path = require("path");
+var libString = require("../lib/js/string");
 var Disp = require("../src/disp");
 var log = require("../lib/nodejs/log");
 log.setLevel(2);
-var disp = new Disp();
+function parseArgv(){
+	//init global
+	var env = {};
+	env.argv = [];
+	var ParamsHelp = {
+		"p": "project path, default '.'",
+		"t": "target path, default '.', can be configured in disp.json",
+		"v": "verbose mode"
+	}
+	var op = process.argv.shift();
+	var projectDir;
+	while(op){
+		switch(op){
+			case "-p":
+			env.projectDir = path.resolve(process.argv.shift());
+			break;
+			case "-t":
+			env.targetDir = path.resolve(process.argv.shift());
+			break;
+			case "-v":
+			log.setLevel(3);
+			log.v("verbose mode enabled");
+			break;
+			case "-h":
+			throw libString.makeArgvHelp(ParamsHelp);
+			break;
+			default:
+			env.argv.push(op);
+		}
+		op = process.argv.shift();
+	}
+	log.v(env);
+	return env;
+}
+
+var disp = new Disp(parseArgv());
 disp.run();

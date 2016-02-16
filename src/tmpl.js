@@ -74,6 +74,9 @@ function render(config, data){
 		log.e("render with undefined data");
 		return "";
 	};
+	if(typeof data !="object"){
+		data = {name: data};
+	}
 	if(data.p || data.originstr || data.evalstr){
 		log.e(config);
 		log.e("variable p, originstr, evalstr is not allowed!!!!");

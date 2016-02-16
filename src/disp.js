@@ -10,69 +10,40 @@ var log = require("../lib/nodejs/log");
 
 var tmpl = require("./tmpl");
 module.exports = Disp;
-function Disp(fn){
+function Disp(config, fn){
 	var self = this;
+	if(!fn) fn = function(err){
+		if(err) throw err;
+		else log.i("done");
+	}
 	self.callback = fn;
+
+	self.global = {};
+	if(config)
+		utils.extend(self, config);
+	if(!self.projectDir)
+		self.projectDir = path.resolve(".");
+	if(!self.targetDir)
+		self.targetDir = ".";
 }
 
 Disp.prototype.run = function(){
 	var self = this;
-	if(!self.callback) self.callback = function(err){
-		if(err) throw err;
-		else log.i("done");
-	}
-	self.parseArgv();
-	self.readJson();
-	self.setGlobal();
+	self.extendEnv();
+	self.extendGlobal();
 	self.readPrev();
 	self.readArch();
-	self.genCode();
+	self.genProj();
 	self.dispose();
 }
-Disp.prototype.parseArgv = function(){
+Disp.prototype.extendEnv = function(){
 	var self = this;
-	//init global
-	var env = {};
-	env.nodeBin = process.argv.shift();
-	env.dispBin = process.argv.shift();
-	env.argv = [];
-	var ParamsHelp = {
-		"p": "project path, default '.'",
-		"t": "target path, default '.', can be configured in disp.json",
-		"v": "verbose mode"
-	}
-	var op = process.argv.shift();
-	var projectDir;
-	while(op){
-		switch(op){
-			case "-p":
-			projectDir = path.resolve(process.argv.shift());
-			break;
-			case "-t":
-			env.targetDir = path.resolve(process.argv.shift());
-			break;
-			case "-v":
-			log.setLevel(3);
-			log.v("verbose mode enabled");
-			break;
-			case "-h":
-			self.callback(libString.makeArgvHelp(ParamsHelp));
-			break;
-			default:
-			env.argv.push(op);
-		}
-		op = process.argv.shift();
-	}
-	if(!projectDir) projectDir = path.resolve(".");
-	env.projectDir = projectDir;
-	env.dispDir = path.resolve(__dirname + "/..");
-//	env.dicDir = path.resolve(__dirname + "/../dic");
-	env.implDir = path.resolve(__dirname + "/../impl");
-	env.archDir = path.resolve(__dirname + "/../arch");
-	env.langDir = path.resolve(__dirname + "/../lang");
-	env.target = ".";
-	log.v(env);
-	self.env = env;
+	self.env = {};
+	self.env.nodeBin = process.argv.shift();
+	self.env.dispBin = process.argv.shift();
+	self.env.dispDir = path.resolve(__dirname + "/..");
+	self.env.archDir = path.resolve(self.env.dispDir + "/arch");
+	self.env.langDir = path.resolve(self.env.dispDir + "/lang");
 }
 Disp.prototype.readPrev = function(){
 	var self = this;
@@ -84,35 +55,22 @@ Disp.prototype.readPrev = function(){
 	log.v(prev);
 	self.prev = prev;
 }
-Disp.prototype.readJson = function(){
+
+Disp.prototype.extendGlobal = function(){
 	var self = this;
-	//init src
-	if(!fs.existsSync(self.env.projectDir + "/disp.json")){
-		log.e("no disp.json");
-		return self.callback("no disp json");
+
+	if(fs.existsSync(self.projectDir + "/disp.json")){
+		var dispJson = libFile.readJSON(self.projectDir + "/disp.json");
+		log.v("read json success");
+		log.v(dispJson);
+
+		utils.extend(self.global, dispJson);
 	}
-	self.dispJson = libFile.readJSON(self.env.projectDir + "/disp.json");
-	log.v("read json success");
-	log.v(self.dispJson);
-}
-Disp.prototype.setGlobal = function(){
-	var self = this;
-//	var dic = new Dic([self.env.dicDir]);
-//	var tree = new Tree("disp", self.dispJson, self.global, self.global);
-/*
-	try {
-		tree.parse(dic);
-	}catch(e){
-		return self.callback(e);
-	}
-*/
-	self.global = {};
-	utils.extend(self.global, self.dispJson);
 	if(!self.global.arch)
 		self.global.arch = "raw";
 	if(!self.global.impl)
 		self.global.impl = "nodejs";
-
+	log.v("global");
 	log.v(self.global);
 }
 
@@ -149,78 +107,137 @@ Disp.prototype.readArch = function(){
 	self.filelist = tmp;
 	self.fileroot = configFile;
 }
-Disp.prototype.genCode = function(){
+Disp.prototype.genProj = function(){
 	var self = this;
 	var filelist = self.filelist;
   for (var orifilename in filelist){
     var partConfig = filelist[orifilename];
-    var filename = self.env.target + "/" + orifilename;
-    libFile.mkdirpSync(path.dirname(filename)); //to be acc
-/*todo sync*/
-/**/
-    var str = "";
-		var deps = {};
-		var c;
-		if(partConfig.code || partConfig.content){
-			if(partConfig.code)
-				c = partConfig.code;
-			if(partConfig.content)
-				c = self.global[partConfig.content];
-			str += self.eval(c, partConfig.lang, deps);
-    }
-		if(partConfig.tmpl){
+		//target filename
+		if(orifilename.match(/\^\^.*\$\$/)){
 			var env;
-			if(!partConfig.env) env = self.global;
-			else{
-				env = libObject.getByKey(self.global, partConfig.env);
-				env.global = self.global;
-				env.main = str;
+			if(partConfig.envkey){
+				env = libObject.getByKey(self.global, partConfig.envkey);
+				partConfig.env = env;
 			}
-			tmpl.extendMethods("eval", function(json){
-				return self.eval(json, partConfig.lang, deps);
-			});
-			str = tmpl.render({
-				file: self.fileroot + "/" + partConfig.tmpl
-			}, env);
-		}
-
-//parse deps
-/////////////////////////////////
-		if(partConfig.lib){
-// if has lib, require lib and add func to lib
-			var requires = {};
-			for(var key in deps){
-//TODO mutilayer support
-				if(!self.global[partConfig.lib]) //init
-					self.global[partConfig.lib] = {};
-				var libs = self.global[partConfig.lib];
-				if(!libs.exports)
-					libs.exports = {};
-				if(!libs.exports[key]) libs.exports[key] = 1;
-				requires[deps[key]]++;
-			}
-			for(var key in requires){
-				str = self.eval({"require": {name: key, file: self.contentLinks[partConfig.lib]}}, partConfig.lang, deps) + str;
+			else if(partConfig.env)
+				env = partConfig.env;
+			else
+				env = self.global;
+			var tfilename;
+			if(typeof env != "object"){
+				tfilename = self.targetDir + "/" + tmpl.render(orifilename, {argv: env});
+				self.genFile(partConfig, tfilename);
+			}else{
+				for(var key in env){
+					tfilename = self.targetDir + "/" + 
+								tmpl.render(orifilename, {argv: key, env: env[key]});
+					var newPartConfig = libObject.copy1(partConfig);
+					newPartConfig.env = partConfig.env[key];
+					self.genFile(newPartConfig, tfilename);
+				}
 			}
 		}else{
-// else add func in this file
-			for(var key in deps){
-				str = self.eval(key + ".lib", partConfig.lang, deps) + str;
-			}
+			self.genFile(partConfig, self.targetDir + "/" + orifilename);
 		}
-//////////////////////////////
-
-    if(fs.existsSync(filename))
-      fs.unlinkSync(filename);
-    fs.writeFileSync(filename, str, {mode: 0444});
   }
 }
 Disp.prototype.dispose = function(){
 	log.v("dispose success");
 }
+Disp.prototype.genFile = function(partConfig, filename){
+	var self = this;
+	if(partConfig.arch){
+		var config = {
+			projectDir: path.resolve(filename),
+			targetDir: filename,
+			global: {
+				arch: partConfig.arch
+			}
+		}
+		if(partConfig.impl)
+			config.global.impl = partConfig.impl;
+		if(partConfig.env)
+			utils.extend(config.global, partConfig.env);
+		console.log(config.global);
+		var newDisp = new Disp(config, self.callback);
+		newDisp.run();
+		return;
+	}
+  libFile.mkdirpSync(path.dirname(filename)); //to be acc
+	/*todo sync*/
+	/**/
+  var str = "";
+	var deps = {};
+	if(partConfig.code || partConfig.content){
+		var c;
+		if(partConfig.code)
+			c = partConfig.code;
+		if(partConfig.content)
+			c = self.global[partConfig.content];
+		if(c)
+			str += self.eval(c, partConfig.lang, deps);
+  }
+	var env;
+	if(partConfig.envkey || partConfig.env){
+		if(partConfig.env){
+			env = partConfig.env;
+		}else	if(partConfig.envkey){
+			env = libObject.getByKey(self.global, partConfig.envkey);
+		}
+		env.global = self.global;
+		env.main = str;
+	}
+	if(!env) env = self.global;
+	if(partConfig.raw){
+		str += tmpl.render(partConfig.raw, env);
+	}
+	if(partConfig.tmpl || partConfig.src){
+		tmpl.extendMethods("eval", function(json){
+			return self.eval(json, partConfig.lang, deps);
+		});
+		var srcfile;
+		if(partConfig.tmpl)
+			srcfile = self.fileroot + "/" + partConfig.tmpl;
+		else if(partConfig.src)
+			srcfile = self.projectDir + "/" + partConfig.src;
+		str = tmpl.render({
+			file: srcfile
+		}, env);
+	}
+
+	//parse deps
+	/////////////////////////////////
+	if(partConfig.lib){
+		// if has lib, require lib and add func to lib
+		var requires = {};
+		for(var key in deps){
+			//TODO mutilayer support
+			if(!self.global[partConfig.lib]) //init
+				self.global[partConfig.lib] = {};
+			var libs = self.global[partConfig.lib];
+			if(!libs.exports)
+				libs.exports = {};
+			if(!libs.exports[key]) libs.exports[key] = 1;
+			requires[deps[key]]++;
+		}
+		for(var key in requires){
+			str = self.eval({"require": {name: key, file: self.contentLinks[partConfig.lib]}}, partConfig.lang, deps) + str;
+		}
+	}else{
+		// else add func in this file
+		for(var key in deps){
+			str = self.eval(key + ".lib", partConfig.lang, deps) + str;
+		}
+	}
+	//////////////////////////////
+
+  if(fs.existsSync(filename))
+    fs.unlinkSync(filename);
+  fs.writeFileSync(filename, str, {mode: 0444});
+}
+
 // simple methods
 var cache = {};
-
 Disp.prototype.getLangConfig = function(lang){
 	var self = this;
 	var configFile = self.env.langDir + "/" + lang;
