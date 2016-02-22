@@ -1,0 +1,8 @@
+^^
+var tmp = {};
+tmp[argv+".lib"] = 1;
+if(parent.name){
+	tmp.name = parent.name;
+}
+$$
+^^=~tmp$$

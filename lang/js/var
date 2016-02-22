@@ -1,0 +1,5 @@
+^^if(parent.val){$$
+var ^^=argv$$ = ^^=~val: parent.val$$;
+^^}else{$$
+var ^^=argv$$;
+^^}$$

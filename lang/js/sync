@@ -1,0 +1,2 @@
+^^deps.callSeries = "lib";$$
+lib.sync(^^=~argv$$, ^^=~parent.callback$$);

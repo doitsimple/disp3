@@ -1,0 +1,11 @@
+^^var func = {
+	function: {
+		args: ^^=argv.args$$
+		content: ^^=argv.content$$
+	}
+};
+if(parent.name){
+	func.name = parent.name;
+}
+$$
+^^=~func$$

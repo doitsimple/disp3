@@ -11,5 +11,7 @@
 		"https": {
 			"port": 443
 		}
+	},
+	"routers": {
 	}
 }

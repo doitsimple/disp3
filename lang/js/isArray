@@ -1,2 +1,4 @@
-^^deps.isArray = "libObject";$$
-libObject.isArray(^^=~argv$$)
+^^
+deps.isArray = "libObject";
+$$
+isArray(^^=~argv$$)

@@ -1,5 +1,1 @@
-^^if(parent.val){$$
-var ^^=argv$$ = ^^=$.stringify(parent.val)$$;
-^^}else{$$
-var ^^=argv$$;
-^^}$$
+^^=~var: argv, val: parent.val$$

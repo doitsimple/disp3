@@ -1,0 +1,4 @@
+^^=parent.caller$$.route("^^=parent.name$$")
+^^if(argv.get){$$
+	.get(^^=~argv.get$$)
+^^}$$

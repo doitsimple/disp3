@@ -14,20 +14,17 @@
 	"router.js": {
 		"lib": "lib",
 		"lang": "expressjs",
-		"tmpl": "router.js",
-		"envkey": "router"
+		"tmpl": "router.js"
 	},
 	"model.js": {
 		"lib": "lib",
 		"lang": "expressjs",
-		"tmpl": "model.js",
-		"envkey": "config"
+		"tmpl": "model.js"
 	},
 	"db.js": {
 		"lib": "lib",
 		"lang": "nodejs",
-		"tmpl": "db.js",
-		"envkey": "config"		
+		"tmpl": "db.js"
 	},
 	"lib.js": {
 		"lang": "expressjs",

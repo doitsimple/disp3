@@ -33,7 +33,7 @@ function callback(err){
 	else
 		console.log("Server start failed " + err);
 }
-^^=$.eval({callSeries: {get: "runs"}, callback: {get: "callback"}})$$
+^^=~sync: {get: "runs"}, callback: {get: "callback"}$$
 /*
 var db = require("../db");
 var sync =require("../lib/sync");

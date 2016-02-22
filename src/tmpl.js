@@ -132,16 +132,21 @@ function render(config, data){
 					if(!data[ms[1]]){
 						data[ms[1]] = "";
 					}
-				if((ms=win.match(/^=~(.*)$/)))
+				if((ms=win.match(/^=~(.*)$/))){
 					if(ms[1].match(/:/)){
 						win = win.replace(/~(.+)/,"$.eval({$1})");
 					}else{
 						win = win.replace(/~(.+)/,"$.eval($1)");
 					}
+				}
 				evalstr += (win.replace(/^=(.+)/, "',$1,'") + wout);
 			}
 			else{
-				evalstr+=("');"+win+";p.push('"+wout);
+				if(win.match(/~$/)){
+					evalstr+=("');" +win.replace(/~$/, "'")+wout+"';p.push('");
+				}else{
+					evalstr+=("');"+win+";p.push('"+wout);
+				}
 			}
 		});
 		evalstr+="');";

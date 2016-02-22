@@ -198,7 +198,6 @@ Disp.prototype.genFile = function(partConfig, filename){
 			str += self.eval(c, partConfig.lang, deps);
   }
 	var env = self.getEnv(partConfig);
-
 	if(env.isGlobal){
 		env.global = self.global;
 		env.main = str;
@@ -222,28 +221,41 @@ Disp.prototype.genFile = function(partConfig, filename){
 
 	//parse deps
 	/////////////////////////////////
-	if(partConfig.lib){
-		// if has lib, require lib and add func to lib
-		var requires = {};
-		for(var key in deps){
-			//TODO mutilayer support
+	// if has lib, require lib and add func to lib
+	var Lrequire = {};
+	var methodSpace = {};
+	for(var key in deps){
+		//TODO mutilayer support
+		var requirevar;
+		if(typeof deps[key] == "string"){
+			if(partConfig.lib){
+				deps[key] = {
+					sub: key,
+					file: self.contentLinks[partConfig.lib]
+				};
+			}else{
+				str = self.eval({
+					lib: key, name: key
+				}, partConfig.lang, deps) + str;
+				continue;
+			}
+		}else if(typeof deps[key] != "object"){
+			deps[key] = {
+				mod: key
+			}
+		}
+		if(partConfig.lib){
 			if(!self.global[partConfig.lib]) //init
 				self.global[partConfig.lib] = {};
-			var libs = self.global[partConfig.lib];
-			if(!libs.exports)
-				libs.exports = {};
-			if(!libs.exports[key]) libs.exports[key] = 1;
-			requires[deps[key]]++;
-		}
-		for(var key in requires){
-			str = self.eval({"require": {name: key, file: self.contentLinks[partConfig.lib]}}, partConfig.lang, deps) + str;
-		}
-	}else{
-		// else add func in this file
-		for(var key in deps){
-			str = self.eval(key + ".lib", partConfig.lang, deps) + str;
+			var libContent = self.global[partConfig.lib];
+			if(!libContent.Lexport)
+				libContent.Lexport = {};
+			if(!libContent.Lexport[key]) 
+				libContent.Lexport[key] = {lib: key};
+			Lrequire[key] = deps[key];
 		}
 	}
+	str = self.eval({Lrequire: Lrequire}, partConfig.lang, deps) + str;
 	//////////////////////////////
 	var tfilename = self.targetDir + "/" + filename;
   libFile.mkdirpSync(path.dirname(tfilename)); //to be acc
@@ -297,8 +309,16 @@ Disp.prototype.eval = function(json, lang, deps){
 		return json;
 	}else if(type == "object"){
 		if(libObject.isArray(json)){
+			var toextend = {};
+			for(var i in json){
+				if(!i.match(/\d+/)){
+					toextend[i] = json[i];
+					delete json[i];
+				}
+			}
 			for(var i in json){
 				json[i].index = i;
+				utils.extend(json[i], toextend);
 				str += self.eval(json[i], lang, deps);
 			}
 			return str;
@@ -306,11 +326,17 @@ Disp.prototype.eval = function(json, lang, deps){
 	}
 	var name = Object.keys(json)[0];
 	if(name[0] == "L"){
+		var toextendl = {};
 		for(var key in json){
+			if(key !== name)
+				toextendl[key] = json[key];
+		}
+		for(var key in json[name]){
 			var truename = name.substr(1);
 			var tmpjson = {};
-			tmpjson[truename] = json[key];
-			tmpjson.name = truename;
+			tmpjson[truename] = json[name][key];
+			tmpjson.name = key;
+			utils.extend(tmpjson, toextendl);
 			str += self.eval(tmpjson, lang, deps);
 		}
 		return str;
@@ -320,21 +346,29 @@ Disp.prototype.eval = function(json, lang, deps){
 	if(!file){
 		self.callback(lang + " " + name + " not exist");
 	}
-/*
-	if(json[name].eval || json[name].val || json[name].get){
-		var str = self.eval(json[name], lang, deps);
-		json[name] = str;
-	}
-*/
-	tmpl.extendMethods("eval", function(json){
+
+	tmpl.extendMethods("eval", function(json, lang2){
+		if(lang2) return self.eval(json, lang2, deps);
 		return self.eval(json, lang, deps);
 	});
 	var data = {
+		name: name,
 		argv: json[name],
 		deps: deps,
 		parent: json,
 		global: self.global
 	}
 	
-	return tmpl.render({file: file}, data);
+	var rtnstr = tmpl.render({file: file}, data);
+	if(rtnstr && rtnstr[0] == "~"){
+		try{
+			var func;
+			eval('func = {"function":{'+rtnstr.substr(1)+'}}');
+			if(json.name) func.name = json.name;
+			return self.eval(func, lang, deps);
+		}catch(e){
+			log.e('func = {"function":{'+rtnstr.substr(1)+'}}');
+		}
+	}else
+		return rtnstr;
 }

@@ -1,0 +1,4 @@
+function ^^=$.ucfirst(argv.name)$$(){
+	var self = this;
+	^^=~argv.content$$
+}

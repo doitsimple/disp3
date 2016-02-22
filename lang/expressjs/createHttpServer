@@ -1,0 +1,7 @@
+^^deps$$
+  var server = http.createServer(^^=argv.caller$$);
+  server.listen(^^=argv.port$$, function(){
+    console.log('Express http server listening on port: ^^=http.port$$, pid: ' + process.pid);
+    fs.writeFileSync("pid", process.pid);
+    ^^=argv.callback$$();
+  });

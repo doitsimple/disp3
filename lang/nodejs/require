@@ -1,10 +1,13 @@
 ^^
-var varname;
 var rpath;
 if(argv.file){
 	rpath = "./" + path.relative(".", argv.file);
 	var m =argv.file.match(/([a-z][a-z0-9]+)(?:\.[A-Za-z0-9]+)?$/);
-}else if(argv.cdn){
+}else if(argv.mod){
+	rpath = argv.mod;
+}else{
+// error
 }
+var sub = argv.sub?"."+argv.sub:"";
 $$
-var ^^=argv.name$$ = require("^^=rpath$$");
+var ^^=parent.name$$ = require("^^=rpath$$")^^=sub$$;

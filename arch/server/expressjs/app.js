@@ -12,9 +12,6 @@ app.use(bodyParser.urlencoded());
 ^^if(parser.json){$$
 app.use(bodyParser.json());
 ^^}$$
-/*
-app.use("^^=key$$", express.static(__dirname + '/'));
-*/
 ^^=main$$
 for(var key in router){
 	app.use(key, router[key]);

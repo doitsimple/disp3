@@ -1,0 +1,14 @@
+^^
+var code = {
+	class: {
+		name: argv.name,
+		content: [{
+			constructer: {
+				args: {db: {: }}
+			},
+		}, getter: {
+			}
+		]
+	}
+}$$
+^^=~code$$
