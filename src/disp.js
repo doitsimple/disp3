@@ -341,7 +341,15 @@ Disp.prototype.eval = function(json, lang, deps){
 		}
 		return str;
 	}
+
+
+	var flags = {};
+	if(name.match(/\.lib$/)){
+		flags.lib = 1;
+	}
 //begin eval
+
+	
 	var file = self.getLangFile(name, lang);
 	if(!file){
 		self.callback(lang + " " + name + " not exist");
@@ -360,15 +368,16 @@ Disp.prototype.eval = function(json, lang, deps){
 	}
 	
 	var rtnstr = tmpl.render({file: file}, data);
-	if(rtnstr && rtnstr[0] == "~"){
+	if(flags.lib){
 		try{
 			var func;
-			eval('func = {"function":{'+rtnstr.substr(1)+'}}');
+			eval('func = {"function":{'+rtnstr+'}}');
 			if(json.name) func.name = json.name;
 			return self.eval(func, lang, deps);
 		}catch(e){
-			log.e('func = {"function":{'+rtnstr.substr(1)+'}}');
+			log.e('func = {"function":{'+rtnstr+'}}');
 		}
-	}else
+	}else{
 		return rtnstr;
+	}
 }
