@@ -1,10 +1,10 @@
-function callSeries(fnarr, fn){
+function sync(fnarr, fn){
 	var runner = {};
 	runner.nexti = 0;
 	runner.fnarr = fnarr;
-	_callSeries(runner, fn);
+	_sync(runner, fn);
 }
-function _callSeries(runner, fn){
+function _sync(runner, fn){
 	if(runner.fnarr.length == runner.nexti) {
 		fn(null);
 		return;
@@ -16,6 +16,6 @@ function _callSeries(runner, fn){
 			return;
 		}
 		runner.nexti += 1;
-		_callSeries(runner, fn);
+		_sync(runner, fn);
 	});
 }

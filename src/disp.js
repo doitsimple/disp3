@@ -19,7 +19,8 @@ function Disp(config, fn){
 	}
 	self.callback = fn;
 	self.global = {
-		isGlobal: true
+		_isGlobal: true,
+		_deps: {}
 	};
 
 	if(config)
@@ -100,10 +101,12 @@ Disp.prototype.readArch = function(){
 	}
 // make content link for lib func
 /////////////////////
-	self.contentLinks = {};
+	self.fileMap = {};
 	for(var key in tmp){
-		var content = tmp[key].content;
-		self.contentLinks[content] = key;
+		var name = tmp[key].name;
+		if(name){
+			self.fileMap[name] = key;
+		}
 	}
 /////////////////////
 	log.v(tmp);
@@ -130,13 +133,12 @@ Disp.prototype.dispose = function(){
 Disp.prototype.getEnv = function(partConfig){
 	var self = this;
 	var env;
-	if(partConfig.envkey){
+	if(partConfig.env){
+		env = partConfig.env;
+	}else if(partConfig.envkey){
 		env = libObject.getByKey(self.global, partConfig.envkey);
 		partConfig.env = env;
-	}
-	else if(partConfig.env)
-		env = partConfig.env;
-	else
+	}else
 		env = self.global;
 	if(!env) env = {};
 	return env;
@@ -151,9 +153,12 @@ Disp.prototype.genFilePre = function(orifilename, partConfig){
 			self.genFile(partConfig, tfilename);
 		}else{
 			for(var key in env){
-				tfilename = tmpl.render(orifilename, {argv: key, env: env[key]});
+				tfilename = tmpl.render(orifilename, {
+					argv: key, 
+					env: env[key]
+				});
 				var newPartConfig = libObject.copy1(partConfig);
-				newPartConfig.env = partConfig.env[key];
+				newPartConfig.env = env[key];
 				self.genFile(newPartConfig, tfilename);
 			}
 		}
@@ -177,7 +182,7 @@ Disp.prototype.genFile = function(partConfig, filename){
 			config.global.impl = partConfig.impl;
 		var tmpenv = self.getEnv(partConfig);
 		
-		if(tmpenv && !tmpenv.isGlobal)
+		if(tmpenv && !tmpenv._isGlobal)
 			utils.extend(config.global, tmpenv);
 		var newDisp = new Disp(config, self.callback);
 		newDisp.run();
@@ -195,10 +200,10 @@ Disp.prototype.genFile = function(partConfig, filename){
 		if(partConfig.content)
 			c = self.global[partConfig.content];
 		if(c)
-			str += self.eval(c, partConfig.lang, deps);
+			str += self.eval(c, partConfig.lang, deps) + "\n";
   }
 	var env = self.getEnv(partConfig);
-	if(env.isGlobal){
+	if(!env._isGlobal){
 		env.global = self.global;
 		env.main = str;
 	}
@@ -226,13 +231,19 @@ Disp.prototype.genFile = function(partConfig, filename){
 	var methodSpace = {};
 	for(var key in deps){
 		//TODO mutilayer support
-		var requirevar;
 		if(typeof deps[key] == "string"){
 			if(partConfig.lib){
 				deps[key] = {
 					sub: key,
-					file: self.contentLinks[partConfig.lib]
+					file: self.fileMap[partConfig.lib]
 				};
+				if(!self.global[partConfig.lib]) //init
+					self.global[partConfig.lib] = {};
+				var libContent = self.global[partConfig.lib];
+				if(!libContent.Lexport)
+					libContent.Lexport = {};
+				if(!libContent.Lexport[key]) 
+					libContent.Lexport[key] = {lib: key};
 			}else{
 				str = self.eval({
 					lib: key, name: key
@@ -240,20 +251,14 @@ Disp.prototype.genFile = function(partConfig, filename){
 				continue;
 			}
 		}else if(typeof deps[key] != "object"){
+			self.global._deps[key] = 1;
 			deps[key] = {
 				mod: key
 			}
+		}else if(deps[key].file){
+			deps[key].file = self.fileMap[deps[key].file];
 		}
-		if(partConfig.lib){
-			if(!self.global[partConfig.lib]) //init
-				self.global[partConfig.lib] = {};
-			var libContent = self.global[partConfig.lib];
-			if(!libContent.Lexport)
-				libContent.Lexport = {};
-			if(!libContent.Lexport[key]) 
-				libContent.Lexport[key] = {lib: key};
-			Lrequire[key] = deps[key];
-		}
+		Lrequire[key] = deps[key];
 	}
 	str = self.eval({Lrequire: Lrequire}, partConfig.lang, deps) + str;
 	//////////////////////////////
@@ -299,8 +304,10 @@ Disp.prototype.getLangFile = function(name, lang){
 
 Disp.prototype.eval = function(json, lang, deps){
 	var self = this;
+	if(!json) return "";
 	var type = typeof json;
 	var str = "";
+/*
 	if(type === "string"){
 		var tmp = {};
 		tmp[json] = 1;
@@ -308,6 +315,10 @@ Disp.prototype.eval = function(json, lang, deps){
 	}else if(type == "number"){
 		return json;
 	}else if(type == "object"){
+*/
+	if(type !== "object"){
+		return json;
+	}else{
 		if(libObject.isArray(json)){
 			var toextend = {};
 			for(var i in json){
@@ -319,7 +330,7 @@ Disp.prototype.eval = function(json, lang, deps){
 			for(var i in json){
 				json[i].index = i;
 				utils.extend(json[i], toextend);
-				str += self.eval(json[i], lang, deps);
+				str += self.eval(json[i], lang, deps) + "\n";
 			}
 			return str;
 		}
@@ -337,12 +348,12 @@ Disp.prototype.eval = function(json, lang, deps){
 			tmpjson[truename] = json[name][key];
 			tmpjson.name = key;
 			utils.extend(tmpjson, toextendl);
-			str += self.eval(tmpjson, lang, deps);
+			str += self.eval(tmpjson, lang, deps) + "\n";
 		}
 		return str;
 	}
 
-
+	log.v(json);
 	var flags = {};
 	if(name.match(/\.lib$/)){
 		flags.lib = 1;
@@ -368,14 +379,14 @@ Disp.prototype.eval = function(json, lang, deps){
 	}
 	
 	var rtnstr = tmpl.render({file: file}, data);
-	if(flags.lib){
+	if(flags.lib && rtnstr && rtnstr[0] == "~"){
 		try{
 			var func;
-			eval('func = {"function":{'+rtnstr+'}}');
+			eval('func = {"function":{'+rtnstr.substr(1)+'}}');
 			if(json.name) func.name = json.name;
 			return self.eval(func, lang, deps);
 		}catch(e){
-			log.e('func = {"function":{'+rtnstr+'}}');
+			log.e('func = {"function":{'+rtnstr.substr(1)+'}}');
 		}
 	}else{
 		return rtnstr;

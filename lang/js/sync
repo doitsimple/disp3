@@ -1,2 +1,13 @@
-^^deps.callSeries = "lib";$$
-lib.sync(^^=~argv$$, ^^=~parent.callback$$);
+^^deps.sync = "lib";
+var argvx = [];
+for(var i in argv){
+	argv[i].callback="fn";
+	argvx[i] = {
+		"function": {
+			args: {fn: "function"},
+			content: argv[i],
+		}
+	};
+}
+$$
+sync(^^=~makeArray: argvx$$, ^^=~makeCallback: parent.callback$$);

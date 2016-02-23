@@ -1,0 +1,7 @@
+function(err){
+	if(err){
+		^^=~argv.error$$
+	}else{
+		^^=~argv.success$$
+	}
+}

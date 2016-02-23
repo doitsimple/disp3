@@ -1,1 +1,3 @@
-^^=$.stringify(argv)$$
+^^if($.isArray(argv)){$$
+^^=~makeArray: argv$$^^}else{$$
+^^=$.stringify(argv)$$^^}$$

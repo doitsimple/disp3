@@ -1,15 +1,16 @@
 {
-	"server.js": {
+	"server-^^=argv$$.js": {
 		"lib": "lib",
 		"lang": "expressjs",
 		"tmpl": "server.js",
-		"envkey": "config"
+		"envkey": "servers"
 	},
 	"app.js": {
 		"lib": "lib",
 		"lang": "expressjs",
 		"tmpl": "app.js",
-		"envkey": "config"		
+		"envkey": "config",
+		"name": "app"
 	},
 	"router.js": {
 		"lib": "lib",
@@ -27,6 +28,7 @@
 		"tmpl": "db.js"
 	},
 	"lib.js": {
+		"name": "lib",
 		"lang": "expressjs",
 		"content": "lib"
 	},

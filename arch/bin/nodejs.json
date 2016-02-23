@@ -6,6 +6,7 @@
 	},
 	"lib.js": {
 		"lang": "nodejs",
-		"content": "lib"
+		"content": "lib",
+		"name": "lib"
 	}
 }
