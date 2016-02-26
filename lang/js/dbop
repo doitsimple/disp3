@@ -1,0 +1,11 @@
+^^
+var dbname = parent.dbname || "main";
+var arg1 = "";
+var arg2 = "";
+if(argv.arg1)
+	arg1 = $.eval(argv.arg1) +", ";
+if(argv.arg2)
+	arg2 = $.eval(argv.arg2) +", ";
+var callback = parent.callback || {};
+$$
+db.^^=dbname$$.^^=~argv.method$$("^^=~argv.schema$$", ^^=arg1$$^^=arg2$$^^=~makeCallback: callback$$)

@@ -1,0 +1,6 @@
+^^
+deps["Database"] = "db";
+var tmp = {};
+tmp[argv.type] = argv;
+$$
+new Database(^^=~tmp$$);

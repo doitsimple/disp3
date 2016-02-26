@@ -1,0 +1,12 @@
+^^if($.isArray(argv)){$$
+ ^^argv.forEach(function(e, i){$$
+  ^^if(i == 0){$$
+^^=~parent.prefix$$^^=~e$$
+  ^^}else{$$
+^^=~parent.sep$$^^=~e$$
+  ^^}$$
+ ^^});$$
+^^=~parent.postfix$$
+^^}else{$$
+^^=~argv$$
+^^}$$

@@ -7,6 +7,11 @@
 		}
 	},
 	"startups": [],
+	"databases": {
+		"main": {
+			"type": "mongodb"
+		}
+	},
 	"servers": {
 		"main": {
 			"protocol": "http",

@@ -1,0 +1,49 @@
+/*
+db.insert
+db.select
+db.update
+db.delete
+*/
+function Database(methods){
+	var self = this;
+	var db;
+	var internalMethods = {
+		select: function(name, where){
+			getOp("selectx")(name, {$match: where, $limit:1});
+		},
+		selects: function(name, where){
+			getOp("selectx")(name, {$match: where});
+		}
+	}
+	function _getOp(op){
+		if(methods[op]) return methods[op];
+		else return internalMethods[op];
+	}
+	function getOp(op){
+		if(!db)
+			return function(){
+				var arg = arguments;
+				methods.connect(function(err, _db){
+					db = _db;
+					_getOp(op).apply(self, arg);
+				});
+			}
+		else
+			return _getOp(op);
+	}
+	var opList = {
+		insert: 2,
+		select: 3,
+		update: 3,
+		delete: 3,
+		aggr: 1,
+		count: 1
+	};
+	for(var key in opList){
+		self[key] = getOp(key);
+		if(opList[key] > 1)
+			self[key+"s"] = getOp(key+"s");
+		if(opList[key] > 2)
+			self[key+"x"], getOp(key+"x");
+	}
+}

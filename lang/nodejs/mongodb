@@ -1,0 +1,50 @@
+^^
+deps.mongodb = 1;
+var host, port, dbname, authStr, hostStr;
+if(!argv.host) host = "127.0.0.1";
+if(!argv.port) port = 27017;
+if(argv.username && argv.password) authStr = username + ":" + password + "@";
+else authStr = "";
+hostStr =  "mongodb://" + authStr + host + ":" + port + "/" + argv.name;
+$$
+new function(){
+	var self = this;
+	var colCache = {};
+	var conn;
+	self.getCol = function(name){
+		var col = colCache[name];
+		if(!col){
+			col = conn.collection(name);
+			colCache[name] = col;
+		}
+		return col;
+	}
+	self.connect = function(fn){
+		mongodb.MongoClient.connect("^^=hostStr$$", function(err, client) {
+      conn = client;
+      fn(err);
+		})
+	}
+	self.aggr = function(name, arr, fn){
+		self.getCol(name).aggregate(arr, fn);
+	}
+	self.selectx = function(name, op, fn){
+		var aggrarr = [];
+		if(op.$match) aggrarr.push({$match: op.$match});
+    if(op.$sort && Object.keys(op.$sort).length>0)
+      aggrarr.push({$sort: op.$sort});
+    if(op.$skip)
+      aggrarr.push({$skip: parseInt(op.$skip)});
+    if(op.$limit)
+      aggrarr.push({$limit: parseInt(op.$limit)});
+    if(op.$project && Object.keys(op.$project).length>0)
+      aggrarr.push({$project: op.$project});
+		self.aggr(name, aggrarr, fn);
+	},
+	self.insert = function(name, doc, fn){
+		self.getCol(name).insertOne(doc, fn);
+	}
+	self.inserts = function(name, docs, fn){
+		self.getCol(name).insertMany(docs, fn);
+	}
+}

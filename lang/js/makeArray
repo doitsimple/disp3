@@ -1,3 +1,1 @@
-[^^argv.forEach(function(e, i){$$
-^^=~e$$^^if(i != 0){$$,^^}$$
-^^});$$]
+^^=~evalArray: argv, sep: ", ", prefix: "[", postfix: "]"$$ 

@@ -1,3 +1,11 @@
+^^
+if(!argv.error){
+	argv.error = {error: "err"};
+}
+if(!argv.success){
+	argv.success = {"success": 1};
+}
+$$
 function(err){
 	if(err){
 		^^=~argv.error$$
