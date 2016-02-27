@@ -1,2 +1,12 @@
 {
+	"index.html": {
+		"lang": "angularhtml",
+		"lib": "libcss"
+	},
+	"main.css": {
+		"lang": "css"
+	},
+	"main.js": {
+		"lang": "angularjs"
+	}
 }

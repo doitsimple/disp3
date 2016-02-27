@@ -1,6 +1,5 @@
 var express = require("express");
 var db = require("./db");
-var model = require("./model");
 var router = {};
 ^^
 var ri = 0;

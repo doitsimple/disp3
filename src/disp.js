@@ -22,7 +22,7 @@ function Disp(config, fn){
 		_isGlobal: true,
 		_deps: {}
 	};
-
+	self.filemap = {};
 	if(config)
 		utils.extend(self, config);
 	if(!self.projectDir)
@@ -37,6 +37,7 @@ Disp.prototype.run = function(){
 	self.extendGlobal();
 	self.readPrev();
 	self.readArch();
+	self.genProj(true);//pseudo run genProj to get filemap
 	self.genProj();
 	self.dispose();
 }
@@ -99,31 +100,22 @@ Disp.prototype.readArch = function(){
 	if(tmp2){
 		utils.append(self.global, tmp2);
 	}
-// make content link for lib func
-/////////////////////
-	self.fileMap = {};
-	for(var key in tmp){
-		var name = tmp[key].name;
-		if(name){
-			self.fileMap[name] = key;
-		}
-	}
-/////////////////////
+
 	log.v(tmp);
 	self.filelist = tmp;
 	self.fileroot = configFile;
 }
-Disp.prototype.genProj = function(){
+Disp.prototype.genProj = function(isPseudo){
 	var self = this;
 	var filelist = self.filelist;
   for (var orifilename in filelist){
     var partConfig = filelist[orifilename];
 		if(libObject.isArray(partConfig)){
 			for(var i in partConfig){
-				self.genFilePre(orifilename, partConfig[i]);
+				self.genFilePre(orifilename, partConfig[i], isPseudo);
 			}
 		}else{
-			self.genFilePre(orifilename, partConfig);
+			self.genFilePre(orifilename, partConfig, isPseudo);
 		}
   }
 }
@@ -143,31 +135,50 @@ Disp.prototype.getEnv = function(partConfig){
 	if(!env) env = {};
 	return env;
 }
-Disp.prototype.genFilePre = function(orifilename, partConfig){
+Disp.prototype.genFilePre = function(orifilename, partConfig, isPseudo){
 	var self = this;
 	if(orifilename.match(/\^\^.*\$\$/)){
 		var env = self.getEnv(partConfig);
 		var tfilename;
 		if(typeof env != "object"){
 			tfilename = tmpl.render(orifilename, {argv: env});
-			self.genFile(partConfig, tfilename);
+			var newPartConfig = libObject.copy1(partConfig);
+			if(partConfig.name)
+				newPartConfig.name = tmpl.render(partConfig.name, {argv: env});
+			self.genFile(newPartConfig, tfilename, isPseudo);
 		}else{
 			for(var key in env){
-				tfilename = tmpl.render(orifilename, {
+				var localenv = {
 					argv: key, 
 					env: env[key]
-				});
+				}
+				tfilename = tmpl.render(orifilename, localenv);
 				var newPartConfig = libObject.copy1(partConfig);
+				if(partConfig.name)
+					newPartConfig.name = tmpl.render(partConfig.name, localenv);
+				else
+					newPartConfig.name = key;
 				newPartConfig.env = env[key];
-				self.genFile(newPartConfig, tfilename);
+				self.genFile(newPartConfig, tfilename, isPseudo);
 			}
 		}
 	}else{
-		self.genFile(partConfig, orifilename);
+		self.genFile(partConfig, orifilename, isPseudo);
 	}
 }
-Disp.prototype.genFile = function(partConfig, filename){
+Disp.prototype.genFile = function(partConfig, filename, isPseudo){
 	var self = this;
+	if(isPseudo){
+		if(partConfig.name){
+			self.filemap[partConfig.name] = filename;
+/*{
+				filename: filename,
+				env: self.getEnv(partConfig)
+			}*/
+		}
+
+		return;
+	}
 	if(partConfig.arch){
 		var config = {
 			projectDir: path.resolve(filename),
@@ -210,6 +221,7 @@ Disp.prototype.genFile = function(partConfig, filename){
 	if(partConfig.raw){
 		str += tmpl.render(partConfig.raw, env);
 	}
+
 	if(partConfig.tmpl || partConfig.src){
 		tmpl.extendMethods("eval", function(json){
 			return self.eval(json, partConfig.lang, deps);
@@ -224,9 +236,19 @@ Disp.prototype.genFile = function(partConfig, filename){
 		}, env);
 	}
 
-	//parse deps
-	/////////////////////////////////
+/*
+	parse deps
+ 
+*/
+	var parseDeps = self.getDepConfig(deps, partConfig.lang);
+	str = self.eval({
+		file: parseDeps, 
+		main: str, 
+		config: partConfig, 
+		filemap: self.filemap
+	}, partConfig.lang);
 	// if has lib, require lib and add func to lib
+/*
 	var Lrequire = {};
 	var methodSpace = {};
 	for(var key in deps){
@@ -234,8 +256,9 @@ Disp.prototype.genFile = function(partConfig, filename){
 		if(typeof deps[key] == "string"){
 			if(partConfig.lib){
 				deps[key] = {
+					type: deps[key],
 					sub: key,
-					file: self.fileMap[partConfig.lib]
+					file: self.filemap[partConfig.lib]
 				};
 				if(!self.global[partConfig.lib]) //init
 					self.global[partConfig.lib] = {};
@@ -256,11 +279,13 @@ Disp.prototype.genFile = function(partConfig, filename){
 				mod: key
 			}
 		}else if(deps[key].file){
-			deps[key].file = self.fileMap[deps[key].file];
+			deps[key].file = self.filemap[deps[key].file];
 		}
 		Lrequire[key] = deps[key];
 	}
 	str = self.eval({Lrequire: Lrequire}, partConfig.lang, deps) + str;
+
+*/
 	//////////////////////////////
 	var tfilename = self.targetDir + "/" + filename;
   libFile.mkdirpSync(path.dirname(tfilename)); //to be acc
@@ -271,6 +296,26 @@ Disp.prototype.genFile = function(partConfig, filename){
 
 // simple methods
 var cache = {};
+Disp.prototype.getDepConfig = function(deps, lang){
+	var self = this;
+	var rtndeps = {};
+	for(var key in deps){
+//local file
+		if(self.filemap[key]){
+			rtndeps[key] = {file: self.filemap[key]};
+		}else{
+//local lib			
+			var evaljson = {};
+			evaljson[key+".lib"] =1;
+			if(self.eval(evaljson, lang, {}, true)){
+				rtndeps[key] = {lib: key, type: deps[key]};
+			}
+//remote lib
+			else rtndeps[key] = {pkg: key, version: deps[key]};
+		}
+	}
+	return rtndeps;
+}
 Disp.prototype.getLangConfig = function(lang){
 	var self = this;
 	var configFile = self.env.langDir + "/" + lang;
@@ -302,7 +347,7 @@ Disp.prototype.getLangFile = function(name, lang){
 	}
 }
 
-Disp.prototype.eval = function(json, lang, deps){
+Disp.prototype.eval = function(json, lang, deps, isPseudo){
 	var self = this;
 	if(!json) return "";
 	var type = typeof json;
@@ -358,14 +403,20 @@ Disp.prototype.eval = function(json, lang, deps){
 	if(name.match(/\.lib$/)){
 		flags.lib = 1;
 	}
-//begin eval
+//get config
 
 	
 	var file = self.getLangFile(name, lang);
 	if(!file){
-		self.callback(lang + " " + name + " not exist");
+		if(isPseudo)
+			return "";
+		else
+			return self.callback(lang + " " + name + " not exist");
 	}
-
+	if(isPseudo){
+		return "1";
+	}
+//begin eval
 	tmpl.extendMethods("eval", function(json, lang2){
 		if(lang2) return self.eval(json, lang2, deps);
 		return self.eval(json, lang, deps);

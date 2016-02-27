@@ -7,7 +7,6 @@ process.on('uncaughtException', function(err) {
   console.log(err.stack);
 });
 ^^
-console.log(origin);
 var syncFuns = [].concat(global.startups);
 syncFuns.push({
 	createServer: origin

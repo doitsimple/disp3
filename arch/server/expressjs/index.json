@@ -17,11 +17,6 @@
 		"lang": "expressjs",
 		"tmpl": "router.js"
 	},
-	"model.js": {
-		"lib": "lib",
-		"lang": "expressjs",
-		"tmpl": "model.js"
-	},
 	"db.js": {
 		"lib": "lib",
 		"lang": "nodejs",
