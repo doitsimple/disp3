@@ -1,0 +1,10 @@
+^^
+var rpath;
+if(argv.type == "js"){
+ if(argv.pkg){
+  rpath = "^^=global.htmlVerdorDir$$/" + argv.pkg);
+$$
+<script type="text/javascript" src="/vendor/js/html5shiv.min.js"></script>
+^^}else if(argv.type == "css"){$$
+<link type="text/css" rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+^^}$$

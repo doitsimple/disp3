@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+^^
+var reservedKey = {
+title:1,
+htmlAttr:1
+}
+$$
+<html^^=makeDash: htmlAttr$$>
+<head>
+<title>^^=argv.title || ""$$</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+^^=~require: {pkg: "respond", type: "js"}$$
+^^=~require: {pkg: "html5shiv", type: "js"}$$
+<script type="text/javascript" src="/vendor/js/html5shiv.min.js"></script>
+<script type="text/javascript" src="/vendor/js/respond.min.js"></script>
+<![endif]-->
+<link type="text/css" rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+<link type="text/css" rel="stylesheet" href="/vendor/font-awesome/css/font-awesome.min.css">
+<link type="text/css" rel="stylesheet" href="/vendor/metisMenu/metisMenu.min.css">
+<link type="text/css" rel="stylesheet" href="main.css">
+
+</head>
+<body>
+^^=parent.main$$
+<script type="text/javascript" src="main.js"></script>
+</body>
+</html>

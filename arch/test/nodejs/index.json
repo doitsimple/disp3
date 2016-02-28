@@ -1,0 +1,23 @@
+{
+	".": [{
+		"arch": "bin",
+		"ignoreDispJson": 1,
+		"env": {
+			"main": {
+				"print": 1
+			}
+		}
+	}],
+	"^^=argv$$.js": {
+		"envkey": "filenames",
+		"raw": "x"
+	},
+	"server": {
+		"arch": "bin",
+		"env": {
+			"main": [{
+				"print": 1
+			}]
+		}
+	}
+}

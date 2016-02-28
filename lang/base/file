@@ -4,19 +4,9 @@
  ^^}else if(reqconfig.file){$$
 ^^=~require: reqconfig, name: key$$
  ^^}else{$$
- 	^^if(parent.config.lib){
-      var libconfig = parent.filemap[parent.config.lib];
-			reqconfig.file = libconfig;
-			reqconfig.sub = key;
-			var toextend = {};
-			toextend[parent.config.lib] = {Lexport: {}};
-			toextend[parent.config.lib].Lexport[key]= {lib: key};
-			$.extend(global, toextend);
-$$
+ 	^^if(parent.lib){parent.addExport(key, parent.lib, reqconfig);$$
 ^^=~require: reqconfig, name: key$$
-  ^^}else{
-     reqconfig.name = key;
-$$
+  ^^}else{reqconfig.name = key;$$
 ^^=~reqconfig$$
   ^^}$$
  ^^}$$

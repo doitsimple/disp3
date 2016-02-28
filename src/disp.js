@@ -33,22 +33,12 @@ function Disp(config, fn){
 
 Disp.prototype.run = function(){
 	var self = this;
-	self.extendEnv();
 	self.extendGlobal();
 	self.readPrev();
 	self.readArch();
 	self.genProj(true);//pseudo run genProj to get filemap
 	self.genProj();
 	self.dispose();
-}
-Disp.prototype.extendEnv = function(){
-	var self = this;
-	self.env = {};
-	self.env.nodeBin = process.argv.shift();
-	self.env.dispBin = process.argv.shift();
-	self.env.dispDir = path.resolve(__dirname + "/..");
-	self.env.archDir = path.resolve(self.env.dispDir + "/arch");
-	self.env.langDir = path.resolve(self.env.dispDir + "/lang");
 }
 Disp.prototype.readPrev = function(){
 	var self = this;
@@ -63,14 +53,21 @@ Disp.prototype.readPrev = function(){
 
 Disp.prototype.extendGlobal = function(){
 	var self = this;
-
 	if(fs.existsSync(self.projectDir + "/disp.json") && !self.ignoreDispJson){
 		var dispJson = libFile.readJSON(self.projectDir + "/disp.json");
 		log.v("read json success");
 		log.v(dispJson);
-
 		utils.extend(self.global, dispJson);
 	}
+	self.global.nodeBin = process.argv.shift();
+	self.global.dispBin = process.argv.shift();
+	self.global.vendorDir = path.resolve(self.projectDir + "/../disp-vendor");
+	self.global.dispDir = path.resolve(__dirname + "/..");
+	self.global.archDir = path.resolve(self.global.dispDir + "/arch");
+	self.global.langDir = path.resolve(self.global.dispDir + "/lang");
+	self.global.projectDir = self.projectDir;
+	self.global.targetDir = self.targetDir;
+	if(!self.global.baseDir) self.global.baseDir = self.projectDir;
 	if(!self.global.arch)
 		self.global.arch = "raw";
 	if(!self.global.impl)
@@ -83,9 +80,9 @@ Disp.prototype.extendGlobal = function(){
 Disp.prototype.readArch = function(){
 	var self = this;
 	//file struct
-	var configFile = self.env.archDir + "/" + self.global.arch + "/" + self.global.impl;
+	var configFile = self.global.archDir + "/" + self.global.arch + "/" + self.global.impl;
 	//global
-	var configFile2 = self.env.archDir + "/" + self.global.arch;
+	var configFile2 = self.global.archDir + "/" + self.global.arch;
 	var tmp, tmp2;
 	try {
 		tmp = require(configFile);
@@ -195,6 +192,7 @@ Disp.prototype.genFile = function(partConfig, filename, isPseudo){
 		
 		if(tmpenv && !tmpenv._isGlobal)
 			utils.extend(config.global, tmpenv);
+		config.global.baseDir = self.projectDir;
 		var newDisp = new Disp(config, self.callback);
 		newDisp.run();
 		return;
@@ -239,54 +237,31 @@ Disp.prototype.genFile = function(partConfig, filename, isPseudo){
 /*
 	parse deps
  
-*/
-	var parseDeps = self.getDepConfig(deps, partConfig.lang);
+*/	
+	var vendors = self.eval({"vendor.json": 1}, partConfig.lang);
+	var parseDeps = {};
+	for(var key in deps){
+		var tmp = {};
+		if(vendors[key]){
+			utils.extend(tmp, vendors[key]);
+		}else{
+			utils.extend(tmp, self.getDepConfig(key, partConfig.lang));
+		}
+		if(typeof deps[key] == "object"){
+			utils.extend(tmp, deps[key]);
+			console.log(deps[key]);
+		}
+		parseDeps[key] = tmp;
+	}
 	str = self.eval({
 		file: parseDeps, 
 		main: str, 
-		config: partConfig, 
-		filemap: self.filemap
-	}, partConfig.lang);
-	// if has lib, require lib and add func to lib
-/*
-	var Lrequire = {};
-	var methodSpace = {};
-	for(var key in deps){
-		//TODO mutilayer support
-		if(typeof deps[key] == "string"){
-			if(partConfig.lib){
-				deps[key] = {
-					type: deps[key],
-					sub: key,
-					file: self.filemap[partConfig.lib]
-				};
-				if(!self.global[partConfig.lib]) //init
-					self.global[partConfig.lib] = {};
-				var libContent = self.global[partConfig.lib];
-				if(!libContent.Lexport)
-					libContent.Lexport = {};
-				if(!libContent.Lexport[key]) 
-					libContent.Lexport[key] = {lib: key};
-			}else{
-				str = self.eval({
-					lib: key, name: key
-				}, partConfig.lang, deps) + str;
-				continue;
-			}
-		}else if(typeof deps[key] != "object"){
-			self.global._deps[key] = 1;
-			deps[key] = {
-				mod: key
-			}
-		}else if(deps[key].file){
-			deps[key].file = self.filemap[deps[key].file];
+		lib: partConfig.lib,
+		addExport: function(key, lib, reqconfig){
+			self.addExport(key, lib, reqconfig);
 		}
-		Lrequire[key] = deps[key];
-	}
-	str = self.eval({Lrequire: Lrequire}, partConfig.lang, deps) + str;
+	}, partConfig.lang);
 
-*/
-	//////////////////////////////
 	var tfilename = self.targetDir + "/" + filename;
   libFile.mkdirpSync(path.dirname(tfilename)); //to be acc
   if(fs.existsSync(tfilename))
@@ -294,31 +269,45 @@ Disp.prototype.genFile = function(partConfig, filename, isPseudo){
   fs.writeFileSync(tfilename, str, {mode: 0444});
 }
 
+
 // simple methods
-var cache = {};
-Disp.prototype.getDepConfig = function(deps, lang){
+Disp.prototype.addExport = function(key, lib, reqconfig){
 	var self = this;
-	var rtndeps = {};
-	for(var key in deps){
+	if(typeof lib == "string"){
+		var name = lib;
+		reqconfig.file = self.filemap[name];
+		reqconfig.sub = key;
+		var toextend = {};
+		toextend[name] = {Lexport: {}};
+		toextend[name].Lexport[key]= {lib: key};
+		utils.extend(self.global, toextend);
+	}
+}
+
+var cache = {};
+Disp.prototype.getDepConfig = function(key, lang){
+	var self = this;
+	var rtn = {};
 //local file
-		if(self.filemap[key]){
-			rtndeps[key] = {file: self.filemap[key]};
-		}else{
+	if(self.filemap[key]){
+		rtn = {file: self.filemap[key]};
+	}else{
 //local lib			
-			var evaljson = {};
-			evaljson[key+".lib"] =1;
-			if(self.eval(evaljson, lang, {}, true)){
-				rtndeps[key] = {lib: key, type: deps[key]};
-			}
+		var evaljson = {};
+		evaljson[key+".lib"] =1;
+		if(self.eval(evaljson, lang, {}, true)){
+			rtn = {lib: key};
+		}
 //remote lib
-			else rtndeps[key] = {pkg: key, version: deps[key]};
+		else {
+			rtn = {pkg: key};
 		}
 	}
-	return rtndeps;
+	return rtn;
 }
 Disp.prototype.getLangConfig = function(lang){
 	var self = this;
-	var configFile = self.env.langDir + "/" + lang;
+	var configFile = self.global.langDir + "/" + lang;
 	if(cache[lang])
 		return cache[lang];
 	var config = {};
@@ -334,7 +323,7 @@ Disp.prototype.getLangConfig = function(lang){
 Disp.prototype.getLangFile = function(name, lang){
 	var self = this;
 	var langConfig = self.getLangConfig(lang);
-	var file = self.env.langDir + "/" + lang + "/" + name;
+	var file = self.global.langDir + "/" + lang + "/" + name;
 	var resultFile;
 	if(fs.existsSync(file)){
 		return file;
@@ -400,8 +389,9 @@ Disp.prototype.eval = function(json, lang, deps, isPseudo){
 
 	log.v(json);
 	var flags = {};
-	if(name.match(/\.lib$/)){
-		flags.lib = 1;
+	var ms;
+	if((ms = name.match(/\.(\S+)$/))){
+		flags[ms[1]] = 1;
 	}
 //get config
 
@@ -438,6 +428,13 @@ Disp.prototype.eval = function(json, lang, deps, isPseudo){
 			return self.eval(func, lang, deps);
 		}catch(e){
 			log.e('func = {"function":{'+rtnstr.substr(1)+'}}');
+		}
+	}else if(flags.json){
+		try{
+			return JSON.parse(rtnstr);
+		}catch(e){
+			JSON.parse(rtnstr);
+			return self.callback("wrong json!");
 		}
 	}else{
 		return rtnstr;
