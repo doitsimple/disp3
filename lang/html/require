@@ -1,10 +1,12 @@
 ^^
-var rpath;
-if(argv.type == "js"){
- if(argv.pkg){
-  rpath = "^^=global.htmlVerdorDir$$/" + argv.pkg);
+
+var prefix = "";
+if(argv.extended){
+ prefix = global.htmlVendorDir + "/" || "";
+}
 $$
-<script type="text/javascript" src="/vendor/js/html5shiv.min.js"></script>
+^^if(argv.type == "js"){$$
+<script type="text/javascript" src="^^=prefix$$^^=argv.file$$"></script>
 ^^}else if(argv.type == "css"){$$
-<link type="text/css" rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+<link type="text/css" rel="stylesheet" href="^^=prefix$$^^=argv.file$$">
 ^^}$$

@@ -1,0 +1,10 @@
+^^
+var toextend = {};
+var name = parent.name || argv.name;
+toextend[name] = argv;
+argv.name = name;
+$.extend(global, {controller: toextend});
+$$
+<div ng-controller="^^=name$$Controller">
+^^=~argv.content$$
+</div>

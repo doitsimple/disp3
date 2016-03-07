@@ -19,8 +19,7 @@ function Disp(config, fn){
 	}
 	self.callback = fn;
 	self.global = {
-		_isGlobal: true,
-		_deps: {}
+		_isGlobal: true
 	};
 	self.filemap = {};
 	if(config)
@@ -202,6 +201,7 @@ Disp.prototype.genFile = function(partConfig, filename, isPseudo){
 	/**/
   var str = "";
 	var deps = {};
+	self.eval({init: 1}, partConfig.lang, deps);
 	if(partConfig.code || partConfig.content){
 		var c;
 		if(partConfig.code)
@@ -213,9 +213,9 @@ Disp.prototype.genFile = function(partConfig, filename, isPseudo){
   }
 	var env = self.getEnv(partConfig);
 	if(!env._isGlobal){
-		env.global = self.global;
 		env.main = str;
 	}
+	env.global = self.global;
 	if(partConfig.raw){
 		str += tmpl.render(partConfig.raw, env);
 	}
@@ -229,32 +229,38 @@ Disp.prototype.genFile = function(partConfig, filename, isPseudo){
 			srcfile = self.fileroot + "/" + partConfig.tmpl;
 		else if(partConfig.src)
 			srcfile = self.projectDir + "/" + partConfig.src;
+		env.deps = deps;
 		str = tmpl.render({
 			file: srcfile
 		}, env);
+		delete env.deps;
 	}
 
 /*
 	parse deps
  
-*/	
-	var vendors = self.eval({"vendor.json": 1}, partConfig.lang);
-	var parseDeps = {};
-	for(var key in deps){
-		var tmp = {};
-		if(vendors[key]){
-			utils.extend(tmp, vendors[key]);
+*/
+	var gdeps = {};
+	self.expandDeps(deps, gdeps, partConfig.lang);
+	var parseDeps = [];
+	var fileArgv = {};
+	for(var key in gdeps){
+		if(gdeps[key].isArgv){
+			fileArgv[key] = gdeps[key];
+		}else if(gdeps[key].files){
+			for(var i in gdeps[key].files){
+				var tmp = gdeps[key].files[i];
+				if(gdeps[key].extended) tmp.extended = 1;
+				tmp.name = key;
+				parseDeps.push(tmp);
+			}
 		}else{
-			utils.extend(tmp, self.getDepConfig(key, partConfig.lang));
+			parseDeps.push(self.getDepConfig(key, gdeps[key], partConfig.lang));
 		}
-		if(typeof deps[key] == "object"){
-			utils.extend(tmp, deps[key]);
-			console.log(deps[key]);
-		}
-		parseDeps[key] = tmp;
 	}
 	str = self.eval({
-		file: parseDeps, 
+		file: fileArgv,
+		deps: parseDeps, 
 		main: str, 
 		lib: partConfig.lib,
 		addExport: function(key, lib, reqconfig){
@@ -271,6 +277,38 @@ Disp.prototype.genFile = function(partConfig, filename, isPseudo){
 
 
 // simple methods
+Disp.prototype.expandDeps = function(deps, gdeps, lang){
+	var self = this;
+	var vendors = self.eval({"vendor.json": 1}, lang);
+	for(var key in deps){
+		var config = vendors[key];
+		if(config && config.deps){
+/*
+			for(var key2 in config.deps){	
+				if(!gdeps[key2]){
+					gdeps[key2] = config.deps[key2];
+				}else{
+					utils.extend(gdeps[key2], config.deps[key2]);
+				}
+			}
+*/
+			self.expandDeps(config.deps, gdeps, lang);
+		}
+		if(!gdeps[key]){
+			gdeps[key] = {};
+		}
+		if(config){
+			if(!gdeps[key].extended){
+				utils.extend(gdeps[key], config);
+				gdeps[key].extended = 1;
+			}
+		}
+		if(typeof deps[key] !="object")
+			gdeps[key].val = deps[key];
+		else
+			utils.extend(gdeps[key], deps[key]);
+	}
+}
 Disp.prototype.addExport = function(key, lib, reqconfig){
 	var self = this;
 	if(typeof lib == "string"){
@@ -285,9 +323,9 @@ Disp.prototype.addExport = function(key, lib, reqconfig){
 }
 
 var cache = {};
-Disp.prototype.getDepConfig = function(key, lang){
+Disp.prototype.getDepConfig = function(key, toextend, lang){
 	var self = this;
-	var rtn = {};
+	var rtn;
 //local file
 	if(self.filemap[key]){
 		rtn = {file: self.filemap[key]};
@@ -303,6 +341,11 @@ Disp.prototype.getDepConfig = function(key, lang){
 			rtn = {pkg: key};
 		}
 	}
+	rtn.name = key;
+	if(typeof toextend == "object"){
+		utils.extend(rtn, toextend);
+	}
+
 	return rtn;
 }
 Disp.prototype.getLangConfig = function(lang){

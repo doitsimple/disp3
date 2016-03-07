@@ -1,2 +1,41 @@
 {
+	"title": {
+		"isArgv": 1
+	},
+	"htmlAttr": {
+		"isArgv": 1
+	},
+	"bootstrap3": {
+		"files": [
+			{
+				"type": "js",
+				"file": "bootstrap3/js/bootstrap.min.js"
+			},
+			{
+				"type": "css",
+				"file": "bootstrap3/css/bootstrap.min.css"
+			}
+		]
+	},
+	"jquery": {
+		"files": [
+			{
+				"type": "js",
+				"file": "js/jquery.min.js"
+			}
+		],
+		"deps": {
+		}
+	},
+	"angular": {
+		"files": [
+			{
+				"type": "js",
+				"file": "js/angular.min.js"
+			}
+		],
+		"deps": {
+			"jquery": 1
+		}
+	}
 }

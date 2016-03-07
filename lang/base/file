@@ -1,12 +1,13 @@
-^^for(var key in argv){var reqconfig = argv[key];$$
+
+^^for(var i in parent.deps){var reqconfig = parent.deps[i];$$
  ^^if(reqconfig.pkg){$$
-^^=~require: reqconfig, name: key$$
+^^=~require: reqconfig$$
  ^^}else if(reqconfig.file){$$
-^^=~require: reqconfig, name: key$$
+^^=~require: reqconfig$$
  ^^}else{$$
- 	^^if(parent.lib){parent.addExport(key, parent.lib, reqconfig);$$
-^^=~require: reqconfig, name: key$$
-  ^^}else{reqconfig.name = key;$$
+ 	^^if(parent.lib){parent.addExport(reqconfig.name, parent.lib, reqconfig);$$
+^^=~require: reqconfig$$
+  ^^}else{$$
 ^^=~reqconfig$$
   ^^}$$
  ^^}$$

@@ -10,4 +10,4 @@ if(argv.file){
 }
 var sub = argv.sub?"."+argv.sub:"";
 $$
-var ^^=parent.name$$ = require("^^=rpath$$")^^=sub$$;
+var ^^=parent.name || argv.name$$ = require("^^=rpath$$")^^=sub$$;

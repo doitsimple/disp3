@@ -1,0 +1,7 @@
+^^
+var str = " "
+for(var key in argv){
+	str += key + '="' + argv[key] + '"';
+}
+$$
+^^=str$$
