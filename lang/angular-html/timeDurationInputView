@@ -1,0 +1,2 @@
+^^$.extend(global, {angularLib: {timeDurationInput: 1}});$$
+<time-duration ng-model="^^=argv.model$$" />

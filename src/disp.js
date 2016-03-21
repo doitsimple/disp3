@@ -33,10 +33,11 @@ function Disp(config, fn){
 Disp.prototype.run = function(){
 	var self = this;
 	self.extendGlobal();
-	self.readPrev();
+//	self.readPrev();
 	self.readArch();
 	self.genProj(true);//pseudo run genProj to get filemap
 	self.genProj();
+	self.genPlugin();
 	self.dispose();
 }
 Disp.prototype.readPrev = function(){
@@ -70,7 +71,7 @@ Disp.prototype.extendGlobal = function(){
 	if(!self.global.arch)
 		self.global.arch = "raw";
 	if(!self.global.impl)
-		self.global.impl = "nodejs";
+		self.global.impl = "basic";
 	log.v("global");
 	log.v(self.global);
 }
@@ -103,15 +104,22 @@ Disp.prototype.readArch = function(){
 }
 Disp.prototype.genProj = function(isPseudo){
 	var self = this;
-	var filelist = self.filelist;
+	self.genProjSub(self.filelist, "", isPseudo);
+}
+Disp.prototype.genPlugin = function(){
+	var self = this;
+	
+}
+Disp.prototype.genProjSub = function(filelist, prefix, isPseudo){
+	var self = this;
   for (var orifilename in filelist){
     var partConfig = filelist[orifilename];
 		if(libObject.isArray(partConfig)){
 			for(var i in partConfig){
-				self.genFilePre(orifilename, partConfig[i], isPseudo);
+				self.genFilePre(path.join(prefix,orifilename), partConfig[i], isPseudo);
 			}
 		}else{
-			self.genFilePre(orifilename, partConfig, isPseudo);
+			self.genFilePre(path.join(prefix, orifilename), partConfig, isPseudo);
 		}
   }
 }
@@ -146,7 +154,8 @@ Disp.prototype.genFilePre = function(orifilename, partConfig, isPseudo){
 			for(var key in env){
 				var localenv = {
 					argv: key, 
-					env: env[key]
+					env: env[key],
+					global: self.global
 				}
 				tfilename = tmpl.render(orifilename, localenv);
 				var newPartConfig = libObject.copy1(partConfig);
@@ -164,15 +173,12 @@ Disp.prototype.genFilePre = function(orifilename, partConfig, isPseudo){
 }
 Disp.prototype.genFile = function(partConfig, filename, isPseudo){
 	var self = this;
+	if(!partConfig.lang)
+		partConfig.lang = "base";
 	if(isPseudo){
 		if(partConfig.name){
 			self.filemap[partConfig.name] = filename;
-/*{
-				filename: filename,
-				env: self.getEnv(partConfig)
-			}*/
 		}
-
 		return;
 	}
 	if(partConfig.arch){
@@ -194,6 +200,11 @@ Disp.prototype.genFile = function(partConfig, filename, isPseudo){
 		config.global.baseDir = self.projectDir;
 		var newDisp = new Disp(config, self.callback);
 		newDisp.run();
+	}
+	if(partConfig.sub){
+		self.genProjSub(partConfig.sub, filename, isPseudo);
+	}
+	if(partConfig.sub || partConfig.arch){
 		return;
 	}
 
@@ -208,8 +219,11 @@ Disp.prototype.genFile = function(partConfig, filename, isPseudo){
 			c = partConfig.code;
 		if(partConfig.content)
 			c = self.global[partConfig.content];
-		if(c)
-			str += self.eval(c, partConfig.lang, deps) + "\n";
+		if(c){
+			var tmpstr = self.eval(c, partConfig.lang, deps);
+			if(tmpstr)
+				str += tmpstr + "\n";
+		}
   }
 	var env = self.getEnv(partConfig);
 	if(!env._isGlobal){
@@ -240,6 +254,7 @@ Disp.prototype.genFile = function(partConfig, filename, isPseudo){
 	parse deps
  
 */
+
 	var gdeps = {};
 	self.expandDeps(deps, gdeps, partConfig.lang);
 	var parseDeps = [];
@@ -260,8 +275,8 @@ Disp.prototype.genFile = function(partConfig, filename, isPseudo){
 	}
 	str = self.eval({
 		file: fileArgv,
-		deps: parseDeps, 
-		main: str, 
+		deps: parseDeps,
+		main: str,
 		lib: partConfig.lib,
 		addExport: function(key, lib, reqconfig){
 			self.addExport(key, lib, reqconfig);
@@ -283,15 +298,6 @@ Disp.prototype.expandDeps = function(deps, gdeps, lang){
 	for(var key in deps){
 		var config = vendors[key];
 		if(config && config.deps){
-/*
-			for(var key2 in config.deps){	
-				if(!gdeps[key2]){
-					gdeps[key2] = config.deps[key2];
-				}else{
-					utils.extend(gdeps[key2], config.deps[key2]);
-				}
-			}
-*/
 			self.expandDeps(config.deps, gdeps, lang);
 		}
 		if(!gdeps[key]){
@@ -323,7 +329,7 @@ Disp.prototype.addExport = function(key, lib, reqconfig){
 }
 
 var cache = {};
-Disp.prototype.getDepConfig = function(key, toextend, lang){
+Disp.prototype.getDepConfig = function(key, vendorconfig, lang){
 	var self = this;
 	var rtn;
 //local file
@@ -342,8 +348,8 @@ Disp.prototype.getDepConfig = function(key, toextend, lang){
 		}
 	}
 	rtn.name = key;
-	if(typeof toextend == "object"){
-		utils.extend(rtn, toextend);
+	if(typeof vendorconfig == "object"){
+		utils.extend(rtn, vendorconfig);
 	}
 
 	return rtn;
@@ -384,6 +390,14 @@ Disp.prototype.eval = function(json, lang, deps, isPseudo){
 	if(!json) return "";
 	var type = typeof json;
 	var str = "";
+	var searchlang;
+	if(lang.match(/@/)){
+		var tmparr = lang.split("@");
+		lang = tmparr[0];
+		searchlang = tmparr[1];
+	}else{
+		searchlang = lang;
+	}
 /*
 	if(type === "string"){
 		var tmp = {};
@@ -412,7 +426,9 @@ Disp.prototype.eval = function(json, lang, deps, isPseudo){
 			return str;
 		}
 	}
+
 	var name = Object.keys(json)[0];
+	if(!name) return "";
 	if(name[0] == "L"){
 		var toextendl = {};
 		for(var key in json){
@@ -438,8 +454,7 @@ Disp.prototype.eval = function(json, lang, deps, isPseudo){
 	}
 //get config
 
-	
-	var file = self.getLangFile(name, lang);
+	var file = self.getLangFile(name, searchlang);
 	if(!file){
 		if(isPseudo)
 			return "";
@@ -450,16 +465,21 @@ Disp.prototype.eval = function(json, lang, deps, isPseudo){
 		return "1";
 	}
 //begin eval
-	tmpl.extendMethods("eval", function(json, lang2){
-		if(lang2) return self.eval(json, lang2, deps);
-		return self.eval(json, lang, deps);
-	});
+
+//	tmpl.extendMethods("eval", 
 	var data = {
 		name: name,
 		argv: json[name],
 		deps: deps,
+		lang: lang,
 		parent: json,
-		global: self.global
+		global: self.global,
+		extend: {
+			"eval": function(json, lang2){
+				if(lang2) return self.eval(json, lang2, deps);
+				return self.eval(json, lang, deps);
+			}
+		}
 	}
 	
 	var rtnstr = tmpl.render({file: file}, data);

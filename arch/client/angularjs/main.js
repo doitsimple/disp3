@@ -5,8 +5,16 @@ for(var key in global.controller){
  
 $$
 app.controller("^^=key$$Controller", function($scope){
+^^=~ctrl.code$$
 });
 
+^^}$$
+^^
+for(var key in global.angularLib){
+ var toeval = {};
+ toeval[key] = global.angularLib[key];
+$$
+^^=~toeval$$; 
 ^^}$$
 
 

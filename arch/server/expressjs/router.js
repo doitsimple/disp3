@@ -5,6 +5,7 @@ var router = {};
 var ri = 0;
 for(var key in routers){
 	ri ++;
+	if($.isEmpty(routers[key])) continue;
 	routers[key].caller = "router" + ri;
 $$
 

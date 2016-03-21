@@ -12,6 +12,8 @@
 			"type": "mongodb"
 		}
 	},
+	"routers": {
+	},
 	"servers": {
 		"main": {
 			"protocol": "http",

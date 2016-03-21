@@ -1,0 +1,29 @@
+^^
+/*deps.normalize=1;*/
+deps.bootstrap3=1;
+$.extend(global, {css: {tree:1}});
+function expand(json, prefix){
+ var i = 0;
+$$<ol>^^
+ for(var key in json){
+  var tmp = json[key];
+  var id = prefix + "-" + i;
+  if(typeof tmp == "object"){
+$$
+<li>
+	<label for="^^=id$$">^^=key$$</label>
+	<input type="checkbox" id="^^=id$$"/>
+  ^^expand(tmp)$$
+</li>
+^^}else{$$
+<li class="leaf"><a href="">^^=key$$:^^=tmp$$</a></li>
+^^
+  }
+  i++;
+ }
+$$</ol>^^
+}
+$$
+<div class="tree">
+^^expand(argv, "root")$$
+</div>

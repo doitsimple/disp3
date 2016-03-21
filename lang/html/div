@@ -1,0 +1,14 @@
+^^
+var attr = "";
+var classstr = "";
+var stylestr = "";
+if(argv.class){
+ classstr+=' class="'+$.eval({class: argv.class}, 'css')+'"'
+}
+if(argv.style){
+ stylestr+=' style="'+$.eval({style: argv.style}, 'css')+'"'
+}
+attr += classstr;
+attr += stylestr;
+$$
+<div^^=attr$$>^^=~argv.content$$</div>

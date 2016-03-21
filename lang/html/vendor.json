@@ -17,6 +17,14 @@
 			}
 		]
 	},
+	"normalize": {
+		"files": [
+			{
+				"type": "css",
+				"file": "css/normalize.css"
+			}
+		]
+	},
 	"jquery": {
 		"files": [
 			{

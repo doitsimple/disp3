@@ -1,0 +1,8 @@
+^^
+for(var key in global.css){
+
+ var toeval = {};
+ toeval[key] = global.css[key];
+$$
+^^=~toeval$$
+^^}$$

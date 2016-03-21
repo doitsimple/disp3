@@ -1,0 +1,14 @@
+{
+	"src/main/java/^^=global.groupId.replace('.','/')$$":{
+		"sub": {
+			"^^=global.artifactId$$": {
+				"sub": {
+					"Application.java": {
+						"lang": "java",
+						"tmpl": "Application.java"
+					}
+				}					
+			}
+		}
+	}
+}

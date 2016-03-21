@@ -1,0 +1,9 @@
+^^
+deps.req = 1;
+var content = parent.content || $.eval(argv.content);
+var op = "";
+if(argv.option){
+ op+= ", " + $.eval(argv.option);
+}
+$$
+req.^^=~argv.method$$(^^=~argv.url$$^^=op$$, ^^=~makeCallback: argv, content: content, args: [{body: "json", info:"json"}]$$;

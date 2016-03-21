@@ -1,5 +1,5 @@
 {
 	"deps": {
-		"xml": 1
+		"partial-html": 1
 	}
 }

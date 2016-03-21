@@ -5,11 +5,20 @@ if(!argv.error){
 if(!argv.success){
 	argv.success = {"success": 1};
 }
+
+var args = "";
+if(parent.args){
+	if(typeof parent.args == "string")
+		args += ", "+parent.args;
+	else
+		args += ", "+Object.keys(parent.args).join(", ");
+}
 $$
-function(err){
+function(err^^=args$$){
 	if(err){
 		^^=~argv.error$$
 	}else{
 		^^=~argv.success$$
 	}
+	^^=~parent.content$$
 }

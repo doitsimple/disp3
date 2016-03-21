@@ -12,7 +12,7 @@ libObject.extend1(methods, libObject);
 libObject.extend1(methods, libFile);
 module.exports.extendMethods = extendMethods;
 function extendMethods(name, fn){
-	methods[name] = fn;
+	methods[name] = fn;	
 }
 var reservedKey = {
 	"$": 1,
@@ -88,7 +88,9 @@ function render(config, data){
 		if(reservedKey[key]) continue;
 		data.origin[key] = data.local[key];
 	}
-	data.$ = methods;
+	data.$ = libObject.copy1(methods);
+	if(data.extend)
+		libObject.extend1(data.$, data.extend);
 	if(config.file)
 		data.file = config.file;
 	data.p=[];

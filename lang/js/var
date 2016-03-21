@@ -1,5 +1,6 @@
-^^if(parent.val){$$
-var ^^=argv$$ = ^^=~val: parent.val$$;
-^^}else{$$
-var ^^=argv$$;
-^^}$$
+^^
+delete parent[name];
+var str = $.eval(parent);
+if(str) str = " = " + str;
+$$
+var ^^=argv$$^^=str$$;

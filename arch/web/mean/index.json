@@ -7,7 +7,7 @@
 		},
 		{
 			"arch": "client",
-			"impl": "angulerjs",
+			"impl": "angularjs",
 			"envkey": "clients"
 		},
 		{

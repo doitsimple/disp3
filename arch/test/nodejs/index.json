@@ -1,6 +1,7 @@
 {
 	".": [{
 		"arch": "bin",
+		"impl": "nodejs",
 		"ignoreDispJson": 1,
 		"env": {
 			"main": {
@@ -14,10 +15,16 @@
 	},
 	"server": {
 		"arch": "bin",
+		"impl": "nodejs",
 		"env": {
 			"main": [{
 				"print": 1
 			}]
+		},
+		"sub": {
+			"x.js": {
+				"raw": "a"
+			}
 		}
 	}
 }

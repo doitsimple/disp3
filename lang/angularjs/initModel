@@ -1,0 +1,10 @@
+^^
+delete parent[name];
+var str = $.eval(parent);
+if(str) str = " = " + str;
+$$
+^^if(argv.async){
+argv.async.content = "$scope."+argv+str+";";$$
+^^=~argv.sync$$
+^^}else{$$
+$scope.^^=argv$$^^=str$$;^^}$$

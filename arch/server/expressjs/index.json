@@ -3,7 +3,7 @@
 		"lib": "lib",
 		"lang": "expressjs",
 		"tmpl": "server.js",
-		"envkey": "servers"
+		"envkey": "instances"
 	},
 	"app.js": {
 		"lib": "lib",

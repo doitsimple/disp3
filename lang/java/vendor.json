@@ -1,0 +1,8 @@
+{
+	"SpringApplication": {
+		"pkg": "org.springframework.boot.SpringApplication"
+	},
+	"SpringBootApplication": {
+		"pkg": "org.springframework.boot.autoconfigure.SpringBootApplication"
+	}
+}

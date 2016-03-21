@@ -1,0 +1,10 @@
+^^
+var str;
+if(argv.file){
+}else if(argv.pkg){
+	str = argv.pkg;
+}else{
+// error
+}
+$$
+import ^^=str$$;
