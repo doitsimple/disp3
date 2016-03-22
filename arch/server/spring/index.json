@@ -1,4 +1,7 @@
 {
+	"application.properties": {
+		"tmpl": "application.properties"
+	},
 	"src/main/java/^^=global.groupId.replace('.','/')$$":{
 		"sub": {
 			"^^=global.artifactId$$": {

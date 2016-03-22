@@ -4,7 +4,9 @@
 			"json": 1,
 			"form": 1,
 			"query": 1
-		}
+		},
+		"protocol": "http",
+		"port": 80
 	},
 	"startups": [],
 	"databases": {
@@ -13,11 +15,5 @@
 		}
 	},
 	"routers": {
-	},
-	"servers": {
-		"main": {
-			"protocol": "http",
-			"port": 80
-		}
 	}
 }

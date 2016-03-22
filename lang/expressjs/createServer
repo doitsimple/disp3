@@ -11,6 +11,6 @@ var server = ^^=argv.protocol$$.createServer(app);
 			return;
 		}
 		console.log('Express http server listening on port: ^^=argv.port$$, pid: '+process.pid);
-		fs.writeFileSync("^^=parent.name$$.pid", process.pid);
+		fs.writeFileSync("^^=parent.name || argv.name || ""$$.pid", process.pid);
 		^^=~callback: "", name: parent.callback$$
 	});

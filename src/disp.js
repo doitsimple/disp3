@@ -34,12 +34,11 @@ Disp.prototype.run = function(){
 	var self = this;
 	self.extendGlobal();
 //	self.readPrev();
-	self.readArch();
-	self.genProj(true);//pseudo run genProj to get filemap
-	self.genProj();
+	self.genArch();
 	self.genPlugin();
 	self.dispose();
 }
+/*
 Disp.prototype.readPrev = function(){
 	var self = this;
 	var prev = {};
@@ -50,7 +49,7 @@ Disp.prototype.readPrev = function(){
 	log.v(prev);
 	self.prev = prev;
 }
-
+*/
 Disp.prototype.extendGlobal = function(){
 	var self = this;
 	if(fs.existsSync(self.projectDir + "/disp.json") && !self.ignoreDispJson){
@@ -64,6 +63,7 @@ Disp.prototype.extendGlobal = function(){
 	self.global.vendorDir = path.resolve(self.projectDir + "/../disp-vendor");
 	self.global.dispDir = path.resolve(__dirname + "/..");
 	self.global.archDir = path.resolve(self.global.dispDir + "/arch");
+	self.global.pluginDir = path.resolve(self.global.dispDir + "/plugin");
 	self.global.langDir = path.resolve(self.global.dispDir + "/lang");
 	self.global.projectDir = self.projectDir;
 	self.global.targetDir = self.targetDir;
@@ -75,9 +75,7 @@ Disp.prototype.extendGlobal = function(){
 	log.v("global");
 	log.v(self.global);
 }
-
-
-Disp.prototype.readArch = function(){
+Disp.prototype.genArch = function(){
 	var self = this;
 	//file struct
 	var configFile = self.global.archDir + "/" + self.global.arch + "/" + self.global.impl;
@@ -97,49 +95,37 @@ Disp.prototype.readArch = function(){
 	if(tmp2){
 		utils.append(self.global, tmp2);
 	}
-
-	log.v(tmp);
-	self.filelist = tmp;
-	self.fileroot = configFile;
+	self.genProj(tmp, {
+		src: configFile,
+		target: ""
+	});
 }
-Disp.prototype.genProj = function(isPseudo){
+Disp.prototype.genProj = function(filelist, config){
 	var self = this;
-	self.genProjSub(self.filelist, "", isPseudo);
+	self.genProjSub(filelist, {
+		src: config.src,
+		target: config.target,
+		isPseudo: true
+	});
+	self.genProjSub(filelist, {
+		src: config.src,
+		target: config.target
+	});
 }
-Disp.prototype.genPlugin = function(){
-	var self = this;
-	
-}
-Disp.prototype.genProjSub = function(filelist, prefix, isPseudo){
+Disp.prototype.genProjSub = function(filelist, config){
 	var self = this;
   for (var orifilename in filelist){
     var partConfig = filelist[orifilename];
 		if(libObject.isArray(partConfig)){
 			for(var i in partConfig){
-				self.genFilePre(path.join(prefix,orifilename), partConfig[i], isPseudo);
+				self.genFilePre(path.join(config.target,orifilename), partConfig[i], config);
 			}
 		}else{
-			self.genFilePre(path.join(prefix, orifilename), partConfig, isPseudo);
+			self.genFilePre(path.join(config.target, orifilename), partConfig, config);
 		}
   }
 }
-Disp.prototype.dispose = function(){
-	log.v("dispose success");
-}
-Disp.prototype.getEnv = function(partConfig){
-	var self = this;
-	var env;
-	if(partConfig.env){
-		env = partConfig.env;
-	}else if(partConfig.envkey){
-		env = libObject.getByKey(self.global, partConfig.envkey);
-		partConfig.env = env;
-	}else
-		env = self.global;
-	if(!env) env = {};
-	return env;
-}
-Disp.prototype.genFilePre = function(orifilename, partConfig, isPseudo){
+Disp.prototype.genFilePre = function(orifilename, partConfig, config){
 	var self = this;
 	if(orifilename.match(/\^\^.*\$\$/)){
 		var env = self.getEnv(partConfig);
@@ -149,7 +135,7 @@ Disp.prototype.genFilePre = function(orifilename, partConfig, isPseudo){
 			var newPartConfig = libObject.copy1(partConfig);
 			if(partConfig.name)
 				newPartConfig.name = tmpl.render(partConfig.name, {argv: env});
-			self.genFile(newPartConfig, tfilename, isPseudo);
+			self.genFile(newPartConfig, tfilename, config);
 		}else{
 			for(var key in env){
 				var localenv = {
@@ -164,25 +150,25 @@ Disp.prototype.genFilePre = function(orifilename, partConfig, isPseudo){
 				else
 					newPartConfig.name = key;
 				newPartConfig.env = env[key];
-				self.genFile(newPartConfig, tfilename, isPseudo);
+				self.genFile(newPartConfig, tfilename, config);
 			}
 		}
 	}else{
-		self.genFile(partConfig, orifilename, isPseudo);
+		self.genFile(partConfig, orifilename, config);
 	}
 }
-Disp.prototype.genFile = function(partConfig, filename, isPseudo){
+Disp.prototype.genFile = function(partConfig, filename, config){
 	var self = this;
 	if(!partConfig.lang)
 		partConfig.lang = "base";
-	if(isPseudo){
+	if(config.isPseudo){
 		if(partConfig.name){
 			self.filemap[partConfig.name] = filename;
 		}
 		return;
 	}
 	if(partConfig.arch){
-		var config = {
+		var dispConfig = {
 			projectDir: path.resolve(filename),
 			targetDir: filename,
 			global: {
@@ -190,19 +176,23 @@ Disp.prototype.genFile = function(partConfig, filename, isPseudo){
 			}
 		}
 		if(partConfig.ignoreDispJson)
-			config.ignoreDispJson = 1;
+			dispConfig.ignoreDispJson = 1;
 		if(partConfig.impl)
-			config.global.impl = partConfig.impl;
+			dispConfig.global.impl = partConfig.impl;
 		var tmpenv = self.getEnv(partConfig);
 		
 		if(tmpenv && !tmpenv._isGlobal)
-			utils.extend(config.global, tmpenv);
-		config.global.baseDir = self.projectDir;
-		var newDisp = new Disp(config, self.callback);
+			utils.extend(dispConfig.global, tmpenv);
+		dispConfig.global.baseDir = self.projectDir;
+		var newDisp = new Disp(dispConfig, self.callback);
 		newDisp.run();
 	}
 	if(partConfig.sub){
-		self.genProjSub(partConfig.sub, filename, isPseudo);
+		self.genProjSub(partConfig.sub, {
+			src: config.src,
+			target: filename,
+			isPseudo: config.isPseudo
+		});
 	}
 	if(partConfig.sub || partConfig.arch){
 		return;
@@ -240,7 +230,7 @@ Disp.prototype.genFile = function(partConfig, filename, isPseudo){
 		});
 		var srcfile;
 		if(partConfig.tmpl)
-			srcfile = self.fileroot + "/" + partConfig.tmpl;
+			srcfile = config.src + "/" + partConfig.tmpl;
 		else if(partConfig.src)
 			srcfile = self.projectDir + "/" + partConfig.src;
 		env.deps = deps;
@@ -249,12 +239,9 @@ Disp.prototype.genFile = function(partConfig, filename, isPseudo){
 		}, env);
 		delete env.deps;
 	}
-
 /*
-	parse deps
- 
+	parse deps 
 */
-
 	var gdeps = {};
 	self.expandDeps(deps, gdeps, partConfig.lang);
 	var parseDeps = [];
@@ -288,6 +275,40 @@ Disp.prototype.genFile = function(partConfig, filename, isPseudo){
   if(fs.existsSync(tfilename))
     fs.unlinkSync(tfilename);
   fs.writeFileSync(tfilename, str, {mode: 0444});
+}
+
+Disp.prototype.genPlugin = function(){
+	var self = this;
+	//file struct
+	for(var plugin in self.global.plugins){
+		var configFile = self.global.pluginDir + "/" + plugin;
+		var tmp;
+		try {
+			tmp = require(configFile);
+		}catch(e){
+			self.callback(e);
+		}
+		self.genProj(tmp, {
+			src: configFile,
+			target: ""
+		});
+	}
+}
+Disp.prototype.dispose = function(){
+	log.v("dispose success");
+}
+Disp.prototype.getEnv = function(partConfig){
+	var self = this;
+	var env;
+	if(partConfig.env){
+		env = partConfig.env;
+	}else if(partConfig.envkey){
+		env = libObject.getByKey(self.global, partConfig.envkey);
+		partConfig.env = env;
+	}else
+		env = self.global;
+	if(!env) env = {};
+	return env;
 }
 
 

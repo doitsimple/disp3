@@ -9,7 +9,7 @@ process.on('uncaughtException', function(err) {
 ^^
 var syncFuns = [].concat(global.startups);
 syncFuns.push({
-	createServer: origin
+	createServer: global.config
 });
 var callback = {
 	error: {print: {val:"Server start failed."}},

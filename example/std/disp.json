@@ -1,5 +1,9 @@
 {
 	"arch": "bin",
+	"impl": "nodejs",
+	"plugins": {
+		"npm": 1
+	},
 	"main": [
 		{
 			"mongodb": 1

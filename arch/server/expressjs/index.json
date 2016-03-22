@@ -1,9 +1,8 @@
 {
-	"server-^^=argv$$.js": {
+	"server.js": {
 		"lib": "lib",
 		"lang": "expressjs",
-		"tmpl": "server.js",
-		"envkey": "instances"
+		"tmpl": "server.js"
 	},
 	"app.js": {
 		"lib": "lib",

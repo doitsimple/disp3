@@ -1,8 +1,21 @@
 {
 	"arch": "server",
-	"impl": "expressjs",
+	"impl": "spring",
+	"plugins": {
+		"maven": 1
+	},
 	"config": {
 		"port": 7000
+	},
+	"groupId": "com.yangold",
+	"artifactId": "common",
+	"instances": {
+		"main": {			
+			"port": 7000
+		},
+		"sub": {			
+			"port": 7001
+		}
 	},
 	"databases": {
 		"main": {
@@ -12,9 +25,6 @@
 		}
 	},
 	"routers": {
-		"/": {
-			"staticSite": {"path": "../angularjs"}
-		},
 		"/api": {
 			"newRouter": [
 				{
