@@ -1,0 +1,8 @@
+{
+	"arch": "client",
+	"impl": "html",
+	"htmlVerdorDir": "/vendor",
+	"main": {
+		"text": "a"
+	}
+}

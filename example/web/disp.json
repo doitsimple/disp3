@@ -1,0 +1,25 @@
+{
+	"arch": "web",
+	"impl": "mean",
+	"servers": {
+		"frontend": {
+			
+		}
+	},
+	"config": {
+		"http": {
+			"port": 8080
+		}
+	},
+	"router": {
+		"/api": {
+			"use": {
+				"midware": {
+				}
+			},
+			"route": {
+				
+			}
+		}
+	}
+}

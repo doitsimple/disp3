@@ -1,0 +1,76 @@
+{
+	"arch": "web",
+  "impl": "mean",
+  "servers": {
+    "server": {
+			"instances": {
+				"main": {
+					"port": 8088
+				}
+			},
+			"routers": {
+				"/": {
+					"staticSite": {"path": "../client"}
+				},
+				"/vendor": {
+					"staticSite": {"path": "../vendor"}
+				},
+				"/api": {
+					"newRouter": {
+						"Lroute": {
+							"/get": {
+								"midware": {"send": {"val": {"a":1}}}
+							}
+						}
+					}
+				}
+			}
+    }
+  },
+	"clients": {
+		"client": {
+			"htmlVendorDir": "/vendor",
+			"main": [{
+			  "controller": {
+					"name": "main",
+					"code": [{
+						"initModel": "y",
+						"eval": {}
+					}],
+					"content": {
+						"div": {
+							"name": "container",
+							"style": {"heightpx": "800", "widthpx": "600"},
+							"content": [
+								{
+									"jsonModifierView": {
+										"model": "y"
+									}
+								},
+								{
+									"jsonDisplayView": {
+										"model": "y"
+									}
+								},
+								{
+									"div": {
+										"name": "nav",
+										"style": {"height": 1, "width": 0.4, "color": "white"},
+										"content": {
+										}
+									}
+								}
+							]
+						}
+					}
+				}										 
+			}]
+		}
+	},
+	"databases": {
+		"db": {
+			"mongodb": {
+			}
+		}
+	}
+}

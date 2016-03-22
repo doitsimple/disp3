@@ -1,0 +1,29 @@
+{
+	"arch": "bin",
+	"main": [
+		{
+			"mongodb": 1
+		},
+		{
+			"array": "a",
+			"val": []
+		},
+		{
+			"var": "b"			
+		},
+		{"print": 2},
+		{"print": {"val": "a"}},
+		{"print": {"get": "a"}},
+		{
+			"if":{
+				"isArray": {"get": "a"}
+			},
+			"then":{
+				"print": {"val":"x"}
+			},
+			"else": {
+				"print": {"val":"y"}
+			}
+		}
+	]
+}

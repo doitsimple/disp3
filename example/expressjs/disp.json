@@ -1,0 +1,51 @@
+{
+	"arch": "server",
+	"impl": "expressjs",
+	"instances": {
+		"main": {			
+			"port": 7000
+		},
+		"sub": {			
+			"port": 7001
+		}
+	},
+	"databases": {
+		"main": {
+			"mongodb": {
+				
+			}
+		}
+	},
+	"routers": {
+		"/": {
+			"staticSite": {"path": "../angularjs"}
+		},
+		"/api": {
+			"newRouter": [
+				{
+					"use": {
+						"midware": [{"print": {"val": "mid"}},{"nextMidware": 1}]
+					}
+				},
+				{
+					"Lroute": {
+						"/test": {
+							"get": {
+								"midware": {"send": {"val": "1"}}
+							}
+						},
+						"/insert": {
+							"get": {
+								"midware": {"dbop": {
+									"schema": "test",
+									"method": "insert",
+									"arg1": {"reqQuery": 1}
+								}}
+							}
+						}						
+					}
+				}
+			]
+		}
+	}
+}

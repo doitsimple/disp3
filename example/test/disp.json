@@ -1,0 +1,8 @@
+{
+	"arch": "test",
+	"impl": "nodejs",
+	"filenames": {
+		"a": 1,
+		"b": 2
+	}
+}
