@@ -8,11 +8,11 @@ function Database(methods){
 	var self = this;
 	var db;
 	var internalMethods = {
-		select: function(name, where){
-			getOp("selectx")(name, {$match: where, $limit:1});
+		select: function(name, where, fn){
+			getOp("selectx")(name, {$match: where, $limit:1}, fn);
 		},
-		selects: function(name, where){
-			getOp("selectx")(name, {$match: where});
+		selects: function(name, where, fn){
+			getOp("selectx")(name, {$match: where}, fn);
 		}
 	}
 	function _getOp(op){

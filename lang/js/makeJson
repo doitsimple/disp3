@@ -1,0 +1,9 @@
+^^var keys = Object.keys(argv);
+var lastkey = keys[keys.length -1];
+$$
+{
+^^for(var key in argv){$$
+"^^=key$$": ^^=~argv[key]$$^^if(key != lastkey){$$,^^}$$
+
+^^}$$
+}

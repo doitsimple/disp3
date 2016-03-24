@@ -1,0 +1,13 @@
+^^
+if(!argv || (!argv.code && !argv.message)){
+	argv = {code:1, message: {stringify: {get: "err"}}};
+}
+if(!argv.code && argv.message){
+	argv.code = 2;
+}
+if(!argv.message){
+//get message according to code;
+}
+$$
+res.send({error: {code:^^=argv.code$$, message:^^=~argv.message$$}});
+return;

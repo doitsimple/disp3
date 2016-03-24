@@ -24,9 +24,26 @@
 				},
 				{
 					"Lroute": {
-						"/test": {
+						"/error": {
 							"get": {
-								"midware": {"send": {"val": "1"}}
+								"midware": {
+										"send": {
+												"val": {
+														"error": {"code": 10, "message": "haha"}
+												}
+										}
+								}
+							}
+						},
+						"/success": {
+							"get": {
+								"midware": {
+										"send": {
+												"val": {
+														"payload": {"abc":1,"abd":[]}
+												}
+										}
+								}
 							}
 						},
 						"/insert": {

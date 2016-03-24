@@ -260,17 +260,18 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 			parseDeps.push(self.getDepConfig(key, gdeps[key], partConfig.lang));
 		}
 	}
+	var tfilename = self.targetDir + "/" + filename;
 	str = self.eval({
 		file: fileArgv,
 		deps: parseDeps,
 		main: str,
+		fullpath: tfilename,
 		lib: partConfig.lib,
 		addExport: function(key, lib, reqconfig){
 			self.addExport(key, lib, reqconfig);
 		}
 	}, partConfig.lang);
 
-	var tfilename = self.targetDir + "/" + filename;
   libFile.mkdirpSync(path.dirname(tfilename)); //to be acc
   if(fs.existsSync(tfilename))
     fs.unlinkSync(tfilename);
@@ -408,7 +409,7 @@ Disp.prototype.getLangFile = function(name, lang){
 
 Disp.prototype.eval = function(json, lang, deps, isPseudo){
 	var self = this;
-	if(!json) return "";
+	if(json === undefined || json === "") return "";
 	var type = typeof json;
 	var str = "";
 	var searchlang;

@@ -1,11 +1,4 @@
 ^^
-if(!argv.error){
-	argv.error = {error: "err"};
-}
-if(!argv.success){
-	argv.success = {"success": 1};
-}
-
 var args = "";
 if(parent.args){
 	if(typeof parent.args == "string")

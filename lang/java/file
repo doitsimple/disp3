@@ -1,2 +1,6 @@
-package ^^=global.groupId$$;
+^^
+var str = path.dirname(path.relative("./src/main/java/"+global.groupId.replace(".","/"), parent.fullpath)).replace("/",".");
+if(str) str = "." +str;
+$$
+package ^^=global.groupId$$^^=str$$;
 ^^=$.eval(parent, lang+"@base")$$
