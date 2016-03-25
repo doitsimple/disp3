@@ -1,0 +1,7 @@
+^^
+var str = "";
+if(parent.data){
+ str = ", data: "+$.eval(parent.data);
+}
+$$
+res.send({success: 1^^=str$$});

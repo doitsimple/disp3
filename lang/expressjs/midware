@@ -1,8 +1,7 @@
 ^^
-if(!argv.callback)
-	argv.callback = parent.callback || {
-		error: {sendError: {}}
-	}
+if(!argv.defautError) argv.defaultError = {
+	sendError: {}
+}
 $$
 function(req, res, next){
 ^^=~argv$$

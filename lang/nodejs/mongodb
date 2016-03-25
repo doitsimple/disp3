@@ -42,7 +42,12 @@ new function(){
 		self.aggr(name, aggrarr, fn);
 	},
 	self.insert = function(name, doc, fn){
-		self.getCol(name).insertOne(doc, fn);
+		self.getCol(name).insertOne(doc, function(err, result){
+			var id = doc._id;
+			delete doc._id;
+			if(err) return fn(err);
+			fn(null, {insertedId: id});
+		});
 	}
 	self.inserts = function(name, docs, fn){
 		self.getCol(name).insertMany(docs, fn);

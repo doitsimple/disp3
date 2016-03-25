@@ -1,0 +1,17 @@
+^^
+var callback = {
+ success: "",
+ error: "",
+ content: "",
+ returns: []
+};
+if(parent.success) callback.success += $.eval(parent.success);
+if(argv.success) callback.success += $.eval(argv.success);
+if(parent.error) callback.error += $.eval(parent.error);
+if(argv.error) callback.error += $.eval(argv.error);
+if(parent.content) callback.content += $.eval(parent.content);
+if(argv.content) callback.content += $.eval(argv.content);
+if(parent.returns) callback.returns = callback.returns.concat(parent.returns);
+if(argv.returns) callback.returns = callback.returns.concat(argv.returns);
+$$
+^^=~argv.method$$(^^=~evalArray: argv.args, sep: ", "$$, ^^=~makeCallback: callback$$);

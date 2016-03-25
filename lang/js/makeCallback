@@ -1,17 +1,16 @@
 ^^
-var args = "";
-if(parent.args){
-	if(typeof parent.args == "string")
-		args += ", "+parent.args;
-	else
-		args += ", "+Object.keys(parent.args).join(", ");
+var returns = "";
+if(argv.returns && argv.returns.length){
+	argv.returns.forEach(function(e){
+	  returns += ", "+Object.keys(e)[0];
+  });
 }
 $$
-function(err^^=args$$){
+function(err^^=returns$$){
 	if(err){
 		^^=~argv.error$$
 	}else{
 		^^=~argv.success$$
 	}
-	^^=~parent.content$$
+	^^=~argv.content$$
 }
