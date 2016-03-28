@@ -3,7 +3,10 @@
 		{
 			"arch": "server",
 			"impl": "expressjs",
-			"envkey": "servers"
+			"envkey": "servers",
+			"global": {
+				"databases": 1
+			}
 		},
 		{
 			"arch": "client",

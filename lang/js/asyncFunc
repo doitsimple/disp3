@@ -11,6 +11,14 @@ if(parent.error) callback.error += $.eval(parent.error);
 if(argv.error) callback.error += $.eval(argv.error);
 if(parent.content) callback.content += $.eval(parent.content);
 if(argv.content) callback.content += $.eval(argv.content);
+if(parent.result){
+	var tmp = {};tmp[parent.result] = "json";
+	callback.returns.push(tmp);
+}
+if(argv.result){
+	var tmp = {};tmp[argv.result] = "json";
+	callback.returns.push(tmp);
+}
 if(parent.returns) callback.returns = callback.returns.concat(parent.returns);
 if(argv.returns) callback.returns = callback.returns.concat(argv.returns);
 $$

@@ -1,0 +1,20 @@
+^^
+deps.redis = 1;
+$$
+new function(){
+	var self = this;
+	var colCache = {};
+	var conn;
+	self.connect = function(fn){
+		mongodb.MongoClient.connect("^^=hostStr$$", function(err, client) {
+      conn = client;
+      fn(err);
+		})
+	}
+	self.get = function(name){
+	}
+	self.set = function(name, fn){
+	}
+	self.expire = function(name, fn){
+	}
+}

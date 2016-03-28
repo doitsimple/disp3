@@ -2,3 +2,12 @@
 ^^if(argv.get){$$
 	.get(^^=~evalArray: argv.get$$)
 ^^}$$
+^^if(argv.post){$$
+	.post(^^=~evalArray: argv.post$$)
+^^}$$
+^^if(argv.put){$$
+	.put(^^=~evalArray: argv.put$$)
+^^}$$
+^^if(argv.delete){$$
+	.delete(^^=~evalArray: argv.delete$$)
+^^}$$

@@ -1,0 +1,12 @@
+function append1(targetObj, obj)
+//extend first level
+{
+	if(!targetObj) targetObj = {};
+	if(obj)
+		for(var key in obj){
+			if(!targetObj.hasOwnProperty(key)){
+				targetObj[key] = obj[key];
+			}
+		}
+	return targetObj;
+}

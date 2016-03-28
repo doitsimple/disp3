@@ -1,0 +1,17 @@
+^^
+deps.request = 1;
+var content = parent.content || $.eval(argv.content);
+var client = argv.client || "request";
+var params = {};
+params.method = "request." + $.eval(argv.method);
+params.args = ['"'+$.eval(argv.url)+'"'];
+if(argv.option){
+ params.method+="x";
+ params.args.push($.eval(argv.option));
+}
+if(argv.data){
+ params.args.push($.eval(argv.data));
+}
+$.extend1(params, parent);
+$$
+^^=~asyncFunc: params$$

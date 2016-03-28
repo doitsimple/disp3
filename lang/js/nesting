@@ -10,8 +10,8 @@ for(var i = funcs.length-1;i>=0;i--){
  if(!funcs[i].content) funcs[i].content = "";
  if(!funcs[i].error) funcs[i].error = "";
  if(!funcs[i].success) funcs[i].success = "";
- if(parent.defaultError){
- 	funcs[i].error += $.eval(parent.defaultError) + $.eval(funcs[i].error);;
+ if(parent.error){
+ 	funcs[i].error += $.eval(parent.error) + $.eval(funcs[i].error);;
  }
  funcs[i].content += $.eval(funcs[i].content) + content;
  content = $.eval(funcs[i]);

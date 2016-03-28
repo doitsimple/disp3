@@ -180,7 +180,9 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 		if(partConfig.impl)
 			dispConfig.global.impl = partConfig.impl;
 		var tmpenv = self.getEnv(partConfig);
-		
+		for(var key in partConfig.global){
+			dispConfig.global[key] = self.global[key];
+		}
 		if(tmpenv && !tmpenv._isGlobal)
 			utils.extend(dispConfig.global, tmpenv);
 		dispConfig.global.baseDir = self.projectDir;

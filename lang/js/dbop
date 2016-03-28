@@ -8,10 +8,6 @@ if(argv.arg1)
 if(argv.arg2)
 	params.args.push($.eval(argv.arg2));
 params.returns = [];
-if(argv.result){
-	var tmp = {};tmp[argv.result] = "json";
-	params.returns.push(tmp);
-}
 $.extend1(params, parent);
 $$
 ^^=~asyncFunc: params$$

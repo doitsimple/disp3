@@ -1,6 +1,5 @@
 ^^
 deps["Database"] = "db";
-var tmp = {};
-tmp[argv.type] = argv;
+console.log(argv);
 $$
-new Database(^^=~tmp$$);
+new Database(^^=~argv$$);

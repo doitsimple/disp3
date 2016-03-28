@@ -1,0 +1,9 @@
+function extend1(targetObj, obj)
+//extend first level
+{
+	if(!targetObj) targetObj = {};
+	if(obj)
+		for(var key in obj)
+			targetObj[key] = obj[key];
+	return targetObj;
+}

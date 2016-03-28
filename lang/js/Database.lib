@@ -37,7 +37,10 @@ function Database(methods){
 		update: 3,
 		delete: 3,
 		aggr: 1,
-		count: 1
+		count: 1,
+		get: 1,
+		set: 1,
+		expire: 1
 	};
 	for(var key in opList){
 		self[key] = getOp(key);

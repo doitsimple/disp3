@@ -1,11 +1,13 @@
-var http = require('http');
-var https = require('https');
-var querystring = require('querystring');
-var url = require("url");
-function strlen(str){
-	return new Buffer(str).length;
-}
-
+^^
+deps.http = 1;
+deps.https = 1;
+deps.querystring = 1;
+deps.url = 1;
+deps.strlen = 1;
+deps.append1 = 1;
+deps.extend1 = 1;
+$$
+new Req();
 function parseRes(res, fn){
 	var data = "";
 	var isText;
@@ -32,31 +34,31 @@ function parseRes(res, fn){
 		if(fn) fn(null, data, {statusCode: res.statusCode, headers: res.headers});
 	});
 }
-var Req = function(){
+function Req(defaultOptions, uastr){
 	var self = this;
-	var uastr = "disp3/alpha";
-	var defaultOptions = {
+	self.ins = Req;
+	if(!uastr) uastr = "disp3/alpha";
+	if(!defaultOptions) defaultOptions = {};
+	append1(defaultOptions, {
 		agent: false,
-		rejectUnauthorized : false
-	};
+		rejectUnauthorized: false,
+		headers: {}
+	});
+	append1(defaultOptions.headers, {
+		"user-agent": uastr
+	})
 	function ajax(config, fn){
-		if(config.url[0].match(/[\dl]/)) config.url = "http://" + config.url;
-		var urlParsed = url.parse(config.url);	
+		if(!config.url.match(":\/")) config.url = "http://" + config.url;
+		var urlParsed = url.parse(config.url);
 		var options = {};
-		for(var key in defaultOptions){
-			options[key] = defaultOptions[key];
-		}
-		if(!options.headers) options.headers = {};
-		if(!options.headers["user-agent"])
-			options.headers["user-agent"] = uastr;
-		options.host = urlParsed.hostname;
-		options.path = urlParsed.path;
-		options.method = config.method || "get";
+		extend1(options, defaultOptions)
+;		extend1(options, {
+			host: urlParsed.hostname,
+			path: urlParsed.path,
+			method: config.method || "get"
+		});
 		if(urlParsed.port) options.port = urlParsed.port;		
-		if(config.headers)
-			for(var key in config.headers)
-				options.headers[key] = config.headers[key];
-		
+		extend1(options.headers, config.headers);		
 		var protocol = urlParsed.protocol || "http:";
 		var req;
 		if(protocol == "http:"){
@@ -199,14 +201,4 @@ var Req = function(){
 
 		return !! (etagMatches && notModified);
 	}
-	self.setuastr = function(str){
-		uastr = str;
-	}
-	self.setoptions = function(obj){
-		for(var key in obj){
-			defaultOptions[key] = obj[key];
-		}
-	}
 };
-module.exports = new Req();
-module.exports.ins = Req;
