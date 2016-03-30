@@ -23,7 +23,12 @@ function Database(methods){
 		if(!db)
 			return function(){
 				var arg = arguments;
+				var lastarg = arguments[arguments.length - 1];
 				methods.connect(function(err, _db){
+					if(err){
+						if(typeof lastarg == "function") lastarg(err);
+						return;
+					}
 					db = _db;
 					_getOp(op).apply(self, arg);
 				});
@@ -47,6 +52,6 @@ function Database(methods){
 		if(opList[key] > 1)
 			self[key+"s"] = getOp(key+"s");
 		if(opList[key] > 2)
-			self[key+"x"], getOp(key+"x");
+			self[key+"x"] = getOp(key+"x");
 	}
 }

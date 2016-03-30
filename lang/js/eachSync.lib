@@ -1,0 +1,19 @@
+function eachSync(arr, fneach, fn){
+//each([0,1,2],function(el,cb){}, function(err){})
+	var runner = {arr: arr, fneach: fneach, fn: fn};
+	runner.nexti = 0;
+	eachSyncSub(runner);
+}
+function eachSyncSub(runner){
+	if(runner.nexti == runner.arr.length){
+		runner.fn();
+		return;
+	}
+	runner.fneach(runner.arr[runner.nexti], function(err){
+		runner.nexti++;
+		if(!err)
+			eachSyncSub(runner);
+		else
+			runner.fn(err);
+	});
+}

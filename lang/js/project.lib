@@ -1,0 +1,12 @@
+function project(src, config, target){
+	if(!src) return;
+	if(!target) target = {};
+	for(var key in config){
+		if(typeof config[key] == "string"){
+			target[config[key]] = src[key];
+		}else{
+			target[key] = src[key];
+		}
+	}
+	return target;
+}

@@ -2,6 +2,9 @@
 if(!argv.error) argv.error = {
 	sendError: {}
 }
+if(!argv.success) argv.success = {
+	nextMidware: {}
+}
 $$
 function(req, res, next){
 ^^=~argv$$

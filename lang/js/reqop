@@ -5,9 +5,9 @@ var client = argv.client || "request";
 var params = {};
 params.method = "request." + $.eval(argv.method);
 params.args = ['"'+$.eval(argv.url)+'"'];
-if(argv.option){
- params.method+="x";
- params.args.push($.eval(argv.option));
+if(argv.headers){
+ params.method+="Ex";
+ params.args.push($.eval(argv.headers));
 }
 if(argv.data){
  params.args.push($.eval(argv.data));

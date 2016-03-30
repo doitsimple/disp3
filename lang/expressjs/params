@@ -1,0 +1,25 @@
+^^for(var key in argv){ var expr = argv[key];
+var config;
+if(typeof expr == "string"){ 
+ config = {};
+ config.type = expr;
+}else{
+ config = expr;
+}
+if(!config.from)
+ config.from = "body";
+var val = "req."+config.from+"."+key;
+var error = parent.error || argv.error;
+if(error.sendError){
+	error.sendError.code = 10
+	error.sendError.message = "params error";
+}
+var estr = $.eval({
+		ensureType: config.type, 
+		val: val, 
+		error: error, 
+		var: key
+});
+$$
+^^=estr$$
+^^}$$

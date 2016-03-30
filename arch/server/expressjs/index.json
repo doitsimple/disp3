@@ -11,6 +11,11 @@
 		"envkey": "config",
 		"name": "app"
 	},
+	"midware.js": {
+		"lib": "lib",
+		"lang": "expressjs",
+		"tmpl": "midware.js"
+	},
 	"router.js": {
 		"lib": "lib",
 		"lang": "expressjs",
@@ -19,7 +24,8 @@
 	"db.js": {
 		"lib": "lib",
 		"lang": "nodejs",
-		"tmpl": "db.js"
+		"tmpl": "db.js",
+		"name": "db"
 	},
 	"lib.js": {
 		"name": "lib",

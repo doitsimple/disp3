@@ -1,0 +1,9 @@
+^^
+deps.db = 1;
+var params = {};
+params.method = "writelog";
+$.extend1(params, parent);
+$$
+var writelog = function(fn) {
+}
+^^=~asyncFunc: params$$

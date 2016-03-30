@@ -277,7 +277,8 @@ Disp.prototype.genFile = function(partConfig, filename, config){
   libFile.mkdirpSync(path.dirname(tfilename)); //to be acc
   if(fs.existsSync(tfilename))
     fs.unlinkSync(tfilename);
-  fs.writeFileSync(tfilename, str, {mode: 0444});
+//  fs.writeFileSync(tfilename, str, {mode: 0444});
+  fs.writeFileSync(tfilename, str, {mode: 0777});
 }
 
 Disp.prototype.genPlugin = function(){

@@ -4,7 +4,9 @@ var params = {};
 params.method = "db." + dbname + "." + $.eval(argv.method);
 params.args = ['"'+$.eval(argv.schema)+'"'];
 if(argv.arg1)
-	params.args.push($.eval(argv.arg1));
+	params.args.push($.eval(argv.arg1) || "{}");
+else
+	params.args.push("{}");
 if(argv.arg2)
 	params.args.push($.eval(argv.arg2));
 params.returns = [];

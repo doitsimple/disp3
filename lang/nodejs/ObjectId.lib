@@ -1,0 +1,4 @@
+^^
+deps.mongodb = 1;
+$$
+mongodb.ObjectId;

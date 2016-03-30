@@ -6,15 +6,19 @@ new function(){
 	var colCache = {};
 	var conn;
 	self.connect = function(fn){
-		mongodb.MongoClient.connect("^^=hostStr$$", function(err, client) {
-      conn = client;
-      fn(err);
-		})
+		conn = redis.createClient();
+		conn.on("error", function (err) {
+  		console.log("REDIS Error " + err);
+		});
+		fn(null, conn);
 	}
-	self.get = function(name){
+	self.get = function(name, fn){
+		conn.get(name, fn);
 	}
-	self.set = function(name, fn){
+	self.set = function(name, val, fn){
+		conn.set(name, val, fn);
 	}
 	self.expire = function(name, fn){
+		conn.expire(name, fn);
 	}
 }

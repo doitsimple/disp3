@@ -1,5 +1,4 @@
 ^^
 deps["Database"] = "db";
-console.log(argv);
 $$
 new Database(^^=~argv$$);

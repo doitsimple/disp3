@@ -1,1 +1,2 @@
-module.exports.^^=parent.name$$ = ^^=~argv$$;
+^^var str = $.eval(argv);$$
+module.exports.^^=parent.name$$ = ^^=str$$;

@@ -1,5 +1,7 @@
 ^^
 deps.mongodb = 1;
+deps.eachSync = 1;
+deps.project = 1;
 var host, port, dbname, authStr, hostStr;
 if(!argv.host) host = "127.0.0.1";
 if(!argv.port) port = 27017;
@@ -9,8 +11,10 @@ hostStr =  "mongodb://" + authStr + host + ":" + port + "/" + (argv.name || "mai
 $$
 new function(){
 	var self = this;
-	var colDef = ^^=$.stringify(argv)$$;
+	var colDef = ^^=$.stringify(argv.schemas)$$;
+	var colArray = Object.keys(colDef);
 	var colCache = {};
+	var colDataCache = {};
 	var conn;
 	self.getCol = function(name){
 		var col = colCache[name];
@@ -22,9 +26,36 @@ new function(){
 	}
 	self.connect = function(fn){
 		mongodb.MongoClient.connect("^^=hostStr$$", function(err, client) {
+			if(err) return fn(err);
       conn = client;
-      fn(err);
+			eachSync(colArray, function(e, cb){
+				var colConfig = colDef[e];
+				if(colConfig.seed){
+					self.getCol(e).findOne(function(err, result){
+						if(err) return cb(err);
+						if(!result){
+							self.inserts(e, colConfig.seed, cb);
+						}else{
+							cb();
+						}
+					});
+				}else{
+					cb();
+				}
+			}, function(err){
+			  fn(err, conn);
+			});
 		})
+	}
+	self.getCache = function(name, key, fn){
+		if(!colDataCache[name]) colDataCache[name] = {};
+		var cache = colDataCache[name];
+		if(cache[key]) return fn(null, cache[key]);
+		self.selectx(name, {$match: {_id: key}, $limit:1}, function(err, result){
+			if(err) return fn(err);
+			cache[key] = result[0];
+			fn(null, result[0]);
+		});
 	}
 	self.aggr = function(name, arr, fn){
 		self.getCol(name).aggregate(arr, fn);
@@ -40,7 +71,30 @@ new function(){
       aggrarr.push({$limit: parseInt(op.$limit)});
     if(op.$project && Object.keys(op.$project).length>0)
       aggrarr.push({$project: op.$project});
-		self.aggr(name, aggrarr, fn);
+		self.aggr(name, aggrarr, function(err, result){
+			if(err) return fn(err);
+			if(op.$join){
+				if(op.$join.cache){
+					var joinConfig = op.$join;
+					eachSync(result, function(row, cb){
+						self.getCache(joinConfig.schema, row[joinConfig.idField], function(err, result2){
+							if(err) return cb(err);
+							project(result2, joinConfig.project, row);
+							cb();
+						});
+					}, function(err){
+						if(err) return fn(err);
+						fn(null, result);
+					});
+				}else if(op.$join.cacheAll){					
+//TODO
+				}else{
+//TODO
+				}
+			}else{
+				fn(null, result);
+			}
+		});
 	},
 	self.insert = function(name, doc, fn){
 		self.getCol(name).insertOne(doc, function(err, result){

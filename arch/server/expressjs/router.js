@@ -1,4 +1,5 @@
 var express = require("express");
+var midware = require("./midware");
 var db = require("./db");
 var router = {};
 ^^
@@ -6,7 +7,7 @@ var ri = 0;
 for(var key in routers){
 	ri ++;
 	if($.isEmpty(routers[key])) continue;
-	routers[key].caller = "router" + ri;
+	routers[key].caller = "router"+ ri;
 $$
 
 var router^^=ri$$;

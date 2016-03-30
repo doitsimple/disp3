@@ -9,5 +9,5 @@ if(!argv.message){
 //get message according to code;
 }
 $$
-res.send({error: {code:^^=argv.code$$, message:^^=~argv.message$$}});
+res.send({error: {code:^^=argv.code$$, message:"^^=~argv.message$$"}});
 return;

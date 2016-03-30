@@ -9,5 +9,7 @@ if(argv.file){
 // error
 }
 var sub = argv.sub?"."+argv.sub:"";
+var keyname = parent.name || argv.name;
+
 $$
-var ^^=parent.name || argv.name$$ = require("^^=rpath$$")^^=sub$$;
+var ^^=$.dash2uc(keyname)$$ = require("^^=rpath$$")^^=sub$$;

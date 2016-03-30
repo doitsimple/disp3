@@ -21,5 +21,7 @@ if(argv.result){
 }
 if(parent.returns) callback.returns = callback.returns.concat(parent.returns);
 if(argv.returns) callback.returns = callback.returns.concat(argv.returns);
+if(!argv.args) argv.args = [];
+argv.args.push({makeCallback: callback});
 $$
-^^=~argv.method$$(^^=~evalArray: argv.args, sep: ", "$$, ^^=~makeCallback: callback$$);
+^^=~argv.method$$(^^=~evalArray: argv.args, sep: ", "$$);

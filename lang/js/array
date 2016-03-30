@@ -1,1 +1,6 @@
-^^=~var: argv, val: parent.val$$
+^^
+var params = {};
+params.var = argv;
+$.extend(params, parent);
+$$
+^^=~params$$
