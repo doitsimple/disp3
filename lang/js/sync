@@ -1,13 +1,13 @@
 ^^deps.sync = "lib";
 var argvx = [];
-for(var i in argv){
-	argv[i].callback="fn";
+argv.forEach(function(e, i){
+	e.callback="fn";
 	argvx[i] = {
 		"function": {
 			args: {fn: "function"},
-			content: argv[i],
+			content: e,
 		}
 	};
-}
+});
 $$
 sync(^^=~makeArray: argvx$$, ^^=~makeCallback: parent.callback$$);

@@ -1,6 +1,5 @@
 var express = require("express");
 var midware = require("./midware");
-var db = require("./db");
 var router = {};
 ^^
 var ri = 0;

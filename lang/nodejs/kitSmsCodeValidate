@@ -1,0 +1,23 @@
+^^
+deps.db = 1;
+var error = parent.error || argv.error || {};
+var success = parent.success || argv.success || {};
+var phone = argv.phone || "phone";
+var code = argv.code || "code";
+var db = argv.db || "main";
+var schema = argv.schema;
+var phoneField = argv.phoneField || "phone";
+var codeField = argv.codeField || "code";
+var timeField = argv.timeField || "time";
+$$
+db.^^=db$$.select("^^=schema$$", {
+	^^=phoneField$$: ^^=phone$$,
+	^^=codeField$$: ^^=code$$
+}, function(err, result){
+	if(err) {^^=~error$$;}
+	if(!result){
+		^^=~extend: error, code: 102, message: "验证码错误"$$
+	}else{
+		^^=~success$$
+	}
+});

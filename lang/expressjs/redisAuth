@@ -7,11 +7,11 @@ $$
 function redisAuth(){
 	passport.use("default", new passportHttpBearer.Strategy(check));
 	function check(token, done) {
-	  db.^^=argv.db$$.get(token, function (err, user_id) {
+	  db.^^=argv.db$$.get("^^=argv.schema$$", token, function (err, user_id) {
 	    if (err) { return done(err); }
 	    if (!user_id) { return done(null, false); }
 	    return done(null, user_id, { scope: 'all' });
   	});
 	}
-	return 	passport.authenticate('default', { session: false });
+	return passport.authenticate('default', { session: false });
 }();

@@ -1,13 +1,6 @@
 ^^
-if(!argv || (!argv.code && !argv.message)){
-	argv = {code:1, message: {stringify: {get: "err"}}};
-}
-if(!argv.code && argv.message){
-	argv.code = 2;
-}
-if(!argv.message){
-//get message according to code;
-}
+var code = parent.code || argv.code || 1;
+var msg = parent.message || argv.message || {stringify: {get: "err"}};
 $$
-res.send({error: {code:^^=argv.code$$, message:"^^=~argv.message$$"}});
+res.send({error: {code:^^=~code$$, message:^^=~msg$$}});
 return;

@@ -1,7 +1,9 @@
 ^^
 var str = "";
 if(parent.data){
- str = ", data: "+$.eval(parent.data);
+ str = $.eval(parent.data);
+}else{
+ str = "{}";
 }
 $$
-res.send({success: 1^^=str$$});
+res.send({data: ^^=str$$});

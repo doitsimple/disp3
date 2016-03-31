@@ -5,12 +5,15 @@ if(argv.returns && argv.returns.length){
 	  returns += ", "+Object.keys(e)[0];
   });
 }
+var error = typeof argv.error == "object"? $.eval(argv.error): argv.error;
+var success = typeof argv.success == "object"? $.eval(argv.success): argv.success;
+var content = typeof argv.content == "object"? $.eval(argv.content): argv.content;
 $$
 function(err^^=returns$$){
 	if(err){
-		^^=~argv.error$$
+		^^=error$$
 	}else{
-		^^=~argv.success$$
+		^^=success$$
 	}
-	^^=~argv.content$$
+	^^=content$$
 }

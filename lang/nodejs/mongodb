@@ -107,4 +107,21 @@ new function(){
 	self.inserts = function(name, docs, fn){
 		self.getCol(name).insertMany(docs, fn);
 	}
+	self.updatex = function(name, where, op, fn){
+		delete op.$limit;
+		self.getCol(name).updateOne(where, op, function(err, result){
+      var rtn;
+      if(result) rtn = result.result;
+      else rtn = {n: 0};
+      fn(err, rtn);
+    });
+	}
+	self.sedatex = function(name, where, op, fn){
+		delete op.$limit;
+    self.getCol(name).findAndModify(where, [], op, function(err, doc){
+      if(err) return fn(err);
+      if(!doc) return fn(null, doc);
+      fn(null, doc.value);
+    });
+	}
 }

@@ -1,0 +1,2 @@
+^^deps.randomDigit = 1;$$
+randomDigit(^^=argv$$)

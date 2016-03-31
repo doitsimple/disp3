@@ -1,8 +1,8 @@
 ^^
 var dbname = argv.dbname || "main";
 var params = {};
-params.method = "db." + dbname + "." + $.eval(argv.method);
-params.args = ['"'+$.eval(argv.schema)+'"'];
+params.method = "db." + dbname + "." + argv.method;
+params.args = [$.eval(argv.schema)];
 if(argv.arg1)
 	params.args.push($.eval(argv.arg1) || "{}");
 else

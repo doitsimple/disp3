@@ -3,8 +3,8 @@ deps.request = 1;
 var content = parent.content || $.eval(argv.content);
 var client = argv.client || "request";
 var params = {};
-params.method = "request." + $.eval(argv.method);
-params.args = ['"'+$.eval(argv.url)+'"'];
+params.method = "request." + argv.method;
+params.args = [$.eval(argv.url)];
 if(argv.headers){
  params.method+="Ex";
  params.args.push($.eval(argv.headers));

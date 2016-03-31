@@ -9,10 +9,24 @@ function Database(methods){
 	var db;
 	var internalMethods = {
 		select: function(name, where, fn){
-			getOp("selectx")(name, {$match: where, $limit:1}, fn);
+			getOp("selectx")(name, {$match: where, $limit:1}, function(err, result){
+				fn(err, result[0]);
+			});
 		},
 		selects: function(name, where, fn){
 			getOp("selectx")(name, {$match: where}, fn);
+		},
+		update: function(name, where, doc, fn){
+			getOp("updatex")(name, where, {$set: doc, $limit: 1}, fn);
+		},
+		updates: function(name, where, doc, fn){
+			getOp("updatex")(name, where, {$set: doc}, fn);
+		},
+		sedate: function(name, where, doc, fn){
+			getOp("sedatex")(name, where, {$set: doc, $limit: 1}, fn);
+		},
+		sedates: function(name, where, doc, fn){
+			getOp("sedatex")(name, where, {$set: doc}, fn);
 		}
 	}
 	function _getOp(op){
@@ -41,6 +55,7 @@ function Database(methods){
 		select: 3,
 		update: 3,
 		delete: 3,
+		sedate: 3,
 		aggr: 1,
 		count: 1,
 		get: 1,

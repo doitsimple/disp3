@@ -12,13 +12,13 @@ new function(){
 		});
 		fn(null, conn);
 	}
-	self.get = function(name, fn){
-		conn.get(name, fn);
+	self.get = function(schema, name, fn){
+		conn.get(schema + "_" +name, fn);
 	}
-	self.set = function(name, val, fn){
-		conn.set(name, val, fn);
+	self.set = function(schema, name, val, fn){
+		conn.set(schema+"_" +name, val, fn);
 	}
-	self.expire = function(name, fn){
-		conn.expire(name, fn);
+	self.expire = function(schema, name, fn){
+		conn.expire(schema+"_"+name, fn);
 	}
 }

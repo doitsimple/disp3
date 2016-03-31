@@ -156,7 +156,7 @@ function render(config, data){
 			eval(evalstr);
 		}catch(e){
 			log.i(evalstr);
-			log.e(e);
+			log.i(config.file);
 			eval(evalstr);
 			return "";
 

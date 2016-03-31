@@ -433,7 +433,7 @@ Disp.prototype.eval = function(json, lang, deps, isPseudo){
 	}else if(type == "object"){
 */
 	if(type !== "object"){
-		return json;
+		return JSON.stringify(json);
 	}else{
 		if(libObject.isArray(json)){
 			var toextend = {};
@@ -494,7 +494,7 @@ Disp.prototype.eval = function(json, lang, deps, isPseudo){
 //	tmpl.extendMethods("eval", 
 	var data = {
 		name: name,
-		argv: json[name],
+		argv: libObject.copy(json[name]),
 		deps: deps,
 		lang: lang,
 		parent: json,
