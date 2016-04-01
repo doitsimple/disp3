@@ -1,0 +1,37 @@
+{
+	"impl": "nodejs",
+	"content": [
+		{
+			"var": "a",
+			"type": "array",
+			"init": {"val": []}
+		},
+		{
+			"nesting": [
+				{
+					"setTimeout": 1000
+				},
+				{
+					"setInterval": 2000
+				},
+				{
+					"setTimeout": 1000
+				}
+			],
+			"success": {"print": {"val": "success"}},
+			"error": {"print": {"val": "error"}}
+		},
+		{
+			"sync": [
+				{
+					"setTimeout": 1000
+				},
+				{
+					"setTimeout": 1000
+				}
+			],
+			"success": {"print": {"val": "success2"}},
+			"error": {"print": {"val": "error2"}}
+		}
+	]
+}
