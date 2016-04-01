@@ -1,7 +1,1 @@
-^^
-var name = parent.name || argv.name;
-var success = parent.success || argv.success || {invoke, name: done};
-$$
-it('^^=name$$', function(done) {
-	
-});
+it('^^=argv$$', ^^=makeAsyncFunc: 1, content: parent.content$$);

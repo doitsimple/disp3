@@ -150,6 +150,7 @@ Disp.prototype.genFilePre = function(orifilename, partConfig, config){
 				else
 					newPartConfig.name = key;
 				newPartConfig.env = env[key];
+				env[key].argv = key;
 				self.genFile(newPartConfig, tfilename, config);
 			}
 		}
@@ -235,6 +236,7 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 			srcfile = config.src + "/" + partConfig.tmpl;
 		else if(partConfig.src)
 			srcfile = self.projectDir + "/" + partConfig.src;
+
 		env.deps = deps;
 		str = tmpl.render({
 			file: srcfile

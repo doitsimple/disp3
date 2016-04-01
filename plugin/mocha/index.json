@@ -3,7 +3,8 @@
 		"sub": {
 			"^^=argv$$_test.js": {
 				"lang": "nodejs",
-				"env": "tests"
+				"tmpl": "test.js",
+				"envkey": "tests"
 			}
 		}
 	}

@@ -16,6 +16,8 @@ function extendMethods(name, fn){
 }
 var reservedKey = {
 	"$": 1,
+	"argv": 1,
+	"deps": 1,
 	"env": 1,
 	"file": 1,
 	"global": 1,
@@ -23,6 +25,7 @@ var reservedKey = {
 	"key": 1,
 	"lib": 1,
 	"local": 1,
+	"main": 1,
 	"name": 1,
 	"origin": 1,
 	"p": 1,
