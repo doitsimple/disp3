@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+mocha test/$1_test

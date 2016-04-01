@@ -1,6 +1,5 @@
 ^^
-delete parent[name];
-var str = $.eval(parent);
-if(str) str = " = " + str;
+if(parent.init) 
+ str = parent.init?" = " + $.eval(parent.init):"";
 $$
 var ^^=argv$$^^=str$$;

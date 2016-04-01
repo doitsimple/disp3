@@ -3,14 +3,15 @@ if(!argv.protocol) argv.protocol = "http";
 deps[argv.protocol] = 1;
 deps.fs = 1;
 deps.app = 1;
+var callback = parent.callback;
 $$
 var server = ^^=argv.protocol$$.createServer(app);
 	server.listen(^^=argv.port$$, function(err){
 		if(err){
-			^^=~callback: "err", name: parent.callback$$
+			^^=~callback: parent.callback, error: {get: "err"}$$
 			return;
 		}
 		console.log('Express http server listening on port: ^^=argv.port$$, pid: '+process.pid);
 		fs.writeFileSync("^^=parent.name || argv.name || ""$$.pid", process.pid);
-		^^=~callback: "", name: parent.callback$$
+		^^=~callback: parent.callback$$
 	});

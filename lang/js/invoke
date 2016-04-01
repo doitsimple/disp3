@@ -1,0 +1,4 @@
+^^var fname = parent.name || argv.name;
+var args = argv.args || [];
+$$
+^^=fname$$(^^=~evalArray: args, sep: ","$$)

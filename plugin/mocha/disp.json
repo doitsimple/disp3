@@ -1,0 +1,10 @@
+{
+	"test": {
+		"sub": {
+			"^^=argv$$_test.js": {
+				"lang": "nodejs",
+				"env": "tests"
+			}
+		}
+	}
+}

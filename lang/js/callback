@@ -1,2 +1,12 @@
-^^if(parent.name){$$
-^^=parent.name$$(^^=~argv$$);^^}$$
+^^if(argv){
+var args = "";
+if(parent.error)
+ args += $.eval(parent.error);
+else
+ args += "null";
+if(parent.result)
+ args += ", " + $.eval(parent.result); 
+if(parent.result2)
+ args += ", " + $.eval(parent.result2); 
+$$
+^^=argv$$(^^=args$$);^^}$$
