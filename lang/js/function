@@ -1,8 +1,6 @@
-^^if(parent.name){$$
-function ^^=parent.name$$(^^=~makeArgs:argv.args$$){
-	^^=~argv.content$$
+^^
+var fname = typeof argv == "string"?argv:"";
+$$
+function ^^=fname$$(^^=~evalArray: parent.args, sep: ", "$$){
+	^^=~parent.content$$
 }
-^^}else{$$
-function(^^=~makeArgs:argv.args$$){
-	^^=~argv.content$$
-}^^}$$

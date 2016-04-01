@@ -1,5 +1,7 @@
 ^^
 delete parent[name];
-$.extend(argv, parent);
+if(argv){
+	$.extend(argv, parent);
+}
 $$
 ^^=~argv$$

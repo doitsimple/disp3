@@ -2,12 +2,19 @@ Disp4 is scratched at April 1, 2016.
 index.json vendor.json
 file init
 
-base
+*base
 extend raw eval evalArray lib
-clike
+*clike
 add/plus minus/substitute multiply divide and or child 
-js
-var val
-nodejs
+get invoke callback
+string
+*js
+var val function
+sync nesting makeCallback makeArray makeAsyncFunc
+dbop reqop
+*nodejs
 
-expressjs
+*expressjs
+createServer
+staticSite
+newRouter

@@ -7,14 +7,11 @@ process.on('uncaughtException', function(err) {
   console.log(err.stack);
 });
 ^^
-var syncFuns = [].concat(global.startups);
-syncFuns.push({
+var syncFuncs = $.concat(global.startups, {
 	createServer: global.config
 });
-var callback = {
-	error: {print: {val:"Server start failed."}},
-	success: {print: {val:"Server start succeed."}}
-}
+var error =  {print: {val:"Server start failed."}};
+var	success = {print: {val:"Server start succeed."}};
 $$
-^^=~sync: syncFuns, callback: callback$$
+^^=~sync: syncFuncs, error: error, success: success$$
 

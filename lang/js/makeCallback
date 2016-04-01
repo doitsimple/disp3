@@ -1,19 +1,14 @@
 ^^
-var returns = "";
-if(argv.returns && argv.returns.length){
-	argv.returns.forEach(function(e){
-	  returns += ", "+Object.keys(e)[0];
-  });
+var params= "";
+if(argv.result){
+	params += ", " + $.eval({evalArray: argv.result, sep: ", "});
 }
-var error = typeof argv.error == "object"? $.eval(argv.error): argv.error;
-var success = typeof argv.success == "object"? $.eval(argv.success): argv.success;
-var content = typeof argv.content == "object"? $.eval(argv.content): argv.content;
 $$
-function(err^^=returns$$){
+function(err^^=params$$){
 	if(err){
-		^^=error$$
-	}else{
-		^^=success$$
+		^^=~argv.error$$
+		return;
 	}
-	^^=content$$
+	^^=~argv.success$$
+	^^=~argv.content$$
 }

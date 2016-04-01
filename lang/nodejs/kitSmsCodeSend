@@ -1,8 +1,6 @@
 ^^
 deps.request = 1;
 deps.db = 1;
-var error = parent.error || argv.error || {};
-var success = parent.success || argv.success || {};
 var phone = argv.phone || "phone";
 var code = argv.code || {randomDigit: 4};
 var db = argv.db || "main";
@@ -10,7 +8,6 @@ var schema = argv.schema;
 var phoneField = argv.phoneField || "phone";
 var codeField = argv.codeField || "code";
 var timeField = argv.timeField || "time";
-var method = argv.method || success;
 $$
 /*{
 	$set: {^^=codeField$$:  ^^=code$$},
@@ -21,10 +18,10 @@ var now = new Date().getTime();
 db.^^=db$$.select("^^=schema$$", {
 	^^=phoneField$$: ^^=phone$$
 }, function(err, result){
-	if(err) {^^=~error$$;}
+	if(err) {^^=~parent.error$$; return;}
 	if(result){
 		if(now - result.^^=timeField$$ < 60000){
-				^^=~extend: error, code: 101, message: "短信发送过于频繁"$$
+				^^=~extend: parent.error, code: 101, error: "短信发送过于频繁"$$
 		}
 		db.^^=db$$.update("^^=schema$$", {
 			^^=phoneField$$: ^^=phone$$
@@ -32,8 +29,8 @@ db.^^=db$$.select("^^=schema$$", {
 			^^=codeField$$: code,
 			^^=timeField$$: now
 		}, function(err, result){
-			if(err) {^^=~error$$;}
-			^^=~method$$
+			if(err) {^^=~parent.error$$; return}
+			^^=~extend: parent.content, error: parent.error, success: parent.success$$
 		});
 	}else{
 		db.^^=db$$.insert("^^=schema$$", {
@@ -41,8 +38,8 @@ db.^^=db$$.select("^^=schema$$", {
 			^^=codeField$$: code,
 			^^=timeField$$: now
 		}, function(err, result){
-			if(err) {^^=~error$$;}
-			^^=~method$$
+			if(err) {^^=~parent.error$$;return;}
+			^^=~extend: parent.content, error: parent.error, success: parent.success$$
 		});
 	}
 });

@@ -13,7 +13,7 @@
 	},
 	"routers": {
 		"/": {
-			"staticSite": {"path": "../angularjs"}
+			"staticSite": {"val": "../angularjs"}
 		},
 		"/api": {
 			"newRouter": [

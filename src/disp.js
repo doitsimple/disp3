@@ -412,7 +412,7 @@ Disp.prototype.getLangFile = function(name, lang){
 
 Disp.prototype.eval = function(json, lang, deps, isPseudo){
 	var self = this;
-	if(json === undefined || json === "") return "";
+	if(json === undefined || json === null || json === "") return "";
 	var type = typeof json;
 	var str = "";
 	var searchlang;
@@ -433,7 +433,7 @@ Disp.prototype.eval = function(json, lang, deps, isPseudo){
 	}else if(type == "object"){
 */
 	if(type !== "object"){
-		return JSON.stringify(json);
+		return json; // return raw if not expr
 	}else{
 		if(libObject.isArray(json)){
 			var toextend = {};

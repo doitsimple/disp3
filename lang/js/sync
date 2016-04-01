@@ -1,13 +1,10 @@
 ^^deps.sync = "lib";
 var argvx = [];
 argv.forEach(function(e, i){
-	e.callback="fn";
 	argvx[i] = {
-		"function": {
-			args: {fn: "function"},
-			content: e,
-		}
+		makeAsyncFunc: 1,
+		content: e
 	};
 });
 $$
-sync(^^=~makeArray: argvx$$, ^^=~makeCallback: parent.callback$$);
+sync(^^=~makeArray: argvx$$, ^^=~makeCallback: parent$$);

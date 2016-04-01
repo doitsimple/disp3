@@ -1,0 +1,9 @@
+^^
+var args = $.concat(parent.args, "fn");
+var content = parent.content || {};
+var error = $.concat(content.error, {callback: "fn", error: {val: "unknown error"}});
+var success = $.concat(content.success, {callback: "fn"});
+content.error = error;
+content.success = success;
+$$
+^^=~function: argv, args: args, content: content$$

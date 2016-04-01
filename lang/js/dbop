@@ -1,15 +1,14 @@
 ^^
+deps.db = 1;
 var dbname = argv.dbname || "main";
-var params = {};
-params.method = "db." + dbname + "." + argv.method;
-params.args = [$.eval(argv.schema)];
+
+var args = [{string: argv.schema}];
 if(argv.arg1)
-	params.args.push($.eval(argv.arg1) || "{}");
+	args.push(argv.arg1);
 else
-	params.args.push("{}");
+	args.push("{}");
 if(argv.arg2)
-	params.args.push($.eval(argv.arg2));
-params.returns = [];
-$.extend1(params, parent);
+	args.push(argv.arg2);
+args.push({makeCallback: parent});
 $$
-^^=~asyncFunc: params$$
+db.^^=dbname$$.^^=argv.method$$(^^=~evalArray:args, sep: ", "$$);

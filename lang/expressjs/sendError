@@ -1,6 +1,5 @@
 ^^
-var code = parent.code || argv.code || 1;
-var msg = parent.message || argv.message || {stringify: {get: "err"}};
+var code = parent.code  || 1;
+var msg = parent.error || {stringify: {get: "err"}};
 $$
-res.send({error: {code:^^=~code$$, message:^^=~msg$$}});
-return;
+res.send({error: {code:^^=~code$$, message:^^=~string: msg$$}});

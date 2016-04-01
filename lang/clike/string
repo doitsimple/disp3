@@ -1,0 +1,3 @@
+^^if(typeof argv == "object"){$$
+^^=~argv$$^^}else{$$
+"^^=argv$$"^^}$$
