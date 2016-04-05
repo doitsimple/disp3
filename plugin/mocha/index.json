@@ -4,8 +4,14 @@
 			"^^=argv$$_test.js": {
 				"lang": "nodejs",
 				"tmpl": "test.js",
-				"envkey": "tests"
+				"envkey": "tests",
+				"lib": "mochalib"
 			}
 		}
+	},
+	"mocha_lib.js": {
+		"name": "mochalib",
+		"lang": "nodejs",
+		"content": "mochalib"
 	}
 }

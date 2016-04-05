@@ -7,9 +7,10 @@ if(!$.isArray(argv)){
 }
 var content = "";
 for(var i = funcs.length-1;i>=0;i--){
- funcs[i].error = $.concat(parent.error, funcs[i].error);
- funcs[i].success = $.concat(parent.success, funcs[i].success, content);
-// funcs[i].content = $.eval(funcs[i].content) + content;
+ funcs[i].error = $.concat(funcs[i].error, parent.error);
+ funcs[i].success = $.concat(funcs[i].success, content);
+ if(i == funcs.length-1)
+ 	 funcs[i].success = $.concat(funcs[i].success, parent.success);
  content = $.eval(funcs[i]);
 }
 $$

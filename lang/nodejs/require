@@ -1,7 +1,7 @@
 ^^
 var rpath;
 if(argv.file){
-	rpath = "./" + path.relative(".", argv.file);
+	rpath = "./" + path.relative(path.dirname(parent.fullpath), argv.file);
 	var m =argv.file.match(/([a-z][a-z0-9]+)(?:\.[A-Za-z0-9]+)?$/);
 }else if(argv.pkg){
 	rpath = argv.pkg;
