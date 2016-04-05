@@ -1,0 +1,15 @@
+^^
+deps.request = 1;
+deps.db = 1;
+var phone = argv.phone || "phone";
+var db = argv.db || "main";
+var schema = argv.schema;
+var phoneField = argv.phoneField || "phone";
+$$
+db.^^=db$$.select("^^=schema$$", {
+	^^=phoneField$$: ^^=phone$$
+}, function(err, ^^=parent.result || "result"$$){
+	if(err) {^^=~parent.error$$; return;}
+	^^=~parent.success$$
+});
+

@@ -10,5 +10,4 @@ function(err^^=params$$){
 		return;
 	}
 	^^=~argv.success$$
-	^^=~argv.content$$
 }

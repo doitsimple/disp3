@@ -9,10 +9,7 @@ var phoneField = argv.phoneField || "phone";
 var codeField = argv.codeField || "code";
 var timeField = argv.timeField || "time";
 $$
-/*{
-	$set: {^^=codeField$$:  ^^=code$$},
-	$inc: {^^=countField$$: 1}
-*/
+
 var code = ^^=~code$$;
 var now = new Date().getTime();
 db.^^=db$$.select("^^=schema$$", {
@@ -30,7 +27,7 @@ db.^^=db$$.select("^^=schema$$", {
 			^^=timeField$$: now
 		}, function(err, result){
 			if(err) {^^=~parent.error$$; return}
-			^^=~extend: parent.content, error: parent.error, success: parent.success$$
+			^^=~parent.success$$
 		});
 	}else{
 		db.^^=db$$.insert("^^=schema$$", {
@@ -39,7 +36,7 @@ db.^^=db$$.select("^^=schema$$", {
 			^^=timeField$$: now
 		}, function(err, result){
 			if(err) {^^=~parent.error$$;return;}
-			^^=~extend: parent.content, error: parent.error, success: parent.success$$
+			^^=~parent.success$$
 		});
 	}
 });

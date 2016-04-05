@@ -7,6 +7,13 @@
 			"init": {"val": []}
 		},
 		{
+      "reqop": {
+        "method": "post",
+        "url": "127.0.0.1:7000/api/sendsms",
+        "data": {"makeJson": {"phone": {"get": "phone"}}}
+      }
+		},
+		{
 			"nesting": [
 				{
 					"setTimeout": 1000

@@ -1,4 +1,5 @@
 ^^
+
 deps.http = 1;
 deps.https = 1;
 deps.querystring = 1;
@@ -6,8 +7,9 @@ deps.url = 1;
 deps.strlen = 1;
 deps.append1 = 1;
 deps.extend1 = 1;
+
 $$
-new Req();
+request = new Req();
 function parseRes(res, fn){
 	var data = "";
 	var isText;

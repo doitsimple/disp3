@@ -1,7 +1,5 @@
 ^^
 deps.db = 1;
-var error = parent.error || argv.error || {};
-var success = parent.success || argv.success || {};
 var phone = argv.phone || "phone";
 var code = argv.code || "code";
 var db = argv.db || "main";
@@ -14,10 +12,10 @@ db.^^=db$$.select("^^=schema$$", {
 	^^=phoneField$$: ^^=phone$$,
 	^^=codeField$$: ^^=code$$
 }, function(err, result){
-	if(err) {^^=~error$$;}
+	if(err) {^^=~parent.error$$;}
 	if(!result){
-		^^=~extend: error, code: 102, message: "验证码错误"$$
+		^^=~extend: parent.error, code: 102, error: "验证码错误"$$
 	}else{
-		^^=~success$$
+		^^=~parent.success$$
 	}
 });

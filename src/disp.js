@@ -21,7 +21,8 @@ function Disp(config, fn){
 	self.global = {
 		_isGlobal: true
 	};
-	self.filemap = {};
+	self.fileMap = {};
+	self.fileCount = 0;
 	if(config)
 		utils.extend(self, config);
 	if(!self.projectDir)
@@ -164,7 +165,7 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 		partConfig.lang = "base";
 	if(config.isPseudo){
 		if(partConfig.name){
-			self.filemap[partConfig.name] = filename;
+			self.fileMap[partConfig.name] = filename;
 		}
 		return;
 	}
@@ -246,6 +247,7 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 /*
 	parse deps 
 */
+
 	var gdeps = {};
 	self.expandDeps(deps, gdeps, partConfig.lang);
 	var parseDeps = [];
@@ -261,10 +263,11 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 				parseDeps.push(tmp);
 			}
 		}else{
-			parseDeps.push(self.getDepConfig(key, gdeps[key], partConfig.lang));
+			parseDeps.push(gdeps[key]);
 		}
 	}
 	var tfilename = self.targetDir + "/" + filename;
+
 	str = self.eval({
 		file: fileArgv,
 		deps: parseDeps,
@@ -274,11 +277,12 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 		addExport: function(key, lib, reqconfig){
 			self.addExport(key, lib, reqconfig);
 		}
-	}, partConfig.lang);
+	}, partConfig.lang, {});
 
   libFile.mkdirpSync(path.dirname(tfilename)); //to be acc
   if(fs.existsSync(tfilename))
     fs.unlinkSync(tfilename);
+	self.fileCount ++;
 //  fs.writeFileSync(tfilename, str, {mode: 0444});
   fs.writeFileSync(tfilename, str, {mode: 0777});
 }
@@ -301,6 +305,8 @@ Disp.prototype.genPlugin = function(){
 	}
 }
 Disp.prototype.dispose = function(){
+	var self = this;
+	log.i(self.fileCount + " files updated");
 	log.v("dispose success");
 }
 Disp.prototype.getEnv = function(partConfig){
@@ -323,18 +329,23 @@ Disp.prototype.expandDeps = function(deps, gdeps, lang){
 	var self = this;
 	var vendors = self.eval({"vendor.json": 1}, lang);
 	for(var key in deps){
-		var config = vendors[key];
-		if(config && config.deps){
-			self.expandDeps(config.deps, gdeps, lang);
+		var vendorConfig = vendors[key];
+		if(vendorConfig && vendorConfig.deps){
+			self.expandDeps(vendorConfig.deps, gdeps, lang);
+		}
+		var langConfig = self.getDepConfig(key, lang);
+		if(langConfig && langConfig.deps){
+			self.expandDeps(langConfig.deps, gdeps, lang);
 		}
 		if(!gdeps[key]){
 			gdeps[key] = {};
 		}
-		if(config){
-			if(!gdeps[key].extended){
-				utils.extend(gdeps[key], config);
-				gdeps[key].extended = 1;
-			}
+		if(!gdeps[key].extended){
+			if(vendorConfig)
+				utils.extend(gdeps[key], vendorConfig);
+			if(langConfig)
+				utils.extend(gdeps[key], langConfig);
+			gdeps[key].extended = 1;
 		}
 		if(typeof deps[key] !="object")
 			gdeps[key].val = deps[key];
@@ -346,7 +357,7 @@ Disp.prototype.addExport = function(key, lib, reqconfig){
 	var self = this;
 	if(typeof lib == "string"){
 		var name = lib;
-		reqconfig.file = self.filemap[name];
+		reqconfig.file = self.fileMap[name];
 		reqconfig.sub = key;
 		var toextend = {};
 		toextend[name] = {Lexport: {}};
@@ -356,28 +367,27 @@ Disp.prototype.addExport = function(key, lib, reqconfig){
 }
 
 var cache = {};
-Disp.prototype.getDepConfig = function(key, vendorconfig, lang){
+Disp.prototype.getDepConfig = function(key, lang){
 	var self = this;
-	var rtn;
+	var rtn = {};
 //local file
-	if(self.filemap[key]){
-		rtn = {file: self.filemap[key]};
+	if(self.fileMap[key]){
+		rtn.file = self.fileMap[key];
 	}else{
 //local lib			
 		var evaljson = {};
 		evaljson[key+".lib"] =1;
-		if(self.eval(evaljson, lang, {}, true)){
-			rtn = {lib: key};
+		var deps = {};
+		if(self.eval(evaljson, lang, deps, true)){
+			rtn.lib = key;
+			rtn.deps = deps;
 		}
 //remote lib
 		else {
-			rtn = {pkg: key};
+			rtn.pkg = key;
 		}
 	}
 	rtn.name = key;
-	if(typeof vendorconfig == "object"){
-		utils.extend(rtn, vendorconfig);
-	}
 
 	return rtn;
 }
@@ -488,11 +498,7 @@ Disp.prototype.eval = function(json, lang, deps, isPseudo){
 		else
 			return self.callback(lang + " " + name + " not exist");
 	}
-	if(isPseudo){
-		return "1";
-	}
 //begin eval
-
 //	tmpl.extendMethods("eval", 
 	var data = {
 		name: name,
@@ -515,18 +521,21 @@ Disp.prototype.eval = function(json, lang, deps, isPseudo){
 			var func;
 			eval('func = {"function":{'+rtnstr.substr(1)+'}}');
 			if(json.name) func.name = json.name;
-			return self.eval(func, lang, deps);
+			rtnstr = self.eval(func, lang, deps);
 		}catch(e){
 			log.e('func = {"function":{'+rtnstr.substr(1)+'}}');
 		}
 	}else if(flags.json){
 		try{
-			return JSON.parse(rtnstr);
+			rtnstr = JSON.parse(rtnstr);
 		}catch(e){
 			JSON.parse(rtnstr);
 			return self.callback("wrong json!");
 		}
-	}else{
-		return rtnstr;
 	}
+	if(!isPseudo)
+		return rtnstr;
+	else
+		return 1;
+	
 }

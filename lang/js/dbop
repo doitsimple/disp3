@@ -1,6 +1,6 @@
 ^^
 deps.db = 1;
-var dbname = argv.dbname || "main";
+var db = argv.db || "main";
 
 var args = [{string: argv.schema}];
 if(argv.arg1)
@@ -9,6 +9,7 @@ else
 	args.push("{}");
 if(argv.arg2)
 	args.push(argv.arg2);
+if(!parent.result) parent.result = "result";
 args.push({makeCallback: parent});
 $$
-db.^^=dbname$$.^^=argv.method$$(^^=~evalArray:args, sep: ", "$$);
+db.^^=db$$.^^=argv.method$$(^^=~evalArray:args, sep: ", "$$);
