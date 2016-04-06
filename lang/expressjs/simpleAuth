@@ -4,8 +4,8 @@ deps.passport = 1;
 deps["passport-http-bearer"] = 1;
 
 $$
-function redisAuth(){
+function simpleAuth(){
 	passport.use("default", new passportHttpBearer.Strategy(check));
-	^^=~makeAsyncFunc: "check", args: ["token"], content: {kitRedisTokenValidate: argv}$$
+	^^=~makeAsyncFunc: "check", args: ["token"], content: {kitSimpleTokenValidate: argv}$$
 	return passport.authenticate('default', { session: false });
 }();

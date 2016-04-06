@@ -18,7 +18,8 @@ db.^^=db$$.select("^^=schema$$", {
 	if(err) {^^=~parent.error$$; return;}
 	if(result){
 		if(now - result.^^=timeField$$ < 60000){
-				^^=~extend: parent.error, code: 101, error: "短信发送过于频繁"$$
+			^^=~extend: parent.error, code: 101, error: "短信发送过于频繁"$$
+			return;
 		}
 		db.^^=db$$.update("^^=schema$$", {
 			^^=phoneField$$: ^^=phone$$

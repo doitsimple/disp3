@@ -1,5 +1,7 @@
 ^^
 deps.mongodb = 1;
+deps.ObjectId = 1;
+deps.isArray = 1;
 deps.eachSync = 1;
 deps.project = 1;
 var host, port, dbname, authStr, hostStr;
@@ -16,6 +18,22 @@ new function(){
 	var colCache = {};
 	var colDataCache = {};
 	var conn;
+	var formatFuncs = {};
+	self.makeFormat = function(config){
+		return function(doc){
+			if(doc._id) doc._id = ObjectId(doc._id);	
+		}
+	}
+	self.format = function(name, doc){
+		if(!formatFuncs[name]) formatFuncs[name] = self.makeFormat(colDef[name]);
+		if(isArray(doc)){
+			for(var i=0;i<doc.length;i++){
+				formatFuncs[name](doc[i]);
+			}
+		}else{
+			formatFuncs[name](doc);
+		}
+	}
 	self.getCol = function(name){
 		var col = colCache[name];
 		if(!col){
@@ -62,6 +80,7 @@ new function(){
 	}
 	self.selectx = function(name, op, fn){
 		var aggrarr = [];
+		self.format(name, op.$match);
 		if(op.$match) aggrarr.push({$match: op.$match});
     if(op.$sort && Object.keys(op.$sort).length>0)
       aggrarr.push({$sort: op.$sort});
@@ -97,6 +116,7 @@ new function(){
 		});
 	},
 	self.insert = function(name, doc, fn){
+		self.format(name, doc);
 		self.getCol(name).insertOne(doc, function(err, result){
 			var id = doc._id;
 			delete doc._id;
@@ -105,9 +125,12 @@ new function(){
 		});
 	}
 	self.inserts = function(name, docs, fn){
+		self.format(name, docs);
 		self.getCol(name).insertMany(docs, fn);
 	}
 	self.updatex = function(name, where, op, fn){
+		self.format(name, where);
+		self.format(name, op);
 		delete op.$limit;
 		self.getCol(name).updateOne(where, op, function(err, result){
       var rtn;
@@ -117,11 +140,16 @@ new function(){
     });
 	}
 	self.sedatex = function(name, where, op, fn){
+		self.format(name, where);
+		self.format(name, op);
 		delete op.$limit;
     self.getCol(name).findAndModify(where, [], op, function(err, doc){
       if(err) return fn(err);
       if(!doc) return fn(null, doc);
       fn(null, doc.value);
     });
+	}
+	self.drop = function(fn){
+		conn.dropDatabase(fn);
 	}
 }

@@ -6,4 +6,6 @@ if(parent.data){
  str = "{}";
 }
 $$
-res.send({data: ^^=str$$ || {}});
+var data = ^^=str$$;
+console.log(data);
+res.send({data: data || {}});

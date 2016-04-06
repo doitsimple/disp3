@@ -1,0 +1,15 @@
+^^
+parent.then.error = parent.error;
+parent.then.success = parent.success;
+$$
+if(^^=$.eval(argv)$$){
+^^=~$.eval(parent.then)$$
+}
+^^if(parent.else){
+parent.else.error = parent.error;
+parent.else.success = parent.success;
+$$
+else{
+^^=~$.eval(parent.else)$$
+}
+^^}$$

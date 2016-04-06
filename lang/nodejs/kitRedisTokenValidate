@@ -1,0 +1,6 @@
+db.^^=argv.db$$.get("^^=argv.schema$$", token, function (err, user_id) {
+	^^console.log(parent.error)$$
+  if (err) { ^^=~extend: parent.error, error: {get: "err"}$$ return; }
+  if (!user_id) { ^^=~extend: parent.success, result: false$$ return;  }
+	^^=~extend: parent.success, result: {"get": "user_id"}$$ return;
+});

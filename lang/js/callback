@@ -1,4 +1,5 @@
 ^^if(argv){
+if(!parent.error) parent.error = "null";
 var args = $.concat(parent.error, parent.result);
 $$
 ^^=argv$$(^^=~evalArray: args, sep: ", "$$);^^}$$

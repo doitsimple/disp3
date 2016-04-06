@@ -1,7 +1,13 @@
 ^^
 delete parent[name];
 if(argv){
-	$.extend(argv, parent);
+	if($.isArray(argv)){
+		argv.forEach(function(e){
+			$.extend1(e, parent);
+		});
+	}else{
+		$.extend1(argv, parent);
+	}
 }
 $$
 ^^=~argv$$

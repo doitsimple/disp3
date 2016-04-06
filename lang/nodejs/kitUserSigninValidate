@@ -1,0 +1,20 @@
+if(code && code != "undefined"){
+	db.main.select("^^=argv.codeSchema$$",{
+		phone: user.phone,
+		code: code
+	}, function(err, result){
+		if(err) {
+	    ^^=~parent.error$$;return;
+		}
+		if(!result){
+			^^=~extend: parent.error, code: 203, error: "验证码错误"$$
+			return;
+		}
+		^^=~parent.success$$
+	})
+}else if(password){
+	if(user.password != password){
+		^^=~parent.error$$;return;
+	}
+	^^=~parent.success$$
+}

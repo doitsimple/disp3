@@ -12,10 +12,11 @@ db.^^=db$$.select("^^=schema$$", {
 	^^=phoneField$$: ^^=phone$$,
 	^^=codeField$$: ^^=code$$
 }, function(err, result){
-	if(err) {^^=~parent.error$$;}
+	if(err) {^^=~parent.error$$;return;}
 	if(!result){
 		^^=~extend: parent.error, code: 102, error: "验证码错误"$$
-	}else{
-		^^=~parent.success$$
+		return;
 	}
+	^^=~parent.success$$
+	
 });

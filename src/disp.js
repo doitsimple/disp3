@@ -53,11 +53,20 @@ Disp.prototype.readPrev = function(){
 */
 Disp.prototype.extendGlobal = function(){
 	var self = this;
-	if(fs.existsSync(self.projectDir + "/disp.json") && !self.ignoreDispJson){
-		var dispJson = libFile.readJSON(self.projectDir + "/disp.json");
-		log.v("read json success");
-		log.v(dispJson);
-		utils.extend(self.global, dispJson);
+	if(!self.ignoreDispJson){
+		if(fs.existsSync(self.projectDir + "/disp.json")){
+			var dispJson = libFile.readJSON(self.projectDir + "/disp.json");
+			log.v("read json success");
+			log.v(dispJson);
+			utils.extend(self.global, dispJson);
+		}
+		if(fs.existsSync(self.projectDir + "/disp")){
+			libFile.forEachFile(self.projectDir + "/disp", function(f){
+				if(!f.match(/\.json$/)) return;
+				var tmpJson = libFile.readJSON(self.projectDir + "/disp/" + f);
+				utils.extend(self.global, tmpJson);
+			});
+		}
 	}
 	self.global.nodeBin = process.argv.shift();
 	self.global.dispBin = process.argv.shift();
@@ -300,7 +309,7 @@ Disp.prototype.genPlugin = function(){
 		}
 		self.genProj(tmp, {
 			src: configFile,
-			target: ""
+			target: self.target || ""
 		});
 	}
 }
@@ -392,16 +401,24 @@ Disp.prototype.getDepConfig = function(key, lang){
 
 	return rtn;
 }
+Disp.prototype.getLangDir = function(lang){
+	var self = this;
+	if(lang == "custom"){
+		return self.projectDir + "/words";
+	}else{
+		return self.global.langDir + "/" + lang;
+	}
+}
 Disp.prototype.getLangConfig = function(lang){
 	var self = this;
-	var configFile = self.global.langDir + "/" + lang;
+	var configFile = self.getLangDir(lang);
 	if(cache[lang])
 		return cache[lang];
 	var config = {};
 	try {
 		config = require(configFile);
 	}catch(e){
-		self.callback(e);
+		config = {};
 	}
 	cache[lang] = config;
 	return config;
@@ -410,7 +427,7 @@ Disp.prototype.getLangConfig = function(lang){
 Disp.prototype.getLangFile = function(name, lang){
 	var self = this;
 	var langConfig = self.getLangConfig(lang);
-	var file = self.global.langDir + "/" + lang + "/" + name;
+	var file = self.getLangDir(lang) + "/" + name;
 	var resultFile;
 	if(fs.existsSync(file)){
 		return file;

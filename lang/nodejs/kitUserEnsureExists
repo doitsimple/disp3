@@ -1,0 +1,13 @@
+^^
+deps.db = 1;
+var db = argv.db || "main";
+var schema = argv.schema;
+$$
+db.^^=db$$.select("^^=schema$$", ^^=~argv.criteria$$, function(err, result){
+	if(err) {^^=~parent.error$$;return;}
+	if(!result){
+		^^=~extend: parent.error, code: 104, error: "用户不存在"$$
+		return;
+	}
+	^^=~parent.success$$
+});

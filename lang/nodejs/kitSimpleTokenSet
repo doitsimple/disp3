@@ -1,0 +1,13 @@
+^^
+deps.db = 1;
+deps.hat = 1;
+var dbname = argv.db || "main";
+var idField = argv.idField || "_id";
+var tokenField = argv.tokenField || "token";
+var user_id = argv.user_id || "user_id";
+$$
+var token = hat();
+db.^^=dbname$$.update("^^=argv.schema$$", {^^=idField$$: ^^=user_id$$}, {^^=tokenField$$: token}, function(err){
+	if(err){ ^^=~parent.error$$ return;}
+	^^=~parent.success$$
+});

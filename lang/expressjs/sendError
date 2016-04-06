@@ -2,4 +2,6 @@
 var code = parent.code  || 1;
 var msg = parent.error || {stringify: {get: "err"}};
 $$
-res.send({error: {code:^^=~code$$, message:^^=~string: msg$$}});
+var errorblock =  {code:^^=~code$$, message:^^=~string: msg$$};
+console.log(errorblock);
+res.send({error: errorblock});

@@ -1,0 +1,6 @@
+^^
+argv.forEach(function(e, i){
+ if(typeof e == "string") argv[i] = {string: e};
+});
+$$
+^^=~evalArray: argv, sep: " + "$$
