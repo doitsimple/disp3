@@ -1,8 +1,6 @@
 ^^
-if(!argv.error) argv.error = {
-	sendError: {}
-}
+var error = parent.error || {sendError: {}}
 $$
 function(req, res, next){
-^^=~argv$$
+^^=~nesting: argv, error: error$$
 }

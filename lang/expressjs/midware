@@ -1,11 +1,7 @@
 ^^
-if(!argv.error) argv.error = {
-	sendError: {}
-}
-if(!argv.success) argv.success = {
-	nextMidware: {}
-}
+var error = parent.error || {sendError: {}}
+var success = parent.success || {nextMidware: {}}
 $$
 function(req, res, next){
-^^=~argv$$
+^^=~nesting: argv, error: error, success: success$$
 }

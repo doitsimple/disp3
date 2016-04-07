@@ -1,4 +1,4 @@
-if(code && code != "undefined"){
+if(code){
 	db.main.select("^^=argv.codeSchema$$",{
 		phone: user.phone,
 		code: code
@@ -14,7 +14,7 @@ if(code && code != "undefined"){
 	})
 }else if(password){
 	if(user.password != password){
-		^^=~parent.error$$;return;
+		^^=~extend: parent.error, error: "密码错误"$$;return;
 	}
 	^^=~parent.success$$
 }

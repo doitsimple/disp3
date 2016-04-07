@@ -8,11 +8,12 @@ var phoneField = argv.phoneField || "phone";
 var codeField = argv.codeField || "code";
 var result = parent.result || "result";
 $$
+
 db.^^=db$$.select("^^=schema$$", {
 	^^=phoneField$$: ^^=phone$$
 }, function(err, doc){
 	if(err) {^^=~parent.error$$; return;}
-	if(!doc) {^^=~extend: parent.error, error: {string:"电话不存在"}$$; return;}
+	if(!doc) {^^=~extend: parent.error, error: {string:"手机不存在"}$$; return;}
 	var ^^=result$$ = doc.^^=codeField$$;
 	^^=~parent.success$$
 });

@@ -77,8 +77,13 @@ function extend(config, config2){
 			itConfig2[key]= [];
 		}
 //		itConfig2[key] = itConfig[key];
-		itConfig[key].forEach(function(v){
-			libArray.pushIfNotExists(itConfig2[key], v);
+		itConfig[key].forEach(function(v, i){
+			if(typeof v == "object" && typeof itConfig2[key][i] == "object"){
+				extend(itConfig2[key][i], v);
+			}else{
+				itConfig2[key][i] = v;
+			}
+//			libArray.pushIfNotExists(itConfig2[key], v);
 		});
 	});
 }

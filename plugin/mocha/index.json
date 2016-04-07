@@ -9,6 +9,10 @@
 			}
 		}
 	},
+	"test.sh": {
+		"lang": "bash",
+		"tmpl": "test.sh"
+	},
 	"mocha_lib.js": {
 		"name": "mochalib",
 		"lang": "nodejs",

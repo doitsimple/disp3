@@ -3,3 +3,4 @@ if(parent.init)
  str = parent.init?" = " + $.eval(parent.init):"";
 $$
 var ^^=argv$$^^=str$$;
+^^=~parent.success$$

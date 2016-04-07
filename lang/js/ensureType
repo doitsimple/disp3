@@ -8,7 +8,7 @@ if(isNaN(^^=~parent.var$$)) {^^=~parent.error$$;}
 var ^^=parent.var$$ = parseFloat(^^=parent.val$$);
 if(isNaN(^^=parent.var$$)) {^^=~parent.error$$;}
 ^^}else if(type == "string"){$$
-var ^^=parent.var$$ = "" + ^^=parent.val$$;
+var ^^=parent.var$$ = ^^=parent.val$$?"" + ^^=parent.val$$:"";
 ^^}else if(type == "ObjectId"){
 deps.ObjectId = 1;
 $$

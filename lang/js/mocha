@@ -1,1 +1,1 @@
-it('^^=parent.name$$', ^^=~makeAsyncFunc: 1, content: argv$$);
+it('^^=parent.name$$', ^^=~makeAsyncFunc: 1, content: {nesting: argv}$$);
