@@ -2,4 +2,4 @@
 $.extend(global, {angularLib: {jsonDisplay: 1}});
 $.extend(global, {css: {tree: 1}});
 $$
-<json-display ng-model="^^=argv.model$$"></json-display>
+<json-display ng-model="^^=parent.model$$"></json-display>

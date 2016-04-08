@@ -3,5 +3,5 @@ $.extend(global, {angularLib: {jsonModifier: 1}});
 $.extend(global, {css: {tree: 1}});
 $$
 <div class="tree">
-<json-modifier ng-model="^^=argv.model$$"></json-modifier>
+<json-modifier ng-model="^^=parent.model$$"></json-modifier>
 </div>

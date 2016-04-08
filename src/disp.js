@@ -275,7 +275,7 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 		}else if(gdeps[key].files){
 			for(var i in gdeps[key].files){
 				var tmp = gdeps[key].files[i];
-				if(gdeps[key].extended) tmp.extended = 1;
+				if(gdeps[key].vendor) tmp.vendor = 1;
 				tmp.name = key;
 				parseDeps.push(tmp);
 			}
@@ -358,12 +358,14 @@ Disp.prototype.expandDeps = function(deps, gdeps, partConfig){
 		if(!gdeps[key]){
 			gdeps[key] = {};
 		}
-		if(!gdeps[key].extended){
-			if(vendorConfig)
+		if(vendorConfig){
+			if(!gdeps[key].vendor){
 				utils.extend(gdeps[key], vendorConfig);
-			if(langConfig)
-				utils.extend(gdeps[key], langConfig);
-			gdeps[key].extended = 1;
+			}
+			gdeps[key].vendor = 1;
+		}
+		if(langConfig){
+			utils.extend(gdeps[key], langConfig);
 		}
 		if(typeof deps[key] !="object")
 			gdeps[key].val = deps[key];

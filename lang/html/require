@@ -1,8 +1,8 @@
 ^^
 
 var prefix = "";
-if(argv.extended){
- prefix = global.htmlVendorDir + "/" || "";
+if(argv.vendor){
+ prefix = global.htmlVendorDir?global.htmlVendorDir + "/" : "vendor/";
 }
 $$
 ^^if(argv.type == "js"){$$

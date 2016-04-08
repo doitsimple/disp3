@@ -1,1 +1,1 @@
-<input ng-model="^^=argv.model$$">
+<input ng-model="^^=parent.model$$">

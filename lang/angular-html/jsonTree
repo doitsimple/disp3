@@ -1,1 +1,1 @@
-<div class="ng-tree" ng-model="^^=argv.model$$"><div>
+<div class="ng-tree" ng-model="^^=parent.model$$"><div>
