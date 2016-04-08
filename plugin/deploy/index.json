@@ -1,0 +1,6 @@
+{
+	"deploy.sh":{
+		"tmpl": "deploy.sh",
+		"lang": "bash"
+	}
+}

@@ -67,9 +67,17 @@ Disp.prototype.extendGlobal = function(){
 				utils.extend(self.global, tmpJson);
 			});
 		}
+		if(self.exDispJsonFile){
+			if(!self.exDispJsonFile.match(/\.json$/))
+				self.exDispJsonFile = self.exDispJsonFile + ".json";
+			if(!fs.existsSync(self.exDispJsonFile)){
+				throw "no exDispJson: " + self.exDispJsonFile;
+			}
+			var exDispJson = libFile.readJSON(self.exDispJsonFile);
+			log.v("read ex json success");
+			utils.extend(self.global, exDispJson);
+		}
 	}
-	self.global.nodeBin = process.argv.shift();
-	self.global.dispBin = process.argv.shift();
 	self.global.vendorDir = path.resolve(self.projectDir + "/../disp-vendor");
 	self.global.dispDir = path.resolve(__dirname + "/..");
 	self.global.archDir = path.resolve(self.global.dispDir + "/arch");
@@ -180,8 +188,8 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 	}
 	if(partConfig.arch){
 		var dispConfig = {
-			projectDir: path.resolve(filename),
-			targetDir: filename,
+			projectDir: self.projectDir + "/" + path.resolve(filename),
+			targetDir: self.targetDir + "/" +filename,
 			global: {
 				arch: partConfig.arch
 			}

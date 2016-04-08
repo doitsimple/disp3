@@ -8,13 +8,16 @@ function parseArgv(){
 	//init global
 	var env = {};
 	env.argv = [];
+	env.global = {};
 	var ParamsHelp = {
 		"p": "project path, default '.'",
 		"t": "target path, default '.', can be configured in disp.json",
+		"x": "extra disp.json file to extend",
 		"v": "verbose mode"
 	}
+	env.global.nodeBin = process.argv.shift();
+	env.global.dispBin = process.argv.shift();
 	var op = process.argv.shift();
-	var projectDir;
 	while(op){
 		switch(op){
 			case "-p":
@@ -22,6 +25,9 @@ function parseArgv(){
 			break;
 			case "-t":
 			env.targetDir = path.resolve(process.argv.shift());
+			break;
+			case "-x":
+			env.exDispJsonFile = path.resolve(process.argv.shift());
 			break;
 			case "-v":
 			log.setLevel(3);
