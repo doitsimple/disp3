@@ -1,0 +1,7 @@
+^^deps.iterateBoth = 1;$$
+function extend(config, config2){
+	if(!config) {config = config2; return; }
+	iterateBoth(config2, config, function(key, itConfig, itConfig2){
+		itConfig2[key] = itConfig[key];
+	});
+}

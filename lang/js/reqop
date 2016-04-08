@@ -1,16 +1,15 @@
 ^^
-deps.request = 1;
+deps.requestx = 1;
 var client = argv.client || "request";
 var method = argv.method;
 var args = [{string: argv.url}]
 if(argv.headers){
- method+="Ex";
+ method+="x";
  args.push(argv.headers);
 }
-if(argv.data){
- args.push(argv.data);
-}
+
+args.push(argv.data || "{}");
 if(!parent.result) parent.result = "result";
 args.push({makeCallback: parent});
 $$
-request.^^=method$$(^^=~evalArray:args, sep: ", "$$)
+requestx.^^=method$$(^^=~evalArray:args, sep: ", "$$)

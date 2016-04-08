@@ -2,6 +2,7 @@ function project(src, config, target){
 	if(!src) return;
 	if(!target) target = {};
 	for(var key in config){
+		if(src[key] == undefined || src[key] == null) continue;
 		if(typeof config[key] == "string"){
 			target[config[key]] = src[key];
 		}else{

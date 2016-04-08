@@ -1,5 +1,3 @@
-~
-args: {obj: "var"}, 
-content: {
-	raw: "return Object.prototype.toString.call( obj ) === '[object Array]';"
+function isArray(obj){
+	return Object.prototype.toString.call( obj ) === '[object Array]';
 }

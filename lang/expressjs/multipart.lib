@@ -1,0 +1,20 @@
+^^
+deps["path"] = 1;
+deps["connect-multiparty"] = 1;
+deps["mkdirpSync"] = 1;
+$$
+function multipart(field){
+  if(!multiparts[field]){
+    var udir = path.resolve(uploadPath + "/" + field);
+    mkdirpSync(udir);
+    multiparts[field] = connectMultiparty({uploadDir: udir});
+  }
+  return multiparts[field];
+}
+^^
+var uploadPath = global.uploadPath || "upload"
+$$
+var multiparts = {};
+var uploadPath = ^^=~string: uploadPath$$;
+
+

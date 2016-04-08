@@ -1,0 +1,2 @@
+^^deps.path=1;$$
+req.files["^^=argv$$"]?path.basename(req.files["^^=argv$$"].path):""

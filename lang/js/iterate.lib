@@ -1,0 +1,23 @@
+^^deps.isArray = 1;$$
+function iterate(config, fnBasic, fnArray){
+	for (var key in config){
+		if(typeof config[key] == "object"){
+			if(isArray(config[key])){
+				if(fnArray) fnArray(key, config);
+				else {
+					config[key].forEach(function(e, i){
+						if(typeof(e) == "object"){
+							iterate(e, fnBasic);
+						}else{
+							fnBasic(key, config, i);
+						}
+					});
+				}
+			}else{
+				iterate(config[key], fnBasic, fnArray);
+			}
+		}else{
+			fnBasic(key, config);
+		}
+	}
+}

@@ -1,0 +1,35 @@
+^^deps.isArray = 1;$$
+function iterateBoth(config, config2, fnBasic, fnArray){
+	if(config2 == undefined) config2 = {};
+	if(typeof config2 != "object"){	
+		throw("config2 is not object: " + config2);
+		return;
+	}
+	for (var key in config){
+		if(typeof config[key] == "object"){
+			if(isArray(config[key])){
+				if(fnArray){
+					fnArray(key, config, config2);
+				}else{
+					if(!config2[key]) config2[key] = [];
+					if(!isArray(config2[key])){
+						throw("not array: " + config2[key]);
+					}
+					config[key].forEach(function(e, i){
+						if(typeof(e) == "object"){
+							if(typeof config2[key][i] == "object")
+								iterateBoth(config[key], config2[key], fnBasic);
+						}else{
+							fnBasic(i, config[key], config2[key]);
+						}
+					});
+				}
+			}else{
+				if(!config2[key]) config2[key] = {};
+				iterateBoth(config[key], config2[key], fnBasic, fnArray);
+			}
+		}else{
+			fnBasic(key, config, config2);
+		}
+	}
+}

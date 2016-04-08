@@ -1,0 +1,2 @@
+^^deps.multipart = 1$$
+multipart(^^=~string: argv$$)

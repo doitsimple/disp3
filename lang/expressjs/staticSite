@@ -1,1 +1,1 @@
-^^=parent.caller$$ = express.static(__dirname + "/" + ^^=~argv$$);
+^^=parent.caller$$ = express.static(__dirname + "/" + ^^=~string: argv$$);

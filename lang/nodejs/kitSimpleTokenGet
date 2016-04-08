@@ -1,0 +1,12 @@
+^^
+deps.db = 1;
+var dbname = argv.db || "main";
+var tokenField = argv.tokenField || "token";
+var criteria = argv.criteria || {val: {}}
+var result = parent.result || "result";
+$$
+db.^^=dbname$$.select("^^=argv.schema$$", ^^=~criteria$$, function(err, doc){
+	if(err){ ^^=~parent.error$$ return;}
+	var ^^=result$$ = doc.^^=tokenField$$;
+	^^=~parent.success$$
+});

@@ -2,12 +2,14 @@
 
 deps.http = 1;
 deps.https = 1;
+deps.fs = 1;
 deps.querystring = 1;
 deps.url = 1;
 deps.strlen = 1;
 deps.append1 = 1;
 deps.extend1 = 1;
-
+deps.extend = 1;
+deps["form-data"] = 1
 $$
 request = new Req();
 function parseRes(res, fn){
@@ -53,14 +55,14 @@ function Req(defaultOptions, uastr){
 		if(!config.url.match(":\/")) config.url = "http://" + config.url;
 		var urlParsed = url.parse(config.url);
 		var options = {};
-		extend1(options, defaultOptions)
-;		extend1(options, {
+		extend(options, defaultOptions);
+		extend(options, {
 			host: urlParsed.hostname,
 			path: urlParsed.path,
 			method: config.method || "get"
 		});
 		if(urlParsed.port) options.port = urlParsed.port;		
-		extend1(options.headers, config.headers);		
+		extend(options.headers, config.headers);
 		var protocol = urlParsed.protocol || "http:";
 		var req;
 		if(protocol == "http:"){
@@ -79,8 +81,11 @@ function Req(defaultOptions, uastr){
 				console.error(config.data);
 			}
 		}
+		if(config.stream){
+			config.stream.pipe(req);
+		}
 		req.once("response", function(res){
-			if(config.stream)
+			if(config.returnStream)
 				fn(null, res);
 			else
 				parseRes(res, fn);
@@ -96,7 +101,7 @@ function Req(defaultOptions, uastr){
 	self.ajax = ajax;
 	["get", "post", "put", "delete"].forEach(function(method){
 
-		self[method + "Ex"] = function(url, headers, param1, param2){
+		self[method + "x"] = function(url, headers, param1, param2){
 			var fn, data;
 			if(!param2){
 				fn = param1;
@@ -121,30 +126,24 @@ function Req(defaultOptions, uastr){
 		};
 
 		self[method] = function(url, data, fn){
-			self[method + "Ex"](url, {}, data, fn);
+			self[method + "x"](url, {}, data, fn);
 		};
-		self[method+"Bearer"] = function(url, token, json, fn){
-			var data = JSON.stringify(json);
-			self[method + "Ex"](url, {
-				Authorization: "Bearer " + token
-			}, data, fn);
-		};
-		self[method+"FormEx"] = function(url, headers, json, fn){
+		self[method+"Formx"] = function(url, headers, json, fn){
 			var data = querystring.stringify(json);
 			headers["Content-type"] = "application/x-www-form-urlencoded";
 			headers["Content-Length"] = strlen(data);
-			self[method + "Ex"](url, headers, data, fn);
+			self[method + "x"](url, headers, data, fn);
 		};
 		self[method+"Form"] = function(url, json, fn){
 			var data = querystring.stringify(json);
-			self[method + "Ex"](url, {
+			self[method + "x"](url, {
 				"Content-type": "application/x-www-form-urlencoded",
 				"Content-Length" : strlen(data)
 			}, data, fn);
 		};
 		self[method+"Json"] = function(url, json, fn){
 			var data = JSON.stringify(json);
-			self[method + "Ex"](url, {
+			self[method + "x"](url, {
 				"Content-type": "application/json",
 				"Content-Length" : strlen(data)
 			}, data, fn);
@@ -153,7 +152,7 @@ function Req(defaultOptions, uastr){
 			var cookiearr = [];
 			for(var key in cookies)
 				cookiearr.push(key + "=" + cookies[key]);
-			self[method + "Ex"](url, {
+			self[method + "x"](url, {
 				Cookie: cookiearr.join("; ")
 			}, data, fn);
 		};
@@ -162,13 +161,35 @@ function Req(defaultOptions, uastr){
 			for(var key in cookies)
 				cookiearr.push(key + "=" + cookies[key]);
 			var data = querystring.stringify(json);
-			self[method + "Ex"](url, {
+			self[method + "x"](url, {
 				"Content-type": "application/x-www-form-urlencoded",
 				"Content-Length" : strlen(data),
 				Cookie: cookiearr.join("; ")
 			}, data, fn);
 		};
 	});
+	self.postMultipartx = function(url, header, json, fn){
+//	-------BNDRY123456\r\ncontent-type: text/plain\r\ncontent-disposition: form-data; name="file"; filename="file.txt"\r\n\r\ntest\r\n-------BNDRY123456--		
+		var form = new formData();
+		for(var key in json){
+			var c = json[key];
+			if(typeof c == "object" && c.file)
+				form.append(key, fs.createReadStream(c.file))
+			else
+				form.append(key, c)
+		}
+		header["Content-type"]= "multipart/form-data; boundary="+form._boundary;
+		form.getLength(function(err, length){
+			header["Content-Length"]=length;
+			ajax({
+				url: url, 
+				method: "post",
+				headers: header,
+				stream: form
+			}, fn);
+		});
+	}
+		
 	//modified from git://github.com/jshttp/fresh
 	self.fresh = function(reqheaders, resheaders){
 
