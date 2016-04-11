@@ -3,6 +3,9 @@
 var prefix = "";
 if(argv.vendor){
  prefix = global.htmlVendorDir?global.htmlVendorDir + "/" : "vendor/";
+ var tarfile=global.baseDir + "/vendor/" + argv.file;
+ $.mkdirpSync(path.dirname(tarfile));
+ $.copySync(global.dispDir+"/vendor/"+argv.file, tarfile);
 }
 $$
 ^^if(argv.type == "js"){$$

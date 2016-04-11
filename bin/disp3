@@ -21,13 +21,13 @@ function parseArgv(){
 	while(op){
 		switch(op){
 			case "-p":
-			env.projectDir = path.resolve(process.argv.shift());
+			env.projectDir = process.argv.shift();
 			break;
 			case "-t":
-			env.targetDir = path.resolve(process.argv.shift());
+			env.targetDir = process.argv.shift();
 			break;
 			case "-x":
-			env.exDispJsonFile = path.resolve(process.argv.shift());
+			env.exDispJsonFile = process.argv.shift();
 			break;
 			case "-v":
 			log.setLevel(3);

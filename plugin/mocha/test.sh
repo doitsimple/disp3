@@ -1,7 +1,8 @@
+DIR=^^=~srcDir: 1$$
 ^^
 for(var key in global.tests){
 $$
-mocha test/^^=key$$_test.js
+mocha $DIR/test/^^=key$$_test.js
 ^^
 }
 $$

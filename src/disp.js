@@ -51,34 +51,26 @@ Disp.prototype.readPrev = function(){
 	self.prev = prev;
 }
 */
+Disp.prototype.readDispJson = function(jsonFile){
+	var self = this;
+	if(!fs.existsSync(self.projectDir + "/" + jsonFile)){
+		log.i("ignore " + self.projectDir + "/" + jsonFile);
+		return;
+	}
+	tmpl.extendMethods("eval", function(json){
+		return self.eval(json, "base");
+	});
+	var str = tmpl.render({file: self.projectDir + "/" + jsonFile}, self.global);
+	var toextend;
+	try {
+		toextend = JSON.parse(str);
+	}catch(e){
+		JSON.parse(str);
+	}
+	utils.extend(self.global, toextend);
+}
 Disp.prototype.extendGlobal = function(){
 	var self = this;
-	if(!self.ignoreDispJson){
-		if(fs.existsSync(self.projectDir + "/disp.json")){
-			var dispJson = libFile.readJSON(self.projectDir + "/disp.json");
-			log.v("read json success");
-			log.v(dispJson);
-			utils.extend(self.global, dispJson);
-		}
-		if(fs.existsSync(self.projectDir + "/disp")){
-			libFile.forEachFile(self.projectDir + "/disp", function(f){
-				if(!f.match(/\.json$/)) return;
-				var tmpJson = libFile.readJSON(self.projectDir + "/disp/" + f);
-				utils.extend(self.global, tmpJson);
-			});
-		}
-		if(self.exDispJsonFile){
-			if(!self.exDispJsonFile.match(/\.json$/))
-				self.exDispJsonFile = self.exDispJsonFile + ".json";
-			if(!fs.existsSync(self.exDispJsonFile)){
-				throw "no exDispJson: " + self.exDispJsonFile;
-			}
-			var exDispJson = libFile.readJSON(self.exDispJsonFile);
-			log.v("read ex json success");
-			utils.extend(self.global, exDispJson);
-		}
-	}
-	self.global.vendorDir = path.resolve(self.projectDir + "/../disp-vendor");
 	self.global.dispDir = path.resolve(__dirname + "/..");
 	self.global.archDir = path.resolve(self.global.dispDir + "/arch");
 	self.global.pluginDir = path.resolve(self.global.dispDir + "/plugin");
@@ -86,6 +78,20 @@ Disp.prototype.extendGlobal = function(){
 	self.global.projectDir = self.projectDir;
 	self.global.targetDir = self.targetDir;
 	if(!self.global.baseDir) self.global.baseDir = self.projectDir;
+	if(!self.ignoreDispJson){
+		self.readDispJson("disp.json");
+		if(fs.existsSync(self.projectDir + "/disp")){
+			libFile.forEachFile(self.projectDir + "/disp", function(f){
+				if(!f.match(/\.json$/)) return;
+				self.readDispJson("disp/"+f);
+			});
+		}		
+		if(self.exDispJsonFile){			
+			if(!self.exDispJsonFile.match(/\.json$/))
+				self.exDispJsonFile = self.exDispJsonFile + ".json";
+			self.readDispJson(self.exDispJsonFile);
+		}
+	}
 	if(!self.global.arch)
 		self.global.arch = "raw";
 	if(!self.global.impl)
@@ -188,7 +194,7 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 	}
 	if(partConfig.arch){
 		var dispConfig = {
-			projectDir: self.projectDir + "/" + path.resolve(filename),
+			projectDir: self.projectDir + "/" + filename,
 			targetDir: self.targetDir + "/" +filename,
 			global: {
 				arch: partConfig.arch
@@ -414,7 +420,7 @@ Disp.prototype.getDepConfig = function(key, lang){
 Disp.prototype.getLangDir = function(lang){
 	var self = this;
 	if(lang == "custom"){
-		return self.projectDir + "/words";
+		return self.global.baseDir + "/words";
 	}else{
 		return self.global.langDir + "/" + lang;
 	}
@@ -544,6 +550,7 @@ Disp.prototype.eval = function(json, lang, deps, isPseudo){
 	}
 	
 	var rtnstr = tmpl.render({file: file}, data);
+/*
 	if(flags.lib && rtnstr && rtnstr[0] == "~"){
 		try{
 			var func;
@@ -553,7 +560,9 @@ Disp.prototype.eval = function(json, lang, deps, isPseudo){
 		}catch(e){
 			log.e('func = {"function":{'+rtnstr.substr(1)+'}}');
 		}
-	}else if(flags.json){
+	}else
+*/ 
+	if(flags.json){
 		try{
 			rtnstr = JSON.parse(rtnstr);
 		}catch(e){
@@ -561,6 +570,7 @@ Disp.prototype.eval = function(json, lang, deps, isPseudo){
 			return self.callback("wrong json!");
 		}
 	}
+
 	if(!isPseudo)
 		return rtnstr;
 	else
