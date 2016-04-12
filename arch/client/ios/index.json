@@ -1,0 +1,32 @@
+{
+	"models": {
+		"sub": {
+			"Item.h": {
+				"tmpl": "Item.h"
+			},
+			"Item.m": {
+				"tmpl": "Item.m"
+			},
+			"^^=$.ucfirst(argv)$$Model.h": {
+				"tmpl": "model.h",
+				"envkey": "schemas"
+			},
+			"^^=$.ucfirst(argv)$$Model.m": {
+				"tmpl": "model.m",
+				"envkey": "schemas"
+			}
+		}
+	},
+	"providers": {
+		"sub": {
+			"^^=$.ucfirst(argv)$$Provider.h": {
+				"tmpl": "provider.h",
+				"envkey": "schemas"
+			},
+			"^^=$.ucfirst(argv)$$Provider.m": {
+				"tmpl": "provider.m",
+				"envkey": "schemas"
+			}
+		}
+	}
+}

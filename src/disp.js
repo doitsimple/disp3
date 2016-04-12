@@ -101,26 +101,31 @@ Disp.prototype.extendGlobal = function(){
 }
 Disp.prototype.genArch = function(){
 	var self = this;
+
+	var archConfigFile = self.global.archDir + "/" + self.global.arch;
+	var archConfig;
+	try {
+		archConfig = require(archConfigFile);
+	}catch(e){
+		self.callback(e);
+	}
+	if(archConfig){
+		utils.append(self.global, archConfig);
+	}
 	//file struct
-	var configFile = self.global.archDir + "/" + self.global.arch + "/" + self.global.impl;
+	var genConfigFile = self.global.archDir + "/" + self.global.arch + "/" + self.global.impl;
 	//global
-	var configFile2 = self.global.archDir + "/" + self.global.arch;
-	var tmp, tmp2;
+	var filelist;
 	try {
-		tmp = require(configFile);
+		filelist = require(genConfigFile);
 	}catch(e){
 		self.callback(e);
 	}
-	try {
-		tmp2 = require(configFile2);
-	}catch(e){
-		self.callback(e);
+	if(self.global.addons){
+		utils.extend(filelist, self.global.addons);		
 	}
-	if(tmp2){
-		utils.append(self.global, tmp2);
-	}
-	self.genProj(tmp, {
-		src: configFile,
+	self.genProj(filelist, {
+		src: genConfigFile,
 		target: ""
 	});
 }
@@ -206,7 +211,12 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 			dispConfig.global.impl = partConfig.impl;
 		var tmpenv = self.getEnv(partConfig);
 		for(var key in partConfig.global){
-			dispConfig.global[key] = self.global[key];
+			var oldkey = partConfig.global[key];
+			if(typeof oldkey == "string"){
+				dispConfig.global[key] = libObject.getByKey(self.global, oldkey);
+			}else{
+				dispConfig.global[key] = self.global[key];
+			}
 		}
 		if(tmpenv && !tmpenv._isGlobal)
 			utils.extend(dispConfig.global, tmpenv);
@@ -419,8 +429,8 @@ Disp.prototype.getDepConfig = function(key, lang){
 }
 Disp.prototype.getLangDir = function(lang){
 	var self = this;
-	if(lang == "custom"){
-		return self.global.baseDir + "/words";
+	if(lang.match(/^custom/)){
+		return self.global.baseDir + "/words" + lang.replace("custom", "");
 	}else{
 		return self.global.langDir + "/" + lang;
 	}

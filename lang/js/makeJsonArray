@@ -1,0 +1,9 @@
+^^
+if(!isArray(argv))
+	argv = [argv];
+var argvn = [];
+for(var i in argv){
+	argvn[i] = {makeJson: argv[i]};
+}
+$$
+^^=~makeArray: argvn$$
