@@ -1,5 +1,5 @@
 ^^
-deps.db = 1;
+deps.libDb = 1;
 var phone = argv.phone || "phone";
 var code = argv.code || "code";
 var db = argv.db || "main";
@@ -8,7 +8,7 @@ var phoneField = argv.phoneField || "phone";
 var codeField = argv.codeField || "code";
 var timeField = argv.timeField || "time";
 $$
-db.^^=db$$.select("^^=schema$$", {
+libDb.^^=db$$.select("^^=schema$$", {
 	^^=phoneField$$: ^^=phone$$,
 	^^=codeField$$: ^^=code$$
 }, function(err, result){

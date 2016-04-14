@@ -1,6 +1,6 @@
 ^^
 deps.request = 1;
-deps.db = 1;
+deps.libDb = 1;
 var phone = argv.phone || "phone";
 var code = argv.code || {randomDigit: 4};
 var db = argv.db || "main";
@@ -12,7 +12,7 @@ $$
 
 var code = ^^=~code$$;
 var now = new Date().getTime();
-db.^^=db$$.select("^^=schema$$", {
+libDb.^^=db$$.select("^^=schema$$", {
 	^^=phoneField$$: ^^=phone$$
 }, function(err, result){
 	if(err) {^^=~parent.error$$; return;}
@@ -21,7 +21,7 @@ db.^^=db$$.select("^^=schema$$", {
 			^^=~extend: parent.error, code: 101, error: "短信发送过于频繁"$$
 			return;
 		}
-		db.^^=db$$.update("^^=schema$$", {
+		libDb.^^=db$$.update("^^=schema$$", {
 			^^=phoneField$$: ^^=phone$$
 		}, {
 			^^=codeField$$: code,
@@ -31,7 +31,7 @@ db.^^=db$$.select("^^=schema$$", {
 			^^=~parent.success$$
 		});
 	}else{
-		db.^^=db$$.insert("^^=schema$$", {
+		libDb.^^=db$$.insert("^^=schema$$", {
 			^^=phoneField$$: ^^=phone$$,
 			^^=codeField$$: code,
 			^^=timeField$$: now

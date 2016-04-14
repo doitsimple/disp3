@@ -13,6 +13,7 @@ function parseArgv(){
 		"p": "project path, default '.'",
 		"t": "target path, default '.', can be configured in disp.json",
 		"x": "extra disp.json file to extend",
+		"P": "production",
 		"v": "verbose mode"
 	}
 	env.global.nodeBin = process.argv.shift();
@@ -28,6 +29,9 @@ function parseArgv(){
 			break;
 			case "-x":
 			env.exDispJsonFile = process.argv.shift();
+			break;
+			case "-P":
+			env.global.dev = 0;
 			break;
 			case "-v":
 			log.setLevel(3);

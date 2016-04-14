@@ -1,10 +1,10 @@
 ^^
-deps.db = 1;
+deps.libDb = 1;
 var db = argv.db || "main";
 var schema = argv.schema;
 var message = argv.message || "用户不存在";
 $$
-db.^^=db$$.select("^^=schema$$", ^^=~argv.criteria$$, function(err, result){
+libDb.^^=db$$.select("^^=schema$$", ^^=~argv.criteria$$, function(err, result){
 	if(err) {^^=~parent.error$$;return;}
 	if(!result){
 		^^=~extend: parent.error, code: 104, error: message$$

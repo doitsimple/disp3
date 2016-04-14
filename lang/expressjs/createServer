@@ -2,9 +2,9 @@
 if(!argv.protocol) argv.protocol = "http";
 deps[argv.protocol] = 1;
 deps.fs = 1;
-deps.app = 1;
+deps.libApp = 1;
 $$
-var server = ^^=argv.protocol$$.createServer(app);
+var server = ^^=argv.protocol$$.createServer(libApp);
 	server.listen(^^=argv.port$$, function(err){
 		if(err){
 			^^=~extend: parent.error, error: {get: "err"}$$

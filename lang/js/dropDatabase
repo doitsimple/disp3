@@ -1,1 +1,2 @@
-db.^^=argv$$.drop(^^=~makeCallback: parent$$)
+^^deps.libDb = 1;$$
+libDb.^^=argv$$.drop(^^=~makeCallback: parent$$)

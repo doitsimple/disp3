@@ -1,1 +1,2 @@
-midware.^^=argv$$
+^^deps.libMidware = 1;$$
+libMidware.^^=argv$$

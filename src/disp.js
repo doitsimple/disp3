@@ -19,7 +19,8 @@ function Disp(config, fn){
 	}
 	self.callback = fn;
 	self.global = {
-		_isGlobal: true
+		_isGlobal: true,
+		dev: 1
 	};
 	self.fileMap = {};
 	self.fileCount = 0;
@@ -65,6 +66,7 @@ Disp.prototype.readDispJson = function(jsonFile){
 	try {
 		toextend = JSON.parse(str);
 	}catch(e){
+		log.i(jsonFile);
 		JSON.parse(str);
 	}
 	utils.extend(self.global, toextend);
@@ -193,7 +195,13 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 		partConfig.lang = "base";
 	if(config.isPseudo){
 		if(partConfig.name){
-			self.fileMap[partConfig.name] = self.targetDir + "/" + filename;
+			if(libObject.isArray(partConfig.name)){
+				for(var i in partConfig.name){
+					self.fileMap[partConfig.name[i]] = self.targetDir + "/" + filename;
+				}
+			}else{
+				self.fileMap[partConfig.name] = self.targetDir + "/" + filename;
+			}
 		}
 		return;
 	}
@@ -201,9 +209,7 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 		var dispConfig = {
 			projectDir: self.projectDir + "/" + filename,
 			targetDir: self.targetDir + "/" +filename,
-			global: {
-				arch: partConfig.arch
-			}
+			global: partConfig
 		}
 		if(partConfig.ignoreDispJson)
 			dispConfig.ignoreDispJson = 1;

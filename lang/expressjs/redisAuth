@@ -1,5 +1,4 @@
 ^^
-deps.db=1;
 deps.passport = 1;
 deps["passport-http-bearer"] = 1;
 

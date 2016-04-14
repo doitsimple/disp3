@@ -1,9 +1,9 @@
 ^^
-deps.db = 1;
+deps.libDb = 1;
 var token = argv.token || "token";
 var userid = argv.userid || "content";
 $$
-db.^^=argv.tokenDb$$.set("^^=argv.tokenSchema$$", ^^=token$$, ^^=content$$, function(err){
+libDb.^^=argv.tokenDb$$.set("^^=argv.tokenSchema$$", ^^=token$$, ^^=content$$, function(err){
 	if(err){ ^^=parent.error$$ return;}
 //	db.^^=argv.tokenDb$$.lpush("^^=argv.userSchema$$", ^^=argv.a$$
 });

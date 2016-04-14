@@ -134,7 +134,7 @@ function render(config, data){
 				var ms;
 //automatic init
 				if((ms=win.match(/^=([A-Za-z0-9-]+)$/)))
-					if(!data[ms[1]]){
+					if(data[ms[1]] === undefined){
 						data[ms[1]] = "";
 					}
 				if((ms=win.match(/^=~(.*)$/))){

@@ -1,5 +1,5 @@
 ^^
-deps.db = 1;
+deps.libDb = 1;
 var db = argv.db || "main";
 
 var args = [{string: argv.schema}];
@@ -12,4 +12,4 @@ if(argv.arg2)
 if(!parent.result) parent.result = "result";
 args.push({makeCallback: parent});
 $$
-db.^^=db$$.^^=argv.method$$(^^=~evalArray:args, sep: ", "$$);
+libDb.^^=db$$.^^=argv.method$$(^^=~evalArray:args, sep: ", "$$);

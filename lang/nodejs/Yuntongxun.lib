@@ -1,0 +1,111 @@
+^^
+deps.requestx = 1;
+deps.base64Encode = 1;
+deps.strlen = 1;
+deps.md5 = 1;
+deps.formatDate = 1;
+$$
+function Yuntongxun(config){
+	var self = this;
+//var accountid = "8a48b5514f49079e014f4eea26e20d35"; //ACCOUNT SID
+//var token = "26f85bb3e3d14581afed8f414855e673"; //AUTH TOKEN
+//var appid = "8a48b5514f49079e014f4ef380dd0d59";
+	var accountid = config.sid;
+	var token = config.token;
+	var appid = config.appid;
+	var rooturl = "https://" + (config.dev?"sandbox":"") + "app.cloopen.com:8883/2013-12-26/Accounts/";
+	self.auth = function(){
+		return {
+			"Accept": "application/json",
+			
+			"Authorization": base64Encode(
+				accountid + ":" + formatDate(new Date(), "yyyyMMddhhmmss")
+			)
+		}
+	}
+	self.sig = function(){
+		var timestamp = formatDate(new Date(), "yyyyMMddhhmmss");
+		console.log(timestamp);
+		return md5(
+			accountid + token + timestamp
+		).toUpperCase();
+	}
+	self.SubAccounts = function(params, fn) {
+		var service = "/SubAccounts";
+		var url = rooturl + accountid + service + "?sig=" + self.sig();
+		requestx.postx(url, self.auth(), 	{
+			'appId': appid,
+			'friendlyName':'ccc'
+		}, function(err, result){
+			if(err) return fn(err);
+			fn(null, result);
+		});
+	}
+	self.GetSubAccounts = function(params, fn){
+		var service = "/GetSubAccounts";
+		var url = rooturl + accountid + service + "?sig=" + self.sig();
+		requestx.postx(url, self.auth(), 	{
+			'appId': appid
+		}, function(err, result){
+			if(err) return fn(err);
+			fn(null, result);
+		});
+	}
+	self.PushMsg = function(params, fn) {
+		var service = "/IM/PushMsg";
+		var url = rooturl + accountid + service + "?sig=" + self.sig();
+		requestx.postx(url, self.auth(), {
+			"pushType":"1",
+			"appId": appid,
+			"sender":"82658800000003",
+			"receiver":["82658800000004"],
+			"msgType":"1",
+			"msgContent": "你好", 
+			"msgDomain":"yuntongxun",
+			"msgFileName":"",
+			"msgFileUrl":""
+		}, function(err, result){
+			if(err) return fn(err);
+			fn(null, result);
+		});
+	}
+//phone voiceflag tpl(content, yuntongxunId) code
+	self.send = function(params, fn) {
+		var data;
+		if(params.voiceflag) {
+			data = {
+				"appId": appid,
+				"verifyCode": params.code,
+				"to": params.phone,
+				"playTimes": 2
+			}
+		}else{
+			var datas = [];
+			params.tpl.content.replace(/%(\S+)%/g, function(str, p1){
+				datas.push(params[p1]);
+			});
+			data = {
+				"to": params.phone,
+				"appId": appid,
+				"templateId": params.tpl.yuntongxunId,
+				"datas": datas
+			}
+		}
+		var headers = {
+			"Accept": "application/json",
+			"Content-Type": "application/json;charset=utf-8",
+			"Content-Length": strlen(data),
+			"Authorization": self.auth()
+		};
+		var service = params.voiceflag ? "/Calls/VoiceVerify" : "/SMS/TemplateSMS";
+
+		var url = rooturl + accountid + service + "?sig=" + self.sig();
+		requestx.postx(url, headers, data, function(err, result) {
+			if (err) return fn(err);
+			console.log(result);
+			if (result.statusCode == "000000")
+				return fn(null, result.smsMessageSid);
+			return fn(result);
+		});
+	}
+}

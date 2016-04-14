@@ -1,5 +1,6 @@
+^^deps.libDb = 1;$$
 if(code){
-	db.main.select("^^=argv.codeSchema$$",{
+	libDb.main.select("^^=argv.codeSchema$$",{
 		phone: user.phone,
 		code: code
 	}, function(err, result){

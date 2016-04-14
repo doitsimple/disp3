@@ -1,6 +1,6 @@
 ^^
 deps.request = 1;
-deps.db = 1;
+deps.libDb = 1;
 var phone = argv.phone || "phone";
 var db = argv.db || "main";
 var schema = argv.schema;
@@ -9,7 +9,7 @@ var codeField = argv.codeField || "code";
 var result = parent.result || "result";
 $$
 
-db.^^=db$$.select("^^=schema$$", {
+libDb.^^=db$$.select("^^=schema$$", {
 	^^=phoneField$$: ^^=phone$$
 }, function(err, doc){
 	if(err) {^^=~parent.error$$; return;}

@@ -2,11 +2,11 @@
 	"main.js": {
 		"lib": "lib",
 		"lang": "nodejs",
-		"content": "main"
+		"content": "content"
 	},
 	"lib.js": {
 		"lang": "nodejs",
 		"content": "lib",
-		"name": "lib"
+		"name": ["lib", "libService","libDb"]
 	}
 }

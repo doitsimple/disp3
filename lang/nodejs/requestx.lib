@@ -11,7 +11,7 @@ deps.extend1 = 1;
 deps.extend = 1;
 deps["form-data"] = 1
 $$
-request = new Req();
+requestx = new Req();
 function parseRes(res, fn){
 	var data = "";
 	var isText;
@@ -118,7 +118,7 @@ function Req(defaultOptions, uastr){
 				else
 					config.data = JSON.stringify(data);
 				if(!headers["Content-type"]){
-					headers["Content-type"] = "application/json";
+					headers["Content-type"] = "application/json;charset=utf-8";
 					headers["Content-Length"] = strlen(config.data);
 				}
 			}

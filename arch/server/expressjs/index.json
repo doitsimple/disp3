@@ -9,12 +9,19 @@
 		"lang": "expressjs",
 		"tmpl": "app.js",
 		"envkey": "config",
-		"name": "app"
+		"name": "libApp"
 	},
 	"midware.js": {
+		"name": "libMidware",
 		"lib": "lib",
 		"lang": "expressjs",
 		"tmpl": "midware.js"
+	},
+	"service.js": {
+		"name": "libService",
+		"lib": "lib",
+		"lang": "expressjs",
+		"tmpl": "service.js"
 	},
 	"router.js": {
 		"lib": "lib",
@@ -25,7 +32,7 @@
 		"lib": "lib",
 		"lang": "nodejs",
 		"tmpl": "db.js",
-		"name": "db"
+		"name": "libDb"
 	},
 	"lib.js": {
 		"name": "lib",

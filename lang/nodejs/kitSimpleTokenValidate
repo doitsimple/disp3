@@ -1,7 +1,8 @@
 ^^
+deps.libDb = 1;
 var tokenField = argv.tokenField || "token";
 $$
-db.^^=argv.db || "main"$$.select("^^=argv.schema$$", {^^=tokenField$$: token}, function (err, user) {
+libDb.^^=argv.db || "main"$$.select("^^=argv.schema$$", {^^=tokenField$$: token}, function (err, user) {
   if (err) { ^^=~extend: parent.error, error: {get: "err"}$$ return; }
   if (!user) { ^^=~extend: parent.success, result: false$$ return;  }
 	^^=~extend: parent.success, result: {"get": "user._id"}$$ return;

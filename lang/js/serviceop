@@ -1,0 +1,14 @@
+^^deps.libService = 1;
+var service = argv.service;
+if(!parent.result) parent.result = "result";
+var args = [];
+if(argv.arg1)
+	args.push(argv.arg1);
+if(argv.arg2)
+	args.push(argv.arg2);
+if(argv.arg3)
+	args.push(argv.arg3);
+if(!parent.result) parent.result = "result";
+args.push({makeCallback: parent});
+$$
+libService.^^=service$$.^^=argv.method$$(^^=~evalArray:args, sep: ", "$$);

@@ -4,7 +4,7 @@
 	"plugins": {
 		"npm": 1
 	},
-	"main": [
+	"content": [
 		{
 			"mongodb": 1
 		},
