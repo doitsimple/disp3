@@ -6,7 +6,7 @@
 	},
 	"lib.js": {
 		"lang": "nodejs",
-		"content": "lib",
-		"name": ["lib", "libService","libDb"]
+		"export": ["lib","services"],
+		"name": ["lib", "libService"]
 	}
 }

@@ -3,7 +3,7 @@ var args = $.concat(parent.args, "fn");
 var content;
 if(parent.content){
  content = parent.content;
- var error = $.concat(content.error, {callback: "fn", error: {get: "error"}});
+ var error = $.concat(content.error, {callback: "fn", error: {get: "err"}});
  var success = $.concat(content.success, {callback: "fn"});
  content.error = error;
  content.success = success;

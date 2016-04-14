@@ -188,6 +188,12 @@ Disp.prototype.genFilePre = function(orifilename, partConfig, config){
 	}else{
 		self.genFile(partConfig, orifilename, config);
 	}
+
+}
+Disp.prototype.addStr = function(c, lang, deps){
+	var self = this;
+	var tmpstr = self.eval(c, lang, deps);
+	return tmpstr || "";
 }
 Disp.prototype.genFile = function(partConfig, filename, config){
 	var self = this;
@@ -246,18 +252,33 @@ Disp.prototype.genFile = function(partConfig, filename, config){
   var str = "";
 	var deps = {};
 	self.eval({init: 1}, partConfig.lang, deps);
-	if(partConfig.code || partConfig.content){
-		var c;
-		if(partConfig.code)
-			c = partConfig.code;
-		if(partConfig.content)
-			c = self.global[partConfig.content];
-		if(c){
-			var tmpstr = self.eval(c, partConfig.lang, deps);
-			if(tmpstr)
-				str += tmpstr + "\n";
+
+//	if(partConfig.code || partConfig.content || partConfig.exports){
+		if(partConfig.code){
+			str += self.eval(partConfig.code, partConfig.lang, deps);
 		}
-  }
+		if(partConfig.content){
+			var c = partConfig.content;
+			if(libObject.isArray(c)){
+				for(var i in c){
+					str += self.eval(self.global[c[i]], partConfig.lang, deps);
+				}
+			}else{
+				str += self.eval(self.global[c], partConfig.lang, deps);
+			}
+		}
+		if(partConfig.export){
+			var c = partConfig.export;
+			if(libObject.isArray(c)){
+				for(var i in c){
+					str += self.eval({Lexport: self.global[c[i]]}, partConfig.lang, deps);
+				}
+			}else{
+				str += self.eval({Lexport: self.global[c]}, partConfig.lang, deps);
+			}
+		}
+
+//  }
 	var env = self.getEnv(partConfig);
 	if(!env._isGlobal){
 		env.main = str;
@@ -402,8 +423,8 @@ Disp.prototype.addExport = function(key, lib, reqconfig){
 		reqconfig.file = self.fileMap[name];
 		reqconfig.sub = key;
 		var toextend = {};
-		toextend[name] = {Lexport: {}};
-		toextend[name].Lexport[key]= {lib: key};
+		toextend[name] = {};
+		toextend[name][key]= {lib: key};
 		utils.extend(self.global, toextend);
 	}
 }

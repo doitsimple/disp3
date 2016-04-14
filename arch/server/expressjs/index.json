@@ -37,7 +37,7 @@
 	"lib.js": {
 		"name": "lib",
 		"lang": "expressjs",
-		"content": "lib"
+		"export": "lib"
 	},
 	"ctrl": {
 		"lang": "bash",
