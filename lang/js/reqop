@@ -3,11 +3,11 @@ deps.requestx = 1;
 var client = argv.client || "request";
 var method = argv.method;
 var args = [{string: argv.url}]
-if(argv.headers){
+if(argv.options){
  method+="x";
- args.push(argv.headers);
+ var options = argv.options?argv.options:{};
+ args.push(options);
 }
-
 args.push(argv.data || "{}");
 if(!parent.result) parent.result = "result";
 args.push({makeCallback: parent});

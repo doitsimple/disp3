@@ -1,0 +1,7 @@
+^^
+var str = "";
+if(parent.click){
+	str += " ng-click=\"" + parent.click + "()\""
+}
+$$
+<button^^=str$$>^^=~parent.layout$$</button>

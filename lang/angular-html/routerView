@@ -1,0 +1,4 @@
+^^deps.angularRouter = 1;
+$.extend(global, {angularDeps: {ngRoute:1}});
+$$
+<div class="ng-view"></div>

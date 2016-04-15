@@ -1,0 +1,12 @@
+app.config(['$routeProvider', function($routeProvider) {
+	$routeProvider.
+^^for(var rname in global.routers){var router = global.routers[rname];$$
+		when("^^=rname$$", {
+			templateUrl: "partial/^^=router.tmpl$$.html",
+			controller: "^^=router.controller$$Controller"
+		}).
+^^}$$
+		otherwise({
+    	redirectTo: '^^=global.errorRoute || "/error"$$'
+    });
+}]);

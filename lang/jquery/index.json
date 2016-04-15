@@ -1,5 +1,5 @@
 {
 	"deps": {
-		"jquery": 1
+		"browserjs": 1
 	}
 }

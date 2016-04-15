@@ -4,5 +4,5 @@ toextend[argv] = parent;
 $.extend(global, {controllers: toextend});
 $$
 <div ng-controller="^^=argv$$Controller">
-^^=~parent.content$$
+^^=~parent.layout$$
 </div>

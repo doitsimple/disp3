@@ -1,0 +1,34 @@
+^^
+deps.append1 = 1;
+$$
+requestx = new Req();
+function Req(defaultOptions, uastr){
+	var self = this;
+	self.ins = Req;
+	if(!uastr) uastr = "disp3/alpha";
+	if(!defaultOptions) defaultOptions = {};
+	append1(defaultOptions.headers, {
+		"user-agent": uastr
+	})
+	self.ajax = ^^=~lib: "ajax"$$
+	["get", "post", "put", "delete"].forEach(function(method){
+		self[method + "x"] = function(url, options, param1, param2){
+			var fn, data;
+			if(!param2){
+				fn = param1;
+				data = "";
+			}else{
+				fn = param2;
+				data = param1;
+			}
+			if(!options) options = {};
+			options.url = url;
+			options.method = method.toUpperCase();
+			options.data = data;
+			self.ajax(options, fn);
+		};
+		self[method] = function(url, data, fn){
+			self[method + "x"](url, {}, data, fn);
+		};
+	});
+};

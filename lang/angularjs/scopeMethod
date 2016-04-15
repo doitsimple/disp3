@@ -1,0 +1,14 @@
+^^
+var content;
+if(parent.content){
+ content = parent.content;
+ var error = $.concat(content.error, parent.error);
+ var success = $.concat(content.success, parent.success);
+ content.error = error;
+ content.success = success;
+}else{
+ content = {}
+}
+var args = parent.args;
+$$
+$scope.^^=argv$$ = ^^=~function: 1, args: args, content: content$$

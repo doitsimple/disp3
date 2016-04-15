@@ -1,0 +1,6 @@
+^^for(var key in argv){
+var newjson = {};
+newjson[key] = argv[key];
+$$
+^^=~newjson$$
+^^}$$

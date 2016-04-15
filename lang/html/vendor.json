@@ -45,5 +45,16 @@
 		"deps": {
 			"jquery": 1
 		}
+	},
+	"angularRouter": {
+		"files": [
+			{
+				"type": "js",
+				"file": "js/angular-route.min.js"
+			}
+		],
+		"deps": {
+			"angular": 1
+		}
 	}
 }

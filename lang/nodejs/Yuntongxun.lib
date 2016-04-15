@@ -57,8 +57,8 @@ function Yuntongxun(config){
 		requestx.postx(url, self.auth(), {
 			"pushType":"1",
 			"appId": appid,
-			"sender":"82658800000003",
-			"receiver":["82658800000004"],
+			"sender":"82658800000004",
+			"receiver":["82658800000003"],
 			"msgType":"1",
 			"msgContent": "你好", 
 			"msgDomain":"yuntongxun",

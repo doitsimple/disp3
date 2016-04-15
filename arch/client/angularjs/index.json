@@ -10,5 +10,10 @@
 	"main.js": {
 		"lang": "angularjs",
 		"tmpl": "main.js"
+	},
+	"partial/^^=argv$$.html": {
+		"lang": "angular-partial-html",
+		"tmpl": "partial.html",
+		"envkey": "tmpls"
 	}
 }
