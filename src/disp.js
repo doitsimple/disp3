@@ -28,8 +28,6 @@ function Disp(config, fn){
 		utils.extend(self, config);
 	if(!self.projectDir)
 		self.projectDir = path.resolve(".");
-	if(!self.targetDir)
-		self.targetDir = ".";
 }
 
 Disp.prototype.run = function(){
@@ -78,7 +76,6 @@ Disp.prototype.extendGlobal = function(){
 	self.global.pluginDir = path.resolve(self.global.dispDir + "/plugin");
 	self.global.langDir = path.resolve(self.global.dispDir + "/lang");
 	self.global.projectDir = self.projectDir;
-	self.global.targetDir = self.targetDir;
 	if(!self.global.baseDir) self.global.baseDir = self.projectDir;
 	if(!self.ignoreDispJson){
 		self.readDispJson("disp.json");
@@ -94,6 +91,13 @@ Disp.prototype.extendGlobal = function(){
 			self.readDispJson(self.exDispJsonFile);
 		}
 	}
+	if(self.global.targetDir)
+		self.targetDir = self.global.targetDir;
+	if(!self.targetDir)
+		self.targetDir = ".";
+	if(!self.global.targetDir)
+		self.global.targetDir = self.targetDir;
+
 	if(!self.global.arch)
 		self.global.arch = "raw";
 	if(!self.global.impl)
@@ -579,9 +583,10 @@ Disp.prototype.eval = function(json, lang, deps, isPseudo){
 		parent: json,
 		global: self.global,
 		extend: {
-			"eval": function(json, lang2){
-				if(lang2) return self.eval(json, lang2, deps);
-				return self.eval(json, lang, deps);
+			"eval": function(json2, lang2){
+				if(json.deps && typeof json2 == "object") json2.deps = json.deps;
+				if(lang2) return self.eval(json2, lang2, deps);
+				return self.eval(json2, lang, deps);
 			}
 		}
 	}

@@ -2,7 +2,7 @@
 parent.then.error = parent.error;
 parent.then.success = parent.success;
 $$
-if(^^=$.eval(argv)$$){
+if(^^=$.eval({extend: argv})$$){
 ^^=~$.eval(parent.then)$$
 }
 ^^if(parent.else){

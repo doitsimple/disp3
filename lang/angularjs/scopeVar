@@ -1,3 +1,5 @@
-^^var str = "";$$
-^^if(parent.init) str = parent.init?" = " + $.eval(parent.init):"";$$
-$scope.^^=argv$$^^=str$$;^^}$$
+^^
+var str = "";
+if(parent.init) str = parent.init?" = " + $.eval(parent.init):"";
+$$
+$scope.^^=argv$$^^=str$$;

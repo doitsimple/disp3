@@ -1,0 +1,12 @@
+function ajax(config, fn){
+	var aconfig = {
+		"method": config.method.toUpperCase(),
+		"url": config.url,
+		"data": config.data,
+		"success": function(result, status, xhr){
+			var headers = xhr.getAllResponseHeaders();
+			fn(null, result, {statusCode: status, headers: headers});
+		}
+	};
+	$.ajax(aconfig);
+};

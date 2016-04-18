@@ -11,7 +11,7 @@ function Req(defaultOptions, uastr){
 		"user-agent": uastr
 	})
 	self.ajax = ^^=~lib: "ajax"$$
-	["get", "post", "put", "delete"].forEach(function(method){
+	(["get", "post", "put", "delete"]).forEach(function(method){
 		self[method + "x"] = function(url, options, param1, param2){
 			var fn, data;
 			if(!param2){
@@ -23,7 +23,7 @@ function Req(defaultOptions, uastr){
 			}
 			if(!options) options = {};
 			options.url = url;
-			options.method = method.toUpperCase();
+			options.method = method?method.toUpperCase():"GET";
 			options.data = data;
 			self.ajax(options, fn);
 		};

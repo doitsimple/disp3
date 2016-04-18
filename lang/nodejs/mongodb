@@ -9,7 +9,7 @@ if(!argv.host) host = "127.0.0.1";
 if(!argv.port) port = 27017;
 if(argv.username && argv.password) authStr = username + ":" + password + "@";
 else authStr = "";
-hostStr =  "mongodb://" + authStr + host + ":" + port + "/" + (argv.name || "main");
+hostStr =  "mongodb://" + authStr + host + ":" + port + "/" + (argv.dbname || "main");
 $$
 new function(){
 	var self = this;

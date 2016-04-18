@@ -1,0 +1,16 @@
+^^
+if(typeof argv == "string") argv = {id: argv};
+if(!$.isArray(argv)) argv = [argv];
+var str = "";
+for(var i in argv){
+	var config = argv[i];
+	if(config.id){
+		str += "#"+config.id
+		break;
+	}
+	if(config.class){
+		str += config.class;	 
+	}
+}
+$$
+^^=str$$

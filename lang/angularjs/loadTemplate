@@ -1,0 +1,11 @@
+^^
+parent.deps.$compile = 1;
+parent.deps.$sce = 1;
+parent.deps.$templateRequest = 1;
+$$
+var templateUrl = $sce.getTrustedResourceUrl('partial/^^=parent.tmpl$$.html');
+$templateRequest(templateUrl).then(function(template) {
+	$compile($('^^=$.eval({selector: argv}, "css")$$').html(template).contents())($scope);
+}, function() {
+  // An error has occurred
+});

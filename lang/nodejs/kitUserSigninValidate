@@ -1,4 +1,7 @@
 ^^deps.libDb = 1;$$
+if(!user){
+	^^=~extend: parent.error, error: "手机号不存在"$$;return;
+}
 if(code){
 	libDb.main.select("^^=argv.codeSchema$$",{
 		phone: user.phone,
