@@ -1,8 +1,4 @@
 {
-	"index.html": {
-		"lang": "angular-html",
-		"tmpl": "index-body.html"
-	},
 	"main.css": {
 		"lang": "css",
 		"tmpl": "main.css"
@@ -15,5 +11,9 @@
 		"lang": "angular-partial-html",
 		"tmpl": "partial.html",
 		"envkey": "tmpls"
+	},
+	"index.html": {
+		"lang": "angular-html",
+		"tmpl": "index-body.html"
 	}
 }

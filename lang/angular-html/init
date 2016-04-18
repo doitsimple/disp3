@@ -1,4 +1,5 @@
 ^^
 deps.htmlAttr = {"attrs": {"ng-app": "app"}}
 deps.angular=1;
+sup();
 $$

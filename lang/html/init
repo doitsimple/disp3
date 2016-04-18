@@ -1,0 +1,6 @@
+^^
+for(var key in global.deps){
+ if(!deps[key]) deps[key] = {};
+ $.extend(deps[key], global.deps[key]);
+}
+$$

@@ -1,0 +1,2 @@
+^^deps["jquery-cookie"] =1$$
+Cookies.set(^^=argv$$, ^^=~string: parent.val$$);

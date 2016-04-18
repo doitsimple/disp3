@@ -349,6 +349,7 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 	self.fileCount ++;
 //  fs.writeFileSync(tfilename, str, {mode: 0444});
   fs.writeFileSync(tfilename, str, {mode: 0777});
+	self.eval({finish: 1}, partConfig.lang, gdeps);
 }
 
 Disp.prototype.genPlugin = function(){
@@ -481,19 +482,20 @@ Disp.prototype.getLangConfig = function(lang){
 	return config;
 }
 
-Disp.prototype.getLangFile = function(name, lang){
+Disp.prototype.getLangFile = function(name, lang, ignoreOnce){
 	var self = this;
 	var langConfig = self.getLangConfig(lang);
 	var file = self.getLangDir(lang) + "/" + name;
 	var resultFile;
 	if(fs.existsSync(file)){
-		return file;
-	}else{
-		for(var key in langConfig.deps){
-			var tmpfile = self.getLangFile(name, key);
-			if(tmpfile)
-				return tmpfile;
-		}
+		if(!ignoreOnce)
+			return file;
+		ignoreOnce = 0;
+	}
+	for(var key in langConfig.deps){
+		var tmpfile = self.getLangFile(name, key, ignoreOnce);
+		if(tmpfile)
+			return tmpfile;
 	}
 }
 
@@ -503,13 +505,17 @@ Disp.prototype.eval = function(json, lang, deps, isPseudo){
 	var type = typeof json;
 	var str = "";
 	var searchlang;
+	var ignoreOnce = 0;
 	if(lang.match(/@/)){
 		var tmparr = lang.split("@");
 		lang = tmparr[0];
 		searchlang = tmparr[1];
-	}else{
-		searchlang = lang;
 	}
+	if(lang.match(/\!/)){
+		lang = lang.substr(1);
+		ignoreOnce = 1;
+	}
+	if(!searchlang) searchlang = lang;
 /*
 	if(type === "string"){
 		var tmp = {};
@@ -566,7 +572,7 @@ Disp.prototype.eval = function(json, lang, deps, isPseudo){
 	}
 //get config
 
-	var file = self.getLangFile(name, searchlang);
+	var file = self.getLangFile(name, searchlang, ignoreOnce);
 	if(!file){
 		if(isPseudo)
 			return "";
@@ -575,6 +581,11 @@ Disp.prototype.eval = function(json, lang, deps, isPseudo){
 	}
 //begin eval
 //	tmpl.extendMethods("eval", 
+	var evalFunc = function(json2, lang2){
+		if(json.deps && typeof json2 == "object") json2.deps = json.deps;
+		if(lang2) return self.eval(json2, lang2, deps);
+		return self.eval(json2, lang, deps);
+	}
 	var data = {
 		name: name,
 		argv: libObject.copy(json[name]),
@@ -582,12 +593,11 @@ Disp.prototype.eval = function(json, lang, deps, isPseudo){
 		lang: lang,
 		parent: json,
 		global: self.global,
+		sup: function(){
+			evalFunc(json, "!" + lang);
+		},
 		extend: {
-			"eval": function(json2, lang2){
-				if(json.deps && typeof json2 == "object") json2.deps = json.deps;
-				if(lang2) return self.eval(json2, lang2, deps);
-				return self.eval(json2, lang, deps);
-			}
+			"eval": evalFunc
 		}
 	}
 	

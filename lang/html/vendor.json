@@ -35,6 +35,17 @@
 		"deps": {
 		}
 	},
+	"jquery-cookie": {
+		"files": [
+      {
+        "type": "js",
+        "file": "js/jquery.cookie.js"
+      }
+    ],
+		"deps": {
+			"jquery":1
+		}
+	},
 	"angular": {
 		"files": [
 			{
