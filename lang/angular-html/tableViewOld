@@ -1,0 +1,239 @@
+^^
+deps.bootstrap3 = 1;
+$$
+<div class="panel panel-primary" ng-show="showsearch">
+  <div class="panel-heading" ng-click="showsearch=!showsearch">查询^^=parent.text || argv$$</div>
+  <div class="panel-body">
+    <form role="form" class="form-horizontal" id="form">
+      ^^for(var name in parent.fields){
+        var col = parent.fields[name];
+      $$
+       <div class="form-group">
+          <label for="search_^^=name$$" class="col-sm-2 control-label">^^=col.text$$</label>
+          <div class="col-sm-10">
+          ^^if(col.type && (col.type == "number" || col.type == "int")){$$
+            <input id="search_^^=name$$" ng-model="^^=argv$$.where.^^=name$$" class="form-control" type="number" placeholder="^^=col.placeholder$$"/>
+          ^^}else if(col.type && col.type =="select"){$$
+            <select id="search_^^=name$$" class="form-control" ng-model="target.^^=name$$" >
+               ^^for(var val in col.options){
+               var text = col.options[val];
+               $$
+              <option value="^^=val$$">^^=text$$</option>
+               ^^}$$
+            </select>
+          ^^}else{$$
+            <input id="search_^^=name$$" ng-model="^^=argv$$.where.^^=name$$" class="form-control" type="text" />
+          ^^}$$
+          </div>
+       </div>
+       ^^}$$
+       <div class="row">
+         <div class="col-sm-6 text-right">
+           <button ng-click="^^=argv$$.where={}" class="btn btn-default ">重置</button>
+         </div>
+         <div class="col-sm-6 text-left">
+           <button ng-click="refresh()" class="btn btn-success">^^=parent.submitText || "提交"$$</button>
+         </div>
+       </div>
+    </form>
+  </div>
+</div>
+<div class="panel panel-primary">
+<div class="panel-heading">^^=parent.text || argv$$</div>
+<div class="panel-body">
+
+<!--
+	<div class="col-sm-8">
+		<div class="col-sm-12" style="border:1px solid #428bca;border-radius:4px;margin:12px;padding:5px;">
+			<div class="row">
+				<div class="col-sm-8">
+					<div class="btn-group" role="group">
+						<a type="button" class="btn btn-default" ng-repeat="query in ^^=argv$$.querys">{{query.name}}</a>
+					</div>
+				</div>
+				<div class="col-sm-4 text-right">
+					<div class="btn-group" role="group">
+						<button type="button" class="btn btn-default" ng-click="edit=!edit"><i class="fa fa-plus"></i></button>
+					</div>
+				</div>
+				<div class="col-sm-6" ng-show="edit" style="padding: 10px;">
+					<div class="form-group">
+						<div class="input-group" style="padding: 5px 10px;">
+							<input type="text" class="form-control" id="exampleInputAmount" placeholder="Amount">
+							<div class="input-group-addon" contenteditable ng-model="xxx" autocomplete="aaa" default="aaax"></div>			
+							<input type="text" class="form-control" id="exampleInputAmount" placeholder="Amount">
+						</div>
+						<div class="input-group">
+							<input type="text" class="form-control" id="exampleInputAmount" placeholder="Amount">
+							<div class="input-group-addon" contenteditable ng-model="xxxx" autocomplete="aaa" default="aaax"></div>
+							<input type="text" class="form-control" contenteditable autocomplete="aaa" id="exampleInputAmount" placeholder="Amount" default="xxx" ng-model="xxxx">
+						</div>
+					</div>
+				</div>
+			</div>
+	</div>
+</div>
+-->
+<br/>
+<div class="col-sm-3">
+	<div class="form-inline" style="verical-align:middle;padding:0.2em 0;">
+	<label style="font-weight:normal">Show <select class="form-control input-sm" ng-model="^^=argv$$.perPage">
+			<option value="10">10</option>
+			<option value="25">25</option>
+			<option value="50">50</option>
+			<option value="100">100</option>
+		</select> entries</label>
+	</div>
+</div>
+<div class="col-sm-6 btn-group">
+  <button class="btn btn-default" ng-click="showsearch=!showsearch">查询数据</button>
+^^if(parent.opt && parent.opt.add){$$
+  <button class="btn btn-default" ng-click="optAdd()">添加数据</button>
+^^}$$
+^^if(parent.toolbar){
+  for(var name in parent.toolbar){
+    var ele = parent.toolbar[name];
+    if(!ele.tag)ele.tag="button";
+  $$<^^=ele.tag$$^^if(ele.attr){if(!ele.attr.class){$$ class="btn btn-default"^^}for(var attrname in ele.attr){$$^^= attrname$$="^^=ele.attr[attrname]$$"^^}}else{$$ class="btn btn-default"^^}$$>^^=ele.text||name$$</^^=ele.tag$$>^^}}$$
+</div>
+<div class="col-sm-3 text-right">
+	^^pagenator(parent)$$
+</div>
+  <div class="col-sm-12" style="overflow-x:auto;">
+  <table class="table table-striped table-bordered" style="vertical-align:middle;"><thead>
+ ^^for(var name in parent.fields){var col = parent.fields[name];$$
+ ^^if(!col.hidden){$$
+  <th><a style="padding: 0 5px;" ng-click="^^=argv$$.changeSort('^^=name$$')"><i class="fa" ng-class="{'fa-sort-asc':^^=argv$$.sort.^^=name$$ === 1,'fa-sort-desc': ^^=argv$$.sort.^^=name$$ === -1,'fa-sort':!^^=argv$$.sort.^^=name$$}"></i></a>^^=col.text||name$$<br/>^^=name$$</th>
+ ^^}}$$
+ ^^if(parent.opt){$$
+  <th>opt</th>
+  ^^}$$
+  </thead>
+  <tbody>
+    <tr ng-repeat="row in ^^=argv$$.data" onlastrepeat>
+ ^^for(var name in parent.fields){var col = parent.fields[name];$$
+ ^^if(!col.hidden){$$
+ 	<td>
+  ^^if(col.ondemand){$$
+	<span class="glyphicon glyphicon-option-horizontal" ng-click="^^=argv$$.showrow^^=name$$=true" ng-hide="^^=argv$$.showrow^^=name$$"></span>
+	<div ng-click="^^=argv$$.showrow^^=name$$=false" ng-show="^^=argv$$.showrow^^=name$$">^^bytype(col.type)$$</div>
+  ^^}else if(col.href){$$
+  <a ng-href="^^=col.href$${{row.^^=name$$}}">^^bytype(col.type)$$</a>
+  ^^}else if(col.showuser){$$
+  <a data-toggle="popover" class='showuser' data-container="body" data-placement="right" data-content="..." userid="{{row.^^=col.showuser$$}}">^^bytype(col.type)$$</a>
+  ^^}else{
+		bytype(col.type)
+  }$$</td>
+ ^^}}$$
+ ^^if(parent.opt){$$
+ <td>
+    ^^if(parent.opt.update){$$
+      <button class="btn btn-primary" ng-click="optUpdate(row)">修改</button>
+    ^^}$$
+    ^^if(parent.opt.delete){$$
+      <button class="btn btn-primary" ng-click="optDelete(row)">删除</button>
+    ^^}$$
+    ^^for(var name in parent.opt){if(name != "add" && name != "update" && name != "delete"){$$
+      <button class="btn btn-primary"
+      ^^for(var attr in parent.opt[name].attr){var value = parent.opt[name].attr[attr];$$
+        ^^=attr$$="^^=value$$" 
+        ^^}$$
+        >^^= parent.opt[name].text || name$$</button>
+    ^^}}$$
+  </td>
+  ^^}$$
+		</tr>
+	</tbody>
+</table>
+  </div>
+<div class="col-sm-5"><div style="padding:0.5em 0;">Showing {{^^=argv$$.perPage*(^^=argv$$.currPage-1)+1}} to {{^^=argv$$.perPage*^^=argv$$.currPage}} of {{^^=argv$$.count}} entries</div></div>
+<div class="col-sm-7 text-right">
+	^^pagenator(parent)$$
+</div>
+</div>
+</div>
+
+ ^^if(parent.opt){$$
+   ^^if(parent.opt.update || parent.opt.add){$$
+    <div class="modal fade" id="optModal" tabindex="-1" role="dialog" aria-labelledby="optLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="optLabel">
+            添加^^=(parent.text || argv)$$
+            </h4>
+          </div>
+          <div class="modal-body">
+            <form role="form" class="form-horizontal" id="optform">
+              ^^for(var name in parent.fields){
+                var col = parent.fields[name];
+              $$
+              <div class="form-group">
+                <label for="field_^^=name$$" class="col-sm-3 control-label">^^=col.text$$</label>
+                 <div class="col-sm-7">
+                  ^^if(col.type && col.type =="file"){$$
+                  <input id="field_^^=name$$" class="form-control" type="file" name="^^=name$$" ng-model="opt_model.^^=name$$" />
+                  ^^}else if(col.type && col.type =="boolean"){$$
+                  <select id="field_^^=name$$" class="form-control" name="^^=name$$" ng-model="opt_model.^^=name$$" >
+                    ^^
+                    var truefalse = {
+                      true:"是",
+                      false:"否"
+                    }
+                    for(var val in truefalse){
+                         var text = truefalse[val];
+                         $$
+                    <option value="^^=val$$">^^=text$$</option>
+                    ^^}$$
+                  </select>
+                  ^^}else if(col.type && col.type =="enum"){$$
+                  <select id="field_^^=name$$" class="form-control" name="^^=name$$" ng-model="opt_model.^^=name$$" >
+                    ^^for(var val in col.values){
+                         var text = col.values[val];
+                         $$
+                    <option value="^^=val$$">^^=text$$</option>
+                    ^^}$$
+                  </select>
+                  ^^}else if(name == "_id"){$$
+                  <input id="field_^^=name$$" class="form-control" ^^if(col.disabled===undefined){$$disabled="disabled"^^}else{}$$ name="^^=name$$" ng-model="opt_model.^^=name$$" />
+                  ^^}else{$$
+                  <input id="field_^^=name$$" class="form-control" type="text" name="^^=name$$" ng-model="opt_model.^^=name$$" />
+                  ^^}$$
+                </div>
+              </div>
+              ^^}$$
+            </form>
+          </div>
+          <div class="modal-footer">
+                <div class="col-sm-4"><button ng-click="resetOptform()" class="col-sm-6 btn btn-default pull-right">重置</button></div>
+                <div class="col-sm-4"><button ng-click="submitOptform()" class="col-sm-6 btn btn-success">^^=parent.submitText || "提交"$$</button></div>
+                <div class="col-sm-4"><button ng-click="closeOptform()" class="col-sm-6 btn btn-default" data-dismiss="modal">关闭</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+   ^^}$$
+ ^^}$$
+
+
+
+
+
+ ^^function bytype(type){$$
+	^^if(type == "date"){$$
+ 			{{row.^^=name$$|date:'yyyy/MM/dd'}}
+	^^}else if(type == "datetime"){$$
+ 			{{row.^^=name$$|date:'yy/MM/dd HH:mm'}}
+  ^^}else{$$
+ 			{{row.^^=name$$}}
+  ^^}$$
+ ^^}$$
+
+ ^^function pagenator(parent){$$
+<ul class="pagination" style="margin:2px 0;">
+  <li><a ng-click="^^=argv$$.gotoFirst()" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+  <li ng-class="{active: p===^^=argv$$.currPage}" ng-repeat="p in ^^=argv$$.adj()"><a style="cursor:pointer;" ng-click="^^=argv$$.gotoPage(p)">{{p}}</a></li>
+  <li><a ng-click="^^=argv$$.gotoLast()" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+</ul>
+ ^^}$$

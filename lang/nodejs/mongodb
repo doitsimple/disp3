@@ -13,7 +13,7 @@ hostStr =  "mongodb://" + authStr + host + ":" + port + "/" + (argv.dbname || "m
 $$
 new function(){
 	var self = this;
-	var colDef = ^^=$.stringify(argv.schemas)$$;
+	var colDef = ^^=$.stringify(parent.schemas)$$;
 	var colArray = Object.keys(colDef);
 	var colCache = {};
 	var colDataCache = {};

@@ -1,4 +1,6 @@
 ^^
+if(global.routers)
+	$.extend(global, {angularDeps: {"ngRoute": 1}});
 var str = "";
 if(global.angularDeps){
 str+=$.eval({evalStringArray: Object.keys(global.angularDeps), sep:","});
@@ -12,6 +14,8 @@ for(var key in global.controllers){
  str3 = $.eval({extend: ctrl.content, error: ctrl.error, success:ctrl.success, deps: ctrl.deps});
  var str2 = "";
  for(var key2 in ctrl.deps){
+	 if(ctrl.deps[key2] == "lib")
+		 deps[key2] = 1;
 	str2 += ", " + key2;
  }
 $$

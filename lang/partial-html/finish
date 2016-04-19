@@ -1,0 +1,8 @@
+^^
+if(!global.deps) global.deps = {};
+for(var key in deps){
+	if(deps[key].pkg){
+		global.deps[key] = deps[key];
+	}
+}
+$$

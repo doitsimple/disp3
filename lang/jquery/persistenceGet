@@ -1,2 +1,2 @@
 ^^deps["jquery-cookie"] =1$$
-Cookies.get('^^=argv$$')
+$.cookie('^^=argv$$')

@@ -1,0 +1,5 @@
+^^deps.tableController = 1;$$
+$scope.^^=argv$$ = new tableController($scope, {
+	api: ^^=~string: parent.api$$
+});
+$scope.^^=argv$$.refresh();

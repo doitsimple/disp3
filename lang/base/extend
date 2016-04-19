@@ -1,12 +1,18 @@
 ^^
 delete parent[name];
+var json = parent.json;
+delete parent.json;
 if(argv){
 	if($.isArray(argv)){
 		argv.forEach(function(e){
 			$.extend1(e, parent);
+			if(json)
+				$.extend1(e, json);
 		});
 	}else{
-		$.extend1(argv, parent);
+		$.extend1(argv, parent);	
+		if(json)
+			$.extend1(argv, json);	
 	}
 }
 $$

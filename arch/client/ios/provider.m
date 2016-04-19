@@ -166,11 +166,14 @@ $$
 	^^=model$$ * item = [self getById:ID];
 
 	if (item.^^=idFieldName$$ == NULL) {
+		item.^^=idFieldName$$ = ID;
 		[self addItem:updateItem];
 	}else{
 		NSMutableString * string  = [[NSMutableString alloc] init];
 		NSMutableString * muString = [[NSMutableString alloc] initWithString:@"UPDATE ^^=argv$$ SET "];
+		[string appendFormat:@", %@ = '%@'" , @"_id" , ID];
 ^^for(var key in fields){var f = fields[key];$$
+ ^^if(key == "_id") continue;$$
 		if (updateItem.^^=key$$ != NULL) {
 				[string appendFormat:@", %@ = '%@'" , @"^^=key$$" , updateItem.^^=key$$];
 		}
@@ -178,7 +181,7 @@ $$
         
 		[muString appendString:[string substringFromIndex:2]];
 		
-		NSString * updateSql = [NSString stringWithFormat:@"%@;", muString];
+		NSString * updateSql = [NSString stringWithFormat:@"%@ WHERE _id='%@';", muString, ID];
 		@synchronized(self){
 			BOOL res = [_database executeUpdate:updateSql];
 			if (!res) {
