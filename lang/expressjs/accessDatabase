@@ -1,0 +1,13 @@
+^^deps.libDb =1;
+var dbname = parent.dbname || "main";
+var result = parent.result || "result";
+$$
+var body = req.body;
+if(!body.method) body.method = "colectx";
+libDb.^^=dbname$$[body.method](body.schema, body.options, function(err, ^^=result$$){
+	if(err){
+	^^=~parent.error$$
+	return;
+	}
+	^^=~parent.success$$
+});

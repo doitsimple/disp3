@@ -17,10 +17,10 @@ function Database(methods){
 			getOp("selectx")(name, {$match: where}, fn);
 		},
 		update: function(name, where, doc, fn){
-			getOp("updatex")(name, where, {$set: doc, $limit: 1}, fn);
+			getOp("updatex")(name, {$match: where, $set: doc, $limit: 1}, fn);
 		},
 		updates: function(name, where, doc, fn){
-			getOp("updatex")(name, where, {$set: doc}, fn);
+			getOp("updatex")(name, {$match: where, $set: doc}, fn);
 		},
 		sedate: function(name, where, doc, fn){
 			getOp("sedatex")(name, where, {$set: doc, $limit: 1}, fn);
@@ -56,6 +56,8 @@ function Database(methods){
 		update: 3,
 		delete: 3,
 		sedate: 3,
+		upsert: 3,
+		colect: 3,
 		aggr: 1,
 		count: 1,
 		get: 1,

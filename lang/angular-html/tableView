@@ -379,7 +379,13 @@ $$
 ^^}$$
 
 
-^^var config = {name: argv, fields: parent.fields};$$
+^^var config = parent;
+config.name = argv;
+for(var key in config.fields){
+ config.fields[key].name = key;
+}
+
+$$
 ^^appendconfig(config)$$
 <div class="panel panel-primary">
 <div class="panel-heading" ^^=local.makeng(config.heading)$$>^^=config.text || config.name$$</div>

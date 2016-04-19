@@ -21,6 +21,7 @@ new function(){
 	var formatFuncs = {};
 	self.makeFormat = function(config){
 		return function(doc){
+			if(!doc) return;
 			if(doc._id) doc._id = ObjectId(doc._id);	
 		}
 	}
@@ -128,11 +129,18 @@ new function(){
 		self.format(name, docs);
 		self.getCol(name).insertMany(docs, fn);
 	}
-	self.updatex = function(name, where, op, fn){
-		self.format(name, where);
+	self.updatex = function(name, op, fn){
 		self.format(name, op);
+		var where = op.$match;
+		self.format(name, where);
+		delete op.$match;
+		var method;
+		if(op.$limit == 1)
+			method = "updateOne"
+		else
+			method = "updateMany"
 		delete op.$limit;
-		self.getCol(name).updateOne(where, op, function(err, result){
+		self.getCol(name)[method](where, op, function(err, result){
       var rtn;
       if(result) rtn = result.result;
       else rtn = {n: 0};
@@ -147,6 +155,23 @@ new function(){
       if(err) return fn(err);
       if(!doc) return fn(null, doc);
       fn(null, doc.value);
+    });
+	}
+	self.count = function(name, op, fn){
+		self.format(name, op);
+    self.getCol(name).count(op, fn);
+	}
+	self.colectx = function(name, op, fn){
+    self.format(name, op);
+		self.count(name, op.$match, function(err, count){
+      if(err) return fn(err);
+      self.selectx(name, op, function(err, data){
+        if(err) return fn(err);
+        fn(err, {
+          data: data,
+          count: count
+        });
+      });
     });
 	}
 	self.drop = function(fn){

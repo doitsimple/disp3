@@ -198,18 +198,26 @@ tableController = function tableController($scope, config) {
 	self.refresh = function() {
 		if(self.formatRawQuery()) return;
 		requestx.postx(config.api, {}, {
+			schema: config.schema,
 			by: self.by,
-			where: self.where,
 			options: {
+				$match: self.where,
 				$project: self.project,
 				$sort: self.sort,
 				$skip: (self.currPage - 1) * self.perPage,
 				$limit: self.perPage
 			}
-		}, function(err, data) {
+		}, function(err, result) {
+			var data = result.data;
+			if(!data){
+				alert("error");
+				console.log(result);
+				return;
+			}
 			self.data = data.data;
 			self.count = data.count;
 			self.totalPage = Math.ceil(data.count / self.perPage);
+			$scope.$apply();
 		});
 	};
 	self.showinsertrow = false;
@@ -240,16 +248,49 @@ tableController = function tableController($scope, config) {
 	self.upsert = function(){
 		var row = self.new;
 		var _id = row._id;
-		if(!_id)
-			access.insert(config.schema, row, function(){
+		if(!_id){
+			requestx.postx(config.api, {}, {
+				method: "insert",
+				schema: config.schema,
+				by: self.by,
+				options: self.new
+			}, function(err, result) {
+				var data = result.data;
+				if(!data){
+					alert("error");
+					console.log(result);
+					return;
+				}
 				self.hiderow();
 				self.refresh();
+				$scope.$apply();
 			});
-		else{
-			delete row._id;
-			access.update(config.schema, _id, row, function(){
+		}else{
+			var id = row._id;
+			var newrow = {};
+			for(var key in row){
+				if(key != "_id" && key[0] != "$")
+					newrow[key] = row[key];
+			}
+			
+			requestx.postx(config.api, {}, {
+				method: "updatex",
+				schema: config.schema,
+				by: self.by,
+				options: {
+					$match: {_id: id},
+					$set: newrow
+				}
+			}, function(err, result) {
+				var data = result.data;
+				if(!data){
+					alert("error");
+					console.log(result);
+					return;
+				}
 				self.hiderow();
 				self.refresh();
+				$scope.$apply();
 			});
 		}
 	}
@@ -258,6 +299,7 @@ tableController = function tableController($scope, config) {
 		methods.openConfirmModal("确定要删除"+id+"吗", function(){
 			access.delete(config.schema, id, function(){
 				self.refresh();
+				$scope.$apply();
 			});
 		});
 	}
