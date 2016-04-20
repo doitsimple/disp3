@@ -1,20 +1,8 @@
-^^deps.bootstrap3 = 1;$$
-^^deps["font-awesome"] = 1;$$
-^^function appendconfig(config){
- if(!config.reflist) config.reflist = {};
-	if (config.withSchema) {
-		if(Object.keys(config.fields).length){
-			for(var f in config.fields){
-				$.append(config.fields[f], global.proto.schemas[config.withSchema].fields[f]);
-			}
-		}else{
-			$.append(config.fields, global.proto.schemas[config.withSchema].fields);
-		}
-	}
-  for(var f in config.fields){
-	 if(config.fields[f].ref) config.reflist[config.fields[f].ref] = f;
-	}
-}$$
+^^
+deps.bootstrap3 = 1;
+deps["font-awesome"] = 1;
+var dbname = parent.db || "main";
+$$
 
 ^^function bytype(f, model, fields){$$
  ^^ var type = f.type;
@@ -381,12 +369,8 @@ $$
 
 ^^var config = parent;
 config.name = argv;
-for(var key in config.fields){
- config.fields[key].name = key;
-}
-
 $$
-^^appendconfig(config)$$
+^^=~appendSchema:1, config: config$$
 <div class="panel panel-primary">
 <div class="panel-heading" ^^=local.makeng(config.heading)$$>^^=config.text || config.name$$</div>
 <div class="panel-body" ^^=local.makeng(config.body)$$>

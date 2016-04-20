@@ -11,7 +11,10 @@
 		{
 			"arch": "client",
 			"impl": "angularjs",
-			"envkey": "clients"
+			"envkey": "clients",
+			"global": {
+				"databases": 1
+			}
 		},
 		{
 			"arch": "web-container",

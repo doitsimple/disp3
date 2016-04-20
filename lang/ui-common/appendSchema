@@ -1,0 +1,18 @@
+^^
+var fields = parent.config.fields;
+var schema = parent.config.schema;
+var dbname = parent.config.db || "main";
+if (schema) {
+ if(Object.keys(fields).length){
+  for(var f in fields){
+   $.append(fields[f], global.databases[dbname].schemas[schema].fields[f]);
+  }
+ }else{
+  $.append(fields, global.databases[dbname].schemas[schema].fields);
+ }
+}
+for(var f in fields){
+ fields[f].name = f;
+}
+
+$$
