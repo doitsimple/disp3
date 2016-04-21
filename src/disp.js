@@ -50,7 +50,7 @@ Disp.prototype.readPrev = function(){
 	self.prev = prev;
 }
 */
-Disp.prototype.readDispJson = function(jsonFile){
+Disp.prototype.readDispJson = function(jsonFile, config){
 	var self = this;
 	if(!fs.existsSync(self.projectDir + "/" + jsonFile)){
 		log.i("ignore " + self.projectDir + "/" + jsonFile);
@@ -67,7 +67,13 @@ Disp.prototype.readDispJson = function(jsonFile){
 		log.i(jsonFile);
 		JSON.parse(str);
 	}
-	utils.extend(self.global, toextend);
+	if(config && config.mount){
+		var sub = libObject.getByKey(self.global, config.mount);
+		utils.extend(sub, toextend);
+	}else{
+		utils.extend(self.global, toextend);
+	}
+	
 }
 Disp.prototype.extendGlobal = function(){
 	var self = this;
@@ -83,6 +89,17 @@ Disp.prototype.extendGlobal = function(){
 			libFile.forEachFile(self.projectDir + "/disp", function(f){
 				if(!f.match(/\.json$/)) return;
 				self.readDispJson("disp/"+f);
+			});
+			libFile.forEachDir(self.projectDir + "/disp", function(f){
+				var config;
+				if(fs.existsSync("disp/"+f+"/index.json")){
+					config = libFile.readJson("disp/"+f+"/index.json");
+				}
+				libFile.forEachFile(self.projectDir + "/disp/"+f, function(subf){
+					if(!subf.match(/\.json$/)) return;
+					if(subf == "index.json") return;
+					self.readDispJson("disp/"+f+"/"+subf, config);
+				});
 			});
 		}		
 		if(self.exDispJsonFile){			
@@ -577,7 +594,7 @@ Disp.prototype.eval = function(json, lang, deps, isPseudo){
 		if(isPseudo)
 			return "";
 		else
-			return self.callback(lang + " " + name + " not exist");
+			return self.callback(lang + " " + name + " not exist\n" + JSON.stringify(json));
 	}
 //begin eval
 //	tmpl.extendMethods("eval", 

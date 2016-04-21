@@ -6,23 +6,33 @@ if(typeof expr == "string"){
 }else{
  config = expr;
 }
-if(!config.from)
- config.from = "body";
-var val = "req."+config.from+"."+key;
+if(!config.type) config.type = "string";
+var val;
+if(config.init){
+	val = $.eval(config.init);
+}else{
+ if(!config.from)
+ 	config.from = "body";
+	val = "req."+config.from+"."+key;
+}
 var error = parent.error || argv.error;
 if(error.sendError){
 	error.sendError.code = 10
 	error.sendError.message = "params error";
 }
 var estr = $.eval({
-		ensureType: config.type, 
-		val: val, 
+		ensureType: config.type,
 		error: error, 
 		var: key
 });
 $$
-if(^^=val$$){
-^^=estr$$
+var ^^=key$$ = ^^=val$$;
+^^=estr$$;
+^^if(config.required){$$
+if(^^=key$$ == undefined || ^^=key$$ == null || ^^=key$$ == ""){
+^^=~extend: parent.error, error: "params " + key + " not exist"$$
+return;
 }
+^^}$$
 ^^}$$
 ^^=~parent.success$$

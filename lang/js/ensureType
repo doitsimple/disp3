@@ -2,15 +2,15 @@
 var type = parent[name];
 $$
 ^^if(type == "int"){$$
-var ^^=parent.var$$ = parseInt(^^=parent.val$$);
+^^=parent.var$$ = parseInt(^^=parent.var$$);
 if(isNaN(^^=~parent.var$$)) {^^=~parent.error$$;}
 ^^}else if(type == "number"){$$
-var ^^=parent.var$$ = parseFloat(^^=parent.val$$);
-if(isNaN(^^=parent.var$$)) {^^=~parent.error$$;}
+^^=parent.var$$ = parseFloat(^^=parent.var$$);
+if(isNaN(^^=parent.var$$)) {^^=parent.var$$ = undefined;}
 ^^}else if(type == "string"){$$
-var ^^=parent.var$$ = ^^=parent.val$$?"" + ^^=parent.val$$:"";
+^^=parent.var$$ = ^^=parent.var$$?"" + ^^=parent.var$$:"";
 ^^}else if(type == "ObjectId"){
 deps.ObjectId = 1;
 $$
-var ^^=~parent.var$$ = ObjectId(^^=~parent.val$$);
+^^=~parent.var$$ = ObjectId(^^=~parent.var$$);
 ^^}$$

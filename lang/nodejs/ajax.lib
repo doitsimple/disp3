@@ -11,23 +11,6 @@ deps["form-data"] = 1
 $$
 function ajax(config, fn){
 	if(!config.headers) config.headers = {};
-	if(config.data){
-		if(typeof config.data == "string"){
-			config.headers["content-type"] = "text/plain";
-		}else if(config.form){
-			delete config.form;
-			config.data = querystring.stringify(config.data);
-			config.headers["content-type"] = "application/x-www-form-urlencoded";
-		}else{
-			if(config.json)
-				delete config.json;
-			config.data = JSON.stringify(config.data);
-			config.headers["content-type"] = "application/json";
-		}
-		config.headers["content-length"] = strlen(config.data);		
-	}else{
-		config.headers["content-type"] = "text/plain";
-	}
 	if(config.bearer){
 		config.headers["authorization"] = "Bearer " + config.bearer;
 	}
@@ -42,13 +25,30 @@ function ajax(config, fn){
 				form.append(key, c)
 		}
 		delete config.data;
-		config.headers["content-type"]= "multipart/form-data; boundary="+form._boundary;
+		config.headers["content-type"]= "multipart/form-data; boundary="+form._boundary;		
 		form.getLength(function(err, length){
 			config.headers["content-length"]=length;
 			config.stream = form;
 			_ajax(config, fn);
 		});
 	}else{
+		if(config.data){
+			if(typeof config.data == "string"){
+				config.headers["content-type"] = "text/plain";
+			}else if(config.form){
+				delete config.form;
+				config.data = querystring.stringify(config.data);
+				config.headers["content-type"] = "application/x-www-form-urlencoded";
+			}else{
+				if(config.json)
+					delete config.json;
+				config.data = JSON.stringify(config.data);
+				config.headers["content-type"] = "application/json";
+			}
+			config.headers["content-length"] = strlen(config.data);		
+		}else{
+			config.headers["content-type"] = "text/plain";
+		}
 		_ajax(config, fn);
 	}
 }

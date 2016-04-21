@@ -1,3 +1,17 @@
+^^if(argv.routers){
+deps.express = 1;
+var rname = "router_"+parent.name.replace(/[:\/]/g,"");
+$$
+var ^^=rname$$ = new express.Router();
+^^if(argv.before){$$
+^^=~extend: argv.before, caller: rname$$
+^^}$$
+^^=~Lroute: argv.routers, caller: rname$$
+^^if(argv.after){$$
+^^=~extend: argv.after, caller: rname$$
+^^}$$
+^^=parent.caller$$.use("^^=parent.name$$", ^^=rname$$)
+^^}else if(argv.get || argv.post || argv.put || argv.delete){$$
 ^^=parent.caller$$.route("^^=parent.name$$")
 ^^if(argv.get){$$
 	.get(^^=~evalArray: argv.get, sep: ", "$$)
@@ -11,14 +25,6 @@
 ^^if(argv.delete){$$
 	.delete(^^=~evalArray: argv.delete, sep: ", "$$)
 ^^}$$
-^^
-if(argv.tests){
-	if(!global.tests) global.tests = {};
-	if(!global.tests.api) global.tests.api = {};
-	if(!global.tests.api.its) global.tests.api.its = {};
-	
-	for(var key in argv.tests){
-		global.tests.api.its[key] = argv.tests[key];
-	}
-}
-$$
+^^}else{$$
+^^=~extend: argv, caller: parent.caller$$
+^^}$$

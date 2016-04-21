@@ -23,11 +23,6 @@
 		"lang": "expressjs",
 		"tmpl": "service.js"
 	},
-	"router.js": {
-		"lib": "lib",
-		"lang": "expressjs",
-		"tmpl": "router.js"
-	},
 	"db.js": {
 		"lib": "lib",
 		"lang": "nodejs",

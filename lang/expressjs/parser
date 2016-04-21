@@ -1,0 +1,11 @@
+^^deps["body-parser"]=1$$
+^^if(argv.form){$$
+ ^^if(argv.query){$$
+app.use(bodyParser.urlencoded({extended: true}));
+ ^^}else{$$
+app.use(bodyParser.urlencoded());
+ ^^}$$
+^^}$$
+^^if(argv.json){$$
+app.use(bodyParser.json());
+^^}$$

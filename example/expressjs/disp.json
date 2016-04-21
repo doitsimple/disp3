@@ -11,61 +11,59 @@
 		"main": {
 			"mongodb": {
 				
-			}
+			},
+			"schemas": {}
 		}
 	},
 	"routers": {
 		"/": {
-			"staticSite": {"val": "../angularjs"}
+			"use": {
+				"staticSite": {"val": "../angularjs"}
+			}
 		},
 		"/api": {
-			"newRouter": [
-				{
-					"use": {
-						"midware": [{"print": {"val": "mid"}},{"nextMidware": 1}]
+			"before": {
+				"use": {
+					"midware": [{"print": {"val": "mid"}},{"nextMidware": 1}]
+				}
+			},
+			"routers": {
+				"/error": {
+					"get": {
+						"midware": {
+							"send": {
+								"val": {
+									"error": {"code": 10, "message": "haha"}
+								}
+							}
+						}
+					},
+					"tests": {
+						"result": {							
+						}
 					}
 				},
-				{
-					"Lroute": {
-						"/error": {
-							"get": {
-								"midware": {
-										"send": {
-												"val": {
-														"error": {"code": 10, "message": "haha"}
-												}
-										}
-								}
-							},
-							"tests": {
-								"result": {
-									
+				"/success": {
+					"get": {
+						"midware": {
+							"send": {
+								"val": {
+									"payload": {"abc":1,"abd":[]}
 								}
 							}
-						},
-						"/success": {
-							"get": {
-								"midware": {
-										"send": {
-												"val": {
-														"payload": {"abc":1,"abd":[]}
-												}
-										}
-								}
-							}
-						},
-						"/insert": {
-							"get": {
-								"midware": {"dbop": {
-									"schema": "test",
-									"method": "insert",
-									"arg1": {"reqQuery": 1}
-								}}
-							}
-						}						
+						}
 					}
-				}
-			]
+				},
+				"/insert": {
+					"get": {
+						"midware": {"dbop": {
+							"schema": "test",
+							"method": "insert",
+							"arg1": {"reqQuery": 1}
+						}}
+					}
+				}						
+			}
 		}
 	}
 }

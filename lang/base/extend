@@ -1,4 +1,6 @@
+
 ^^
+if(typeof argv == "object" && Object.keys(argv).length){
 delete parent[name];
 var json = parent.json;
 delete parent.json;
@@ -14,6 +16,8 @@ if(argv){
 		if(json)
 			$.extend1(argv, json);	
 	}
-}
 $$
 ^^=~argv$$
+^^
+}}
+$$
