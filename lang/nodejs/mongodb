@@ -147,9 +147,16 @@ new function(){
       fn(err, rtn);
     });
 	}
-	self.sedatex = function(name, where, op, fn){
-		self.format(name, where);
+	self.sedatex = function(name, op, fn){
 		self.format(name, op);
+		var where = op.$match;
+		self.format(name, where);
+		delete op.$match;
+		var method;
+		if(op.$limit == 1)
+			method = "updateOne"
+		else
+			method = "updateMany"
 		delete op.$limit;
     self.getCol(name).findAndModify(where, [], op, function(err, doc){
       if(err) return fn(err);

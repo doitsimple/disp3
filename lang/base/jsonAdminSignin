@@ -1,0 +1,33 @@
+[
+	{
+		"params": {
+			"username": "string",
+			"password": "string"
+		}
+  },
+	{
+		"dbop": {
+      "schema": "^^=argv$$",
+      "method": "select",
+      "arg1":{
+        "makeJson": {
+          "username": {"get": "username"}
+        }
+      }
+    },
+    "result": "user",
+		"success": {
+			"ifReturn": "user",
+			"return": "用户不存在"
+		}
+	},
+	{
+		"sendSuccess": 1,
+		"data": {
+			"makeJson": {
+				"token": {"get": "user.token"}
+			}
+		}
+	}
+	
+]

@@ -23,10 +23,10 @@ function Database(methods){
 			getOp("updatex")(name, {$match: where, $set: doc}, fn);
 		},
 		sedate: function(name, where, doc, fn){
-			getOp("sedatex")(name, where, {$set: doc, $limit: 1}, fn);
+			getOp("sedatex")(name, {$match: where, $set: doc, $limit: 1}, fn);
 		},
 		sedates: function(name, where, doc, fn){
-			getOp("sedatex")(name, where, {$set: doc}, fn);
+			getOp("sedatex")(name, {$match: where, $set: doc}, fn);
 		}
 	}
 	function _getOp(op){

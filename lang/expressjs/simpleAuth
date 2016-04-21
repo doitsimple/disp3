@@ -4,7 +4,7 @@ deps["passport-http-bearer"] = 1;
 
 $$
 function simpleAuth(){
-	passport.use("default", new passportHttpBearer.Strategy(check));
+	passport.use("^^=parent.name$$", new passportHttpBearer.Strategy(check));
 	^^=~makeAsyncFunc: "check", args: ["token"], content: {kitSimpleTokenValidate: argv}$$
-	return passport.authenticate('default', { session: false });
+	return passport.authenticate('^^=parent.name$$', { session: false });
 }();

@@ -1,0 +1,4 @@
+if(^^=~argv$$){
+^^=~extend: parent.error, error: {string: parent.return}$$
+return;
+}
