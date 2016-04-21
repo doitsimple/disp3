@@ -1,0 +1,141 @@
+{
+	"/get": {
+		"post": {
+			"midwareLast": [
+				{
+					"params": {
+						"_id": "ObjectId"
+					}
+				},
+				{
+					"dbop": {
+						"schema": "^^=argv$$",
+						"method": "select",
+						"arg1":{
+							"makeJson": {
+								"_id": {"get": "_id"},
+								"user_id": {"reqUser": 1}
+							}
+						}
+					},
+					"success": {
+						"sendSuccess": 1,
+						"data": {
+							"get": "result"
+						}
+					}
+				}
+			]
+		}
+	},
+	"/set": {
+		"post": {
+			"midwareLast": [
+				{
+					"params": {
+						"_id": "ObjectId",
+						"doc": {
+							"type": "hash",
+							"init": {"reqBody": 1}
+						}
+					},
+					"success": {
+						"hashDeleteKey": "_id",
+						"hash": "doc"
+					}
+				},
+				{
+					"dbop": {
+						"schema": "^^=argv$$",
+						"method": "update",
+						"arg1": {
+							"makeJson": {
+								"_id": {"get": "_id"},
+								"user_id": {"reqUser": 1}
+							}							
+						},
+						"arg2":{
+							"get": "doc" 							
+						}
+					},
+					"success": {
+						"sendSuccess": 1,
+						"data": {
+							"get": "result"
+						}
+					}
+				}
+			]
+		}
+	},
+	"/list": {
+		"post": {
+			"midwareLast": [
+				{
+					"params":{
+						"where": {
+							"type": "hash",
+							"init": {"reqBody": 1}
+						}
+					},
+					"success": {
+						"assign": [
+							{"get": "where.user_id"},
+							{"reqUser": 1}
+						]
+					}
+				},
+				{
+					"dbop": {
+						"schema": "^^=argv$$",
+						"method": "selects",
+						"arg1":{
+							"get": "where"
+						}
+					},
+					"success": {
+						"sendSuccess": 1,
+						"data": {
+							"get": "result"
+						}
+					}
+				}
+			]
+		}
+	},
+	"/add": {
+		"post": {
+			"midwareLast": [
+				{
+					"params":{
+						"where": {
+							"type": "hash",
+							"init": {"reqBody": 1}
+						}
+					},
+					"success": {
+						"assign": [
+							{"get": "doc.user_id"},
+							{"reqUser": 1}
+						]
+					}
+				},
+				{
+					"dbop": {
+						"schema": "^^=argv$$",
+						"method": "insert",
+						"arg1":{
+							"get": "doc"
+						}
+					},
+					"success": {
+						"sendSuccess": 1,
+						"data": {
+							"get": "result"
+						}
+					}
+				}
+			]
+		}
+	}
+}

@@ -1,17 +1,8 @@
 DIR=^^=~srcDir: 1$$
 ^^
-for(var key in global.tests){
-if(!global.tests[key].isfirst) continue;
+$.forBySeq(global.tests, function(key){
 $$
 mocha $DIR/test/^^=key$$_test.js
 ^^
-}
-$$
-^^
-for(var key in global.tests){
-if(global.tests[key].isfirst) continue;
-$$
-mocha $DIR/test/^^=key$$_test.js
-^^
-}
+})
 $$

@@ -13,4 +13,6 @@ if(isNaN(^^=parent.var$$)) {^^=parent.var$$ = undefined;}
 deps.ObjectId = 1;
 $$
 ^^=~parent.var$$ = ObjectId(^^=~parent.var$$);
+^^}else if(type == "hash"){$$
+if(typeof ^^=parent.var$$ != "object") ^^=parent.var$$ = {};
 ^^}$$

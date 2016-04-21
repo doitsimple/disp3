@@ -1,0 +1,1 @@
+delete ^^=parent.hash$$[^^=~string: argv$$];
