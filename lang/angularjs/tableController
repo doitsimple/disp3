@@ -1,6 +1,6 @@
 ^^deps.tableController = 1;$$
 $scope.^^=argv$$ = new tableController($scope, {
 	api: ^^=~string: parent.api$$,
-	schema: ^^=~string: parent.api$$
+	schema: ^^=~string: parent.schema$$
 });
 $scope.^^=argv$$.refresh();

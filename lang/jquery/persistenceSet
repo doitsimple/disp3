@@ -1,2 +1,2 @@
 ^^deps["jquery-cookie"] =1$$
-$.cookie("^^=argv$$", ^^=~string: parent.val$$);
+$.cookie("^^=argv$$", ^^=~string: parent.init$$);

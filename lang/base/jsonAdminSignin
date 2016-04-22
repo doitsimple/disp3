@@ -15,11 +15,11 @@
         }
       }
     },
-    "result": "user",
-		"success": {
-			"ifReturn": "user",
-			"return": "用户不存在"
-		}
+    "result": "user"
+	},
+	{
+		"ifNotReturn": "user",
+		"return": "用户不存在"
 	},
 	{
 		"sendSuccess": 1,

@@ -3,10 +3,13 @@ function ajax(config, fn){
 		"method": config.method.toUpperCase(),
 		"url": config.url,
 		"data": config.data,
+		"headers": {},
 		"success": function(result, status, xhr){
 			var headers = xhr.getAllResponseHeaders();
 			fn(null, result, {statusCode: status, headers: headers});
 		}
 	};
+	if(config.bearer)
+		aconfig.headers.authorization = "Bearer "+config.bearer;
 	$.ajax(aconfig);
 };

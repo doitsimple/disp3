@@ -19,14 +19,19 @@ new function(){
 	var colDataCache = {};
 	var conn;
 	var formatFuncs = {};
-	self.makeFormat = function(config){
+	self.makeFormat = function(config, flag){
+		if(flag == "insert"){
+			
+		}
 		return function(doc){
-			if(!doc) return;
+			if(!doc) return;			
 			if(doc._id) doc._id = ObjectId(doc._id);	
 		}
 	}
-	self.format = function(name, doc){
-		if(!formatFuncs[name]) formatFuncs[name] = self.makeFormat(colDef[name]);
+	self.format = function(oriname, doc, flag){
+		if(flag) name = oriname + "@"+flag;
+		else name = oriname;
+		if(!formatFuncs[name]) formatFuncs[name] = self.makeFormat(colDef[oriname], flag);
 		if(isArray(doc)){
 			for(var i=0;i<doc.length;i++){
 				formatFuncs[name](doc[i]);

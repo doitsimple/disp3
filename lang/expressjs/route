@@ -26,5 +26,5 @@ var ^^=rname$$ = new express.Router();
 	.delete(^^=~evalArray: argv.delete, sep: ", "$$)
 ^^}$$
 ^^}else{$$
-^^=~extend: argv, caller: parent.caller$$
+^^=parent.caller$$.use("^^=parent.name$$", ^^=~extend: argv, caller: parent.caller$$)
 ^^}$$

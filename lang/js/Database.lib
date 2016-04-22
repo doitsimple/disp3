@@ -44,11 +44,20 @@ function Database(methods){
 						return;
 					}
 					db = _db;
+					formatArgs(op, arg);
 					_getOp(op).apply(self, arg);
 				});
 			}
-		else
-			return _getOp(op);
+		else{
+			return function(){
+				var arg = arguments;
+				formatArgs(op, arg);
+				_getOp(op).apply(self, arg);				
+			}
+		}
+	}
+	function formatArgs(op, args){		
+		if(methods.formatArgs) methods.formatArgs(op, args);
 	}
 	var opList = {
 		insert: 2,
