@@ -108,7 +108,7 @@
 			"midwareLast": [
 				{
 					"params":{
-						"where": {
+						"doc": {
 							"type": "hash",
 							"init": {"reqBody": 1}
 						}
@@ -131,7 +131,11 @@
 					"success": {
 						"sendSuccess": 1,
 						"data": {
-							"get": "result"
+							"makeJson": {
+								"_id": { 
+									"get": "result.insertedId"
+								}
+							}
 						}
 					}
 				}

@@ -21,7 +21,30 @@ new function(){
 	var formatFuncs = {};
 	self.makeFormat = function(config, flag){
 		if(flag == "insert"){
-			
+			return function(doc){
+				if(!config) return;
+				for(var key in config.fields){
+					var f = config.fields[key];
+					if(f.hasOwnProperty("default") && !doc.hasOwnProperty(key)){
+						if(f.default == "now")
+							doc[key] = new Date().getTime();
+						else
+							doc[key] = f.default;
+					}
+					if(doc.hasOwnProperty(key)){
+						if(f.type == "int"){
+							doc[key] = parseInt(doc[key]);
+						}
+						if(f.type == "float"){
+							doc[key] = parseFloat(doc[key]);
+						}
+						if(f.type == "string"){
+							doc[key] = "" + doc[key];
+						}
+					}
+
+				}
+			}
 		}
 		return function(doc){
 			if(!doc) return;
@@ -135,6 +158,7 @@ new function(){
 		});
 	},
 	self.insert = function(name, doc, fn){
+		self.format(name, doc, "insert");
 		self.format(name, doc);
 		self.getCol(name).insertOne(doc, function(err, result){
 			var id = doc._id;

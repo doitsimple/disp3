@@ -3,7 +3,7 @@ var type = parent[name];
 $$
 ^^if(type == "int"){$$
 ^^=parent.var$$ = parseInt(^^=parent.var$$);
-if(isNaN(^^=~parent.var$$)) {^^=~parent.error$$;}
+if(isNaN(^^=~parent.var$$)) {^^=parent.var$$ = 0}
 ^^}else if(type == "number"){$$
 ^^=parent.var$$ = parseFloat(^^=parent.var$$);
 if(isNaN(^^=parent.var$$)) {^^=parent.var$$ = undefined;}
