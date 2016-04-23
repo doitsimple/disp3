@@ -24,8 +24,21 @@ new function(){
 			
 		}
 		return function(doc){
-			if(!doc) return;			
+			if(!doc) return;
 			if(doc._id) doc._id = ObjectId(doc._id);	
+			for(var key in doc){
+				if(key.match(/_id/)){
+					doc[key] = ObjectId(doc[key]);
+				}
+				var tmp = doc[key];
+				if(typeof tmp == "object"){
+					for(var key2 in tmp){
+						if(key2.match(/_id/)){
+							tmp[key2] = ObjectId(tmp[key2]);
+						}
+					}
+				}
+			}
 		}
 	}
 	self.format = function(oriname, doc, flag){

@@ -82,7 +82,9 @@ Disp.prototype.extendGlobal = function(){
 	self.global.pluginDir = path.resolve(self.global.dispDir + "/plugin");
 	self.global.langDir = path.resolve(self.global.dispDir + "/lang");
 	self.global.projectDir = self.projectDir;
-	if(!self.global.baseDir) self.global.baseDir = self.projectDir;
+	if(!self.global.baseDir){
+		self.global.baseDir = self.projectDir;
+	}
 	if(!self.ignoreDispJson){
 		self.readDispJson("disp.json");
 		if(fs.existsSync(self.projectDir + "/disp")){
