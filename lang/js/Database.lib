@@ -22,6 +22,9 @@ function Database(methods){
 		updates: function(name, where, doc, fn){
 			getOp("updatex")(name, {$match: where, $set: doc}, fn);
 		},
+		upsert: function(name, where, doc, fn){
+			getOp("upsertx")(name, {$match: where, $set: doc}, fn);
+		},
 		sedate: function(name, where, doc, fn){
 			getOp("sedatex")(name, {$match: where, $set: doc, $limit: 1}, fn);
 		},

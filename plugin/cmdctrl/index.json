@@ -1,0 +1,17 @@
+{
+	"cmdctrls": {
+		"sub": {
+			"^^=argv$$.js": {
+				"lang": "nodejs",
+				"content": "content",
+				"envkey": "cmdctrls",
+				"lib": "cmdctrllib"
+			}
+		}
+	},
+	"cmdctrl_lib.js": {
+		"name": "cmdtrllib",
+		"lang": "nodejs",
+		"export": "cmdtrllib"
+	}
+}

@@ -272,10 +272,10 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 	log.i(filename);
 	/*todo sync*/
 	/**/
+	var env = self.getEnv(partConfig);
   var str = "";
 	var deps = {};
 	self.eval({init: 1}, partConfig.lang, deps);
-
 //	if(partConfig.code || partConfig.content || partConfig.exports){
 		if(partConfig.code){
 			str += self.eval(partConfig.code, partConfig.lang, deps);
@@ -284,10 +284,10 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 			var c = partConfig.content;
 			if(libObject.isArray(c)){
 				for(var i in c){
-					str += self.eval(self.global[c[i]], partConfig.lang, deps);
+					str += self.eval(env[c[i]], partConfig.lang, deps);
 				}
 			}else{
-				str += self.eval(self.global[c], partConfig.lang, deps);
+				str += self.eval(env[c], partConfig.lang, deps);
 			}
 		}
 		if(partConfig.export){
@@ -302,7 +302,7 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 		}
 
 //  }
-	var env = self.getEnv(partConfig);
+
 	if(!env._isGlobal){
 		env.main = str;
 	}

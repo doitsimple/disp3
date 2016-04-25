@@ -9,7 +9,7 @@ if(!argv.host) host = "127.0.0.1";
 if(!argv.port) port = 27017;
 if(argv.username && argv.password) authStr = username + ":" + password + "@";
 else authStr = "";
-hostStr =  "mongodb://" + authStr + host + ":" + port + "/" + (argv.dbname || "main");
+hostStr =  "mongodb://" + authStr + host + ":" + port + "/" + (parent.db || "main");
 $$
 new function(){
 	var self = this;
@@ -169,7 +169,7 @@ new function(){
 	}
 	self.inserts = function(name, docs, fn){
 		self.format(name, docs);
-		self.getCol(name).insertMany(docs, fn);
+ 		self.getCol(name).insertMany(docs, fn);
 	}
 	self.updatex = function(name, op, fn){
 		self.format(name, op);
@@ -183,6 +183,24 @@ new function(){
 			method = "updateMany"
 		delete op.$limit;
 		self.getCol(name)[method](where, op, function(err, result){
+      var rtn;
+      if(result) rtn = result.result;
+      else rtn = {n: 0};
+      fn(err, rtn);
+    });
+	}
+	self.upsertx = function(name, op, fn){
+		self.format(name, op);
+		var where = op.$match;
+		self.format(name, where);
+		delete op.$match;
+		var method;
+		if(op.$limit == 1)
+			method = "updateOne"
+		else
+			method = "updateMany"
+		delete op.$limit;
+		self.getCol(name)[method](where, op, {upsert:true}, function(err, result){
       var rtn;
       if(result) rtn = result.result;
       else rtn = {n: 0};

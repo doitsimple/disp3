@@ -10,5 +10,6 @@ if(argv.arg3)
 	args.push(argv.arg3);
 if(!parent.result) parent.result = "result";
 args.push({makeCallback: parent});
+var method = argv.method?"."+argv.method:"";
 $$
-libService.^^=service$$.^^=argv.method$$(^^=~evalArray:args, sep: ", "$$);
+libService.^^=service$$^^=method$$(^^=~evalArray:args, sep: ", "$$);

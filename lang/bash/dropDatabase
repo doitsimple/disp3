@@ -1,0 +1,1 @@
+mongo ^^=global.databases[argv].db$$ --eval "db.dropDatabase()"

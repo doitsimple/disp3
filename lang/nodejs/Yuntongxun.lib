@@ -1,73 +1,90 @@
 ^^
 deps.requestx = 1;
 deps.base64Encode = 1;
+deps.isArray = 1;
 deps.strlen = 1;
 deps.md5 = 1;
+deps.extend1 = 1;
 deps.formatDate = 1;
 $$
 function Yuntongxun(config){
 	var self = this;
-//var accountid = "8a48b5514f49079e014f4eea26e20d35"; //ACCOUNT SID
-//var token = "26f85bb3e3d14581afed8f414855e673"; //AUTH TOKEN
-//var appid = "8a48b5514f49079e014f4ef380dd0d59";
 	var accountid = config.sid;
 	var token = config.token;
 	var appid = config.appid;
 	var rooturl = "https://" + (config.dev?"sandbox":"") + "app.cloopen.com:8883/2013-12-26/Accounts/";
-	self.auth = function(){
+	self.timestamp = function(){
+		return formatDate(new Date(), "yyyyMMddhhmmss");
+	}
+	self.auth = function(timestamp){
 		return {
-			"Accept": "application/json",
-			
-			"Authorization": base64Encode(
-				accountid + ":" + formatDate(new Date(), "yyyyMMddhhmmss")
-			)
+			"headers": {
+				"Accept": "application/json",			
+				"Authorization": base64Encode(
+					accountid + ":" + timestamp
+				)
+			}
 		}
 	}
-	self.sig = function(){
-		var timestamp = formatDate(new Date(), "yyyyMMddhhmmss");
-		console.log(timestamp);
+	self.sig = function(timestamp){
 		return md5(
 			accountid + token + timestamp
 		).toUpperCase();
 	}
-	self.SubAccounts = function(params, fn) {
-		var service = "/SubAccounts";
-		var url = rooturl + accountid + service + "?sig=" + self.sig();
-		requestx.postx(url, self.auth(), 	{
-			'appId': appid,
-			'friendlyName':'ccc'
-		}, function(err, result){
-			if(err) return fn(err);
-			fn(null, result);
-		});
-	}
-	self.GetSubAccounts = function(params, fn){
-		var service = "/GetSubAccounts";
-		var url = rooturl + accountid + service + "?sig=" + self.sig();
-		requestx.postx(url, self.auth(), 	{
+	self.request = function(){
+		var service = arguments[0];
+		var params, fn;
+		if(typeof arguments[2] == "function")
+			params = arguments[1], fn = arguments[2];
+		else if(typeof arguments[1] == "function")
+			params = {}, fn = arguments[1];
+		else
+			params = {}, fn = function(){};
+		var timestamp = self.timestamp();
+		var url = rooturl + accountid + "/" + service + "?sig=" + self.sig(timestamp);
+		var body = {
 			'appId': appid
-		}, function(err, result){
+		}
+		if(self[service])
+			self[service](params, body);
+		else
+			extend1(body, params);
+		requestx.postx(url, self.auth(timestamp), body, function(err, result){
 			if(err) return fn(err);
-			fn(null, result);
+			if(result.statusCode == "000000")
+				fn(null, result);
+			else
+				fn(result);
 		});
 	}
-	self.PushMsg = function(params, fn) {
-		var service = "/IM/PushMsg";
-		var url = rooturl + accountid + service + "?sig=" + self.sig();
-		requestx.postx(url, self.auth(), {
-			"pushType":"1",
-			"appId": appid,
-			"sender":"82658800000004",
-			"receiver":["82658800000003"],
-			"msgType":"1",
-			"msgContent": "你好", 
-			"msgDomain":"yuntongxun",
-			"msgFileName":"",
-			"msgFileUrl":""
-		}, function(err, result){
-			if(err) return fn(err);
-			fn(null, result);
-		});
+	self.SubAccounts = function(params, body) {
+		body['friendlyName'] = params.nickname;
+	}
+	self.GetSubAccounts = function(params, body){
+		body.offset = 100;
+	}	
+	self["IM/PushMsg"] = function(params, body) {
+		body.pushType = "1";
+		body.msgType = "1";
+		body.sender = params.sender;
+		if(!isArray(params.receiver))
+			 body.receiver = [params.receiver];
+		else
+			body.receiver = params.receiver;
+		body.msgContent= params.content;
+		body.msgDomain = params.note?JSON.stringify(params.note):"";
+		body.msgFileName = "";
+		body.msgFileUrl = "";
+	}
+	self["SMS/TemplateSMS"] = function(params, body){
+		body.to = params.phone;
+		body.templateId = params.templateId;
+		if(params.code)
+			body.datas = [params.code];
+		else
+			body.datas = [];
+	}
+	self["Calls/VoiceVerify"] = function(params, body){
 	}
 //phone voiceflag tpl(content, yuntongxunId) code
 	self.send = function(params, fn) {

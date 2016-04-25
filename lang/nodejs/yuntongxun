@@ -1,2 +1,2 @@
 ^^deps.Yuntongxun = 1;$$
-new Yuntongxun(^^=~val: argv$$)
+yuntongxun = (new Yuntongxun(^^=~val: argv$$)).request
