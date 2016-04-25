@@ -90,6 +90,7 @@ new function(){
       conn = client;
 			eachSync(colArray, function(e, cb){
 				var colConfig = colDef[e];
+^^if(global.dev){$$
 				if(colConfig.seed){
 					self.getCol(e).findOne(function(err, result){
 						if(err) return cb(err);
@@ -102,6 +103,9 @@ new function(){
 				}else{
 					cb();
 				}
+^^}else{$$
+				cb();
+^^}$$
 			}, function(err){
 			  fn(err, conn);
 			});

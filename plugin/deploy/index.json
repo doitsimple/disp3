@@ -1,6 +1,7 @@
 {
-	"deploy.sh":{
+	"deploy_^^=argv$$.sh":{
 		"tmpl": "deploy.sh",
-		"lang": "bash"
+		"lang": "bash",
+		"envkey": "deploys"
 	}
 }

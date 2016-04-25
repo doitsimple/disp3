@@ -116,6 +116,9 @@ Disp.prototype.extendGlobal = function(){
 		self.targetDir = ".";
 	if(!self.global.targetDir)
 		self.global.targetDir = self.targetDir;
+	if(!self.global.targetBaseDir){
+		self.global.targetBaseDir = self.targetDir;
+	}
 
 	if(!self.global.arch)
 		self.global.arch = "raw";
@@ -256,6 +259,7 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 		if(tmpenv && !tmpenv._isGlobal)
 			utils.extend(dispConfig.global, tmpenv);
 		dispConfig.global.baseDir = self.projectDir;
+		dispConfig.global.targetBaseDir = self.targetDir;
 		var newDisp = new Disp(dispConfig, self.callback);
 		newDisp.run();
 	}
@@ -273,31 +277,32 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 	/*todo sync*/
 	/**/
 	var env = self.getEnv(partConfig);
+	var lang = partConfig.lang;
   var str = "";
 	var deps = {};
-	self.eval({init: 1}, partConfig.lang, deps);
+	self.eval({init: 1}, lang, deps);
 //	if(partConfig.code || partConfig.content || partConfig.exports){
 		if(partConfig.code){
-			str += self.eval(partConfig.code, partConfig.lang, deps);
+			str += self.eval(partConfig.code, lang, deps);
 		}
 		if(partConfig.content){
 			var c = partConfig.content;
 			if(libObject.isArray(c)){
 				for(var i in c){
-					str += self.eval(env[c[i]], partConfig.lang, deps);
+					str += self.eval(env[c[i]], lang, deps);
 				}
 			}else{
-				str += self.eval(env[c], partConfig.lang, deps);
+				str += self.eval(env[c], lang, deps);
 			}
 		}
 		if(partConfig.export){
 			var c = partConfig.export;
 			if(libObject.isArray(c)){
 				for(var i in c){
-					str += self.eval({Lexport: self.global[c[i]]}, partConfig.lang, deps);
+					str += self.eval({Lexport: self.global[c[i]]}, lang, deps);
 				}
 			}else{
-				str += self.eval({Lexport: self.global[c]}, partConfig.lang, deps);
+				str += self.eval({Lexport: self.global[c]}, lang, deps);
 			}
 		}
 
@@ -313,7 +318,7 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 
 	if(partConfig.tmpl || partConfig.src){
 		tmpl.extendMethods("eval", function(json){
-			return self.eval(json, partConfig.lang, deps);
+			return self.eval(json, lang, deps);
 		});
 		var srcfile;
 		if(partConfig.tmpl)
@@ -360,7 +365,7 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 		addExport: function(key, lib, reqconfig){
 			self.addExport(key, lib, reqconfig);
 		}
-	}, partConfig.lang, {});
+	}, lang, {});
 
   libFile.mkdirpSync(path.dirname(tfilename)); //to be acc
   if(fs.existsSync(tfilename))
@@ -368,7 +373,7 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 	self.fileCount ++;
 //  fs.writeFileSync(tfilename, str, {mode: 0444});
   fs.writeFileSync(tfilename, str, {mode: 0777});
-	self.eval({finish: 1}, partConfig.lang, gdeps);
+	self.eval({finish: 1}, lang, gdeps);
 }
 
 Disp.prototype.genPlugin = function(){

@@ -3,7 +3,7 @@
 var prefix = "";
 if(argv.vendor){
  prefix = global.htmlVendorDir?global.htmlVendorDir + "/" : "vendor/";
- var tarfile=global.baseDir + "/vendor/" + argv.file;
+ var tarfile=global.targetBaseDir + "/vendor/" + argv.file;
  $.mkdirpSync(path.dirname(tarfile));
 // $.copySync(global.dispDir+"/vendor/"+argv.file, tarfile);
 require("child_process").exec("cp -rf " + global.dispDir+"/vendor/"+argv.file + " "+tarfile);

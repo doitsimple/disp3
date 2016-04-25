@@ -2,18 +2,20 @@
 DISP3=^^=global.dispBin$$
 DATE=`date +%Y%m%d`
 ^^
-if(!global.remote.port){
-	global.remote.port = 22;
+if(!local.remote.port){
+	local.remote.port = 22;
 }
 $$
+$DISP3 -t ^^=argv$$ -x ^^=argv$$ 
 ^^
-for(var f in global.staticResource){
+for(var f in local.staticResource){
 $$
-
+mkdir -p ^^=argv$$/^^=path.dirname(f)$$
+cp ^^=f$$ ^^=argv$$/^^=f$$
 ^^
 }
 $$
-$DISP3 -t deploy -x deploy && rsync -avz -e "ssh -p ^^=global.remote.port$$" deploy/. ^^=global.remote.url$$
+rsync -avz -e "ssh -p ^^=local.remote.port$$" ^^=argv$$/. ^^=local.remote.url$$
 
 
 

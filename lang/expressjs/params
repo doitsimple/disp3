@@ -28,10 +28,15 @@ var estr = $.eval({
 $$
 var ^^=key$$ = ^^=val$$;
 ^^=estr$$;
-^^if(config.required){$$
+^^if(config.required || config.default){$$
 if(^^=key$$ == undefined || ^^=key$$ == null || ^^=key$$ == ""){
+^^if(config.required){$$
 ^^=~extend: parent.error, error: "params " + key + " not exist"$$
 return;
+^^}$$
+^^if(config.default){$$
+^^=key$$ = ^^=~config.default$$;
+^^}$$
 }
 ^^}$$
 ^^}$$

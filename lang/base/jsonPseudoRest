@@ -78,12 +78,14 @@
 							"init": {"reqBody": 1}
 						}
 					},
-					"success": {
-						"assign": [
-							{"get": "where.user_id"},
-							{"reqUser": 1}
-						]
-					}
+					"success": [
+						{
+							"assign": [
+								{"get": "where.user_id"},
+								{"reqUser": 1}
+							]
+						}
+					]
 				},
 				{
 					"dbop": {
