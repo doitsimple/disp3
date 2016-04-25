@@ -8,4 +8,5 @@
 ^^for(var key in local.fields){var f = fields[key]$$
 @property (nonatomic , copy) NSString * ^^=key$$; //^^=f.text$$
 ^^}$$
+- (NSDictionary *)toDictionary:(^^=$.ucfirst(argv)$$Model *) model;
 @end
