@@ -1,0 +1,12 @@
+^^
+deps.libDb = 1;
+var db = argv.db || "main";
+var schema = argv.schema;
+var result = parent.result || "result";
+$$
+var keypair = ^^=~argv.keypair$$;
+libDb.^^=db$$.select("^^=schema$$", keypair, function(err, like){
+	if(err) {^^=~parent.error$$; return}
+	var ^^=result$$= like?like.like_flag: 0;
+	^^=~parent.success$$
+})

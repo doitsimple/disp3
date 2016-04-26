@@ -19,6 +19,7 @@ function Disp(config, fn){
 	}
 	self.callback = fn;
 	self.global = {
+		"arch": "base",
 		_isGlobal: true,
 		dev: 1
 	};
@@ -57,7 +58,7 @@ Disp.prototype.readDispJson = function(jsonFile, config){
 		return;
 	}
 	tmpl.extendMethods("eval", function(json){
-		return self.eval(json, "base");
+		return self.eval(json, self.global.arch);
 	});
 	var str = tmpl.render({file: self.projectDir + "/" + jsonFile}, self.global);
 	var toextend;

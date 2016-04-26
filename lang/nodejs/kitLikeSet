@@ -1,0 +1,14 @@
+^^
+deps.libDb = 1;
+var db = argv.db || "main";
+var schema = argv.schema;
+$$
+var keypair = ^^=~argv.keypair$$;
+libDb.^^=db$$.select("^^=schema$$", keypair, function(err, result){
+	if(err) {^^=~parent.error$$; return}
+	if(!result){
+		libDb.^^=db$$.insert("^^=schema$$", keypair, ^^=~makeCallback: parent$$);
+	}else{
+		libDb.^^=db$$.update("^^=schema$$", keypair, {like: 0}, ^^=~makeCallback: parent$$);
+	}
+})

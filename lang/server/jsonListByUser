@@ -1,0 +1,17 @@
+{
+  "dbop": {
+    "schema": "^^=argv$$",
+    "method": "selects",
+    "arg1":{
+			"makeJson": {
+				"user_id": {"reqUser":1}
+			}
+    }
+  },
+  "success": {
+    "sendSuccess": 1,
+    "data": {
+      "get": "result"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "params":{
+    "user_id": {
+			"type": "string",
+			"required": 1
+		}
+  }
+},
+{
+  "dbop": {
+    "schema": "^^=argv$$",
+    "method": "selects",
+    "arg1":{
+			"makeJson": {
+				"user_id": {"get": "user_id"}
+			}
+    }
+  }
+}

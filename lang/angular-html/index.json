@@ -1,6 +1,5 @@
 {
 	"deps": {
-		"html": 1,
-		"ui-common": 1
+		"html": 1
 	}
 }
