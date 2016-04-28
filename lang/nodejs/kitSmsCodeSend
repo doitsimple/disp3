@@ -1,6 +1,7 @@
 ^^
 deps.request = 1;
 deps.libDb = 1;
+deps.libService = 1;
 var phone = argv.phone || "phone";
 var code = argv.code || {randomDigit: 4};
 var db = argv.db || "main";
@@ -21,23 +22,35 @@ libDb.^^=db$$.select("^^=schema$$", {
 			^^=~extend: parent.error, code: 101, error: "短信发送过于频繁"$$
 			return;
 		}
-		libDb.^^=db$$.update("^^=schema$$", {
-			^^=phoneField$$: ^^=phone$$
-		}, {
-			^^=codeField$$: code,
-			^^=timeField$$: now
-		}, function(err, result){
+		libService.^^=argv.method$$({
+			phone: ^^=phone$$,
+			code: code
+		}, function(err){
 			if(err) {^^=~parent.error$$; return}
-			^^=~parent.success$$
+			libDb.^^=db$$.update("^^=schema$$", {
+				^^=phoneField$$: ^^=phone$$
+			}, {
+				^^=codeField$$: code,
+				^^=timeField$$: now
+			}, function(err, result){
+				if(err) {^^=~parent.error$$; return}
+				^^=~parent.success$$
+			});
 		});
 	}else{
-		libDb.^^=db$$.insert("^^=schema$$", {
-			^^=phoneField$$: ^^=phone$$,
-			^^=codeField$$: code,
-			^^=timeField$$: now
-		}, function(err, result){
-			if(err) {^^=~parent.error$$;return;}
-			^^=~parent.success$$
+		libService.^^=argv.method$$({
+			phone: ^^=phone$$,
+			code: code
+		}, function(err){
+			if(err) {^^=~parent.error$$; return}
+			libDb.^^=db$$.insert("^^=schema$$", {
+				^^=phoneField$$: ^^=phone$$,
+				^^=codeField$$: code,
+				^^=timeField$$: now
+			}, function(err, result){
+				if(err) {^^=~parent.error$$;return;}
+				^^=~parent.success$$
+			});
 		});
 	}
 });

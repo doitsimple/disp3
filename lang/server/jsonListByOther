@@ -9,11 +9,14 @@
 {
   "dbop": {
     "schema": "^^=argv$$",
-    "method": "selects",
-    "arg1":{
-			"makeJson": {
-				"user_id": {"get": "user_id"}
-			}
+    "method": "selectx",
+		"arg1":{
+      "makeJson": {
+        "$match": {
+          "makeJson": {"user_id": {"get": "user_id"}}
+        },
+        "$sort": {"val": {"^^=parent.sortTimeField || 'c_time'$$": -1}}
+      }
     }
   }
 }

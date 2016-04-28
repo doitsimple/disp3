@@ -8,6 +8,7 @@ var phoneField = argv.phoneField || "phone";
 var codeField = argv.codeField || "code";
 var timeField = argv.timeField || "time";
 $$
+var now = new Date().getTime();
 libDb.^^=db$$.select("^^=schema$$", {
 	^^=phoneField$$: ^^=phone$$,
 	^^=codeField$$: ^^=code$$
@@ -15,6 +16,10 @@ libDb.^^=db$$.select("^^=schema$$", {
 	if(err) {^^=~parent.error$$;return;}
 	if(!result){
 		^^=~extend: parent.error, code: 102, error: "验证码错误"$$
+		return;
+	}
+	if(now - result.time > 300000){
+		^^=~extend: parent.error, code: 102, error: "验证码失效，请重新发送"$$
 		return;
 	}
 	^^=~parent.success$$
