@@ -2,7 +2,7 @@
 	"test": {
 		"sub": {
 			"^^=argv$$_test.js": {
-				"lang": "nodejs",
+				"lang": "mocha",
 				"tmpl": "test.js",
 				"envkey": "tests",
 				"lib": "mochalib"
@@ -15,7 +15,7 @@
 	},
 	"mocha_lib.js": {
 		"name": "mochalib",
-		"lang": "nodejs",
+		"lang": "mocha",
 		"export": "mochalib"
 	}
 }

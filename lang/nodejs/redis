@@ -1,5 +1,6 @@
 ^^
 deps.redis = 1;
+if(!parent.db) parent.db = 1;
 $$
 new function(){
 	var self = this;
@@ -10,7 +11,10 @@ new function(){
 		conn.on("error", function (err) {
   		console.log("REDIS Error " + err);
 		});
-		fn(null, conn);
+		conn.select(^^=parent.db$$, function(err){
+			if(err) return fn(err);
+			fn(null, conn);
+		})
 	}
 	self.get = function(schema, name, fn){
 		conn.get(schema + "_" +name, fn);

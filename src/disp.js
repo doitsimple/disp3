@@ -277,37 +277,36 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 	log.i(filename);
 	/*todo sync*/
 	/**/
-	var env = self.getEnv(partConfig);
+	var env = libObject.copy1(self.getEnv(partConfig));
 	var lang = partConfig.lang;
   var str = "";
 	var deps = {};
 	self.eval({init: 1}, lang, deps);
-//	if(partConfig.code || partConfig.content || partConfig.exports){
-		if(partConfig.code){
-			str += self.eval(partConfig.code, lang, deps);
-		}
-		if(partConfig.content){
-			var c = partConfig.content;
-			if(libObject.isArray(c)){
-				for(var i in c){
-					str += self.eval(env[c[i]], lang, deps);
-				}
-			}else{
-				str += self.eval(env[c], lang, deps);
-			}
-		}
-		if(partConfig.export){
-			var c = partConfig.export;
-			if(libObject.isArray(c)){
-				for(var i in c){
-					str += self.eval({Lexport: self.global[c[i]]}, lang, deps);
-				}
-			}else{
-				str += self.eval({Lexport: self.global[c]}, lang, deps);
-			}
-		}
 
-//  }
+	if(partConfig.code){
+		str += self.eval(partConfig.code, lang, deps);
+	}
+	if(partConfig.content){
+		var c = partConfig.content;
+		if(libObject.isArray(c)){
+			for(var i in c){
+				str += self.eval(env[c[i]], lang, deps);
+			}
+		}else{
+			str += self.eval(env[c], lang, deps);
+		}
+	}
+	if(partConfig.export){
+		var c = partConfig.export;
+		if(libObject.isArray(c)){
+			for(var i in c){
+				str += self.eval({Lexport: self.global[c[i]]}, lang, deps);
+			}
+		}else{
+			str += self.eval({Lexport: self.global[c]}, lang, deps);
+		}
+	}
+
 
 	if(!env._isGlobal){
 		env.main = str;

@@ -1,0 +1,5 @@
+^^
+var tmp = {};
+tmp[argv] = 1;
+$$
+(^^=~tmp$$)(^^=~makeCallback: parent$$)

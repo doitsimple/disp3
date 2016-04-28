@@ -4,12 +4,15 @@ deps.ObjectId = 1;
 deps.isArray = 1;
 deps.eachSync = 1;
 deps.project = 1;
+deps.bcryptEncode = 1;
 var host, port, dbname, authStr, hostStr;
 if(!argv.host) host = "127.0.0.1";
 if(!argv.port) port = 27017;
 if(argv.username && argv.password) authStr = username + ":" + password + "@";
 else authStr = "";
-hostStr =  "mongodb://" + authStr + host + ":" + port + "/" + (parent.db || "main");
+if(!parent.db) parent.db = "main";
+hostStr =  "mongodb://" + authStr + host + ":" + port + "/" + parent.db ;
+
 $$
 new function(){
 	var self = this;
@@ -50,8 +53,11 @@ new function(){
 			if(!doc) return;
 			if(doc._id) doc._id = ObjectId(doc._id);	
 			for(var key in doc){
-				if(key.match(/_id/)){
+				if(key.match(/_id$/)){
 					doc[key] = ObjectId(doc[key]);
+				}
+				if(key.match(/password$/)){
+					doc[key] = bcryptEncode(doc[key]);
 				}
 				var tmp = doc[key];
 				if(typeof tmp == "object"){
@@ -172,6 +178,7 @@ new function(){
 		});
 	}
 	self.inserts = function(name, docs, fn){
+		self.format(name, docs, "insert");
 		self.format(name, docs);
  		self.getCol(name).insertMany(docs, fn);
 	}
@@ -232,6 +239,18 @@ new function(){
 		self.format(name, op);
     self.getCol(name).count(op, fn);
 	}
+	self.each = function(name, fn, fnfinal){
+    var c = self.getCol(name).find();
+    var nextFn = function(err, doc){
+      if(err) return fnfinal(err);
+      if(!doc) return fnfinal();
+      fn(doc, function(err2){
+        if(err2) return fnfinal(err2);
+        c.next(nextFn);
+      });
+    };
+    c.next(nextFn);
+  }
 	self.colectx = function(name, op, fn){
     self.format(name, op);
 		self.count(name, op.$match, function(err, count){

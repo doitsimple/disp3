@@ -72,6 +72,7 @@ function Database(methods){
 		colect: 3,
 		aggr: 1,
 		count: 1,
+		each: 1,
 		get: 1,
 		set: 1,
 		expire: 1

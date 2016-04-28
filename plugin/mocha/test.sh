@@ -1,5 +1,7 @@
 DIR=^^=~srcDir: 1$$
-^^=~dropDatabase:"main"$$
+^^for(var key in global.databases){$$
+^^=~dropDatabase:global.databases[key], name:key$$
+^^}$$
 ^^
 $.forBySeq(global.tests, function(key){
 $$

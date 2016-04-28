@@ -1,23 +1,15 @@
-^^deps.libDb = 1;$$
+^^
+deps.libDb = 1;
+deps.bcryptCompare = 1;
+var codeSchema = parent.codeSchema;
+$$
 if(!user){
 	^^=~extend: parent.error, error: "手机号不存在"$$;return;
 }
 if(code){
-	libDb.main.select("^^=argv.codeSchema$$",{
-		phone: user.phone,
-		code: code
-	}, function(err, result){
-		if(err) {
-	    ^^=~parent.error$$;return;
-		}
-		if(!result){
-			^^=~extend: parent.error, code: 203, error: "验证码错误"$$
-			return;
-		}
-		^^=~parent.success$$
-	})
+	^^=~kitSmsCodeValidate: argv, error: parent.error, success: parent.success$$
 }else if(password){
-	if(user.password != password){
+	if(bcryptCompare(user.password, password)){
 		^^=~extend: parent.error, error: "密码错误"$$;return;
 	}
 	^^=~parent.success$$

@@ -7,6 +7,7 @@ if(!$.isArray(argv)){
 }
 var content = "";
 for(var ii = funcs.length-1;ii>=0;ii--){
+ if(!funcs[ii]) throw $.stringify(parent)
  funcs[ii].error = $.concat(funcs[ii].error, parent.error);
  funcs[ii].success = $.concat(funcs[ii].success, content);
  if(ii == funcs.length-1)

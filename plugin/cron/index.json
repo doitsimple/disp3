@@ -1,0 +1,26 @@
+{
+	"crons": {
+		"sub": {
+			"^^=argv$$.js": {
+				"lib": "cronlib",
+				"lang": "nodejs",
+				"envkey": "crons",
+				"tmpl": "cron.js"
+			}
+		}
+	},
+	"cron.sh": {
+		"lang": "bash",
+		"tmpl": "cron.sh"
+	},
+	"cron.conf": {
+		"lang": "cron-config",
+		"tmpl": "cron.conf"
+	},
+	"cron_lib.js": {
+		"name": "cronlib",
+		"lang": "nodejs",
+		"export": "cronlib"
+	}
+
+}

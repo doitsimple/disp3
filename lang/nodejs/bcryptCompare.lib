@@ -1,0 +1,6 @@
+^^deps.bcrypt = 1;$$
+function bcryptCompare(p1, p2, fn) {
+	if (typeof fn != "function")
+		return bcrypt.compareSync(p1, p2);
+	bcrypt.compare(p1, p2, fn);
+}

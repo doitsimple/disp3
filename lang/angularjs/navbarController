@@ -1,0 +1,3 @@
+$scope.isActive = function(href){
+	return window.location.href.match(new RegExp(href+"$"));
+}

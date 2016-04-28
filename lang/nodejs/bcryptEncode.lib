@@ -1,0 +1,6 @@
+^^deps.bcrypt = 1;$$
+function bcryptEncode(str, saltnum) {
+  if (!saltnum) saltnum = 5;
+  var salt = bcrypt.genSaltSync(saltnum);
+  return hash = bcrypt.hashSync(str, salt);
+}

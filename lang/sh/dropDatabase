@@ -1,0 +1,5 @@
+^^if(argv.mongodb){$$
+mongo ^^=argv.db || "main"$$ --eval "db.dropDatabase()"
+^^}else if(argv.redis){$$
+redis-cli -n ^^=argv.db || 1$$ FLUSHDB
+^^}$$
