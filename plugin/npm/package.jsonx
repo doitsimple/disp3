@@ -14,7 +14,7 @@ $$
 {
 	"dependencies": {
 ^^for(var keyx in global._packages){if(list[keyx]) continue;$$
-		"^^=keyx$$": "*"
+		"^^=keyx$$": "*"^^if(keyx != $.lastkey(global._packages)){$$,^^}$$
 ^^}$$
 	}
 }

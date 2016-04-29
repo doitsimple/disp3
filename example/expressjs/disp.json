@@ -1,25 +1,18 @@
 {
 	"arch": "server",
 	"impl": "expressjs",
-	"plugins": {
-		"mocha": 1
-	},
 	"config": {
 		"port": 7000
 	},
 	"databases": {
 		"main": {
-			"mongodb": {
-				
-			},
+			"mongodb": 1,
 			"schemas": {}
 		}
 	},
 	"routers": {
 		"/": {
-			"use": {
-				"staticSite": {"val": "../angularjs"}
-			}
+			"staticSite": {"val": "../angularjs"}
 		},
 		"/api": {
 			"before": {
