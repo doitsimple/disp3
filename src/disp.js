@@ -423,7 +423,7 @@ Disp.prototype.expandDeps = function(deps, gdeps, partConfig){
 		if(vendorConfig && vendorConfig.deps){
 			self.expandDeps(vendorConfig.deps, gdeps, partConfig);
 		}
-		var langConfig = self.getDepConfig(key, lang);
+		var langConfig = self.getDepConfig(key, lang, deps[key]);
 		if(!partConfig.lib && langConfig && langConfig.deps){
 			self.expandDeps(langConfig.deps, gdeps, partConfig);
 		}
@@ -459,7 +459,7 @@ Disp.prototype.addExport = function(key, lib, reqconfig){
 }
 
 var cache = {};
-Disp.prototype.getDepConfig = function(key, lang){
+Disp.prototype.getDepConfig = function(key, lang, val){
 	var self = this;
 	var rtn = {};
 //local file
@@ -476,6 +476,11 @@ Disp.prototype.getDepConfig = function(key, lang){
 		}
 //remote lib
 		else {
+			var toext = {
+        _packages: {}
+      }
+			toext._packages[key] = val;
+			libObject.extend(self.global, toext);
 			rtn.pkg = key;
 		}
 	}

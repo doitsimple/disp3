@@ -1,0 +1,20 @@
+^^
+var list = {
+"assert": 1,
+"crypto": 1,
+"form-data": 1,
+"fs": 1,
+"http": 1,
+"https": 1,
+"path": 1,
+"querystring": 1,
+"url": 1
+}
+$$
+{
+	"dependencies": {
+^^for(var keyx in global._packages){if(list[keyx]) continue;$$
+		"^^=keyx$$": "*"
+^^}$$
+	}
+}
