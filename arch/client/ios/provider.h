@@ -23,6 +23,7 @@ $$
 - (void)deleteById:(NSString *) ID;
 //查找所有对象 如果有userid,则基于userid查找
 - (NSArray *)list;
+- (NSArray *)listByUser:(NSString *)userID;
 //查找指定对象
 - (^^=model$$ *)getById:(NSString *) ID;
 //更新指定数据

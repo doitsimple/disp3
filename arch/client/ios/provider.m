@@ -138,6 +138,31 @@ $$
     
     return array;
 }
+^^if(fields.user_id){$$
+- (NSArray *)listByUser:(NSString *)userID
+{
+    //将数据库中，查找到的记录，创建成对应对象，然后装到数组中返回
+	NSString * sql = @"SELECT * FROM ^^=argv$$ WHERE user_id = ?;";
+    FMResultSet * set;
+    @synchronized(self){
+        //找出所有记录
+
+			set = [_database executeQuery:sql, userID];
+    }
+    
+    //根据记录，创建对象
+    NSMutableArray * array = [NSMutableArray array];
+    while ([set next]) {
+        ^^=model$$ *item = [[^^=model$$ alloc] init];
+	^^for(var key in fields){var f = fields[key];$$
+        item.^^=key$$ = [set stringForColumn:@"^^=key$$"];
+	^^}$$
+        [array addObject: item];
+    }
+    
+    return array;
+}
+^^}$$
 //查找指定对象
 - (^^=model$$ *)getById:(NSString *)ID
 {
@@ -166,7 +191,7 @@ $$
 	^^=model$$ * item = [self getById:ID];
 
 	if (item.^^=idFieldName$$ == NULL) {
-		item.^^=idFieldName$$ = ID;
+		updateItem.^^=idFieldName$$ = ID;
 		[self addItem:updateItem];
 	}else{
 		NSMutableString * string  = [[NSMutableString alloc] init];
