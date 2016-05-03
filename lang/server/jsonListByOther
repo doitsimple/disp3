@@ -1,3 +1,4 @@
+^^var field = parent.field || "user_id";$$
 {
   "params":{
     "user_id": {
@@ -13,7 +14,7 @@
 		"arg1":{
       "makeJson": {
         "$match": {
-          "makeJson": {"user_id": {"get": "user_id"}}
+          "makeJson": {"^^=field$$": {"get": "user_id"}}
         },
         "$sort": {"val": {"^^=parent.sortTimeField || 'c_time'$$": -1}}
       }

@@ -1,7 +1,6 @@
 ^^
 $.extend(global, {angularLib: {jsonModifier: 1}});
 $.extend(global, {css: {tree: 1}});
+$.extend(argv, {class: {tree:1}});
 $$
-<div class="tree">
-<json-modifier ng-model="^^=parent.model$$"></json-modifier>
-</div>
+<json-modifier^^=~makeAttr: argv$$></json-modifier>

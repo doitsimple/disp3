@@ -1,14 +1,5 @@
-^^
-var attr = "";
-var classstr = "";
-var stylestr = "";
-if(argv.class){
- classstr+=' class="'+$.eval({class: argv.class}, 'css')+'"'
-}
-if(argv.style){
- stylestr+=' style="'+$.eval({style: argv.style}, 'css')+'"'
-}
-attr += classstr;
-attr += stylestr;
+^^var tag = parent.tagname || "div";
+if(typeof argv == "string")
+	argv = {id: argv};
 $$
-<div^^=attr$$>^^=~argv.content$$</div>
+<^^=tag$$^^=~makeAttr:argv$$>^^=~parent.layout$$</^^=tag$$>

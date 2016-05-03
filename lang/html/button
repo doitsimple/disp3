@@ -1,0 +1,6 @@
+^^
+var tmp = {div: argv};
+tmp.tagname = "button";
+tmp.layout = parent.layout;
+$$
+^^=~tmp$$

@@ -1,8 +1,4 @@
 {
-	"main.css": {
-		"lang": "css",
-		"tmpl": "main.css"
-	},
 	"main.js": {
 		"lang": "angularjs",
 		"tmpl": "main.js"
@@ -15,5 +11,13 @@
 	"index.html": {
 		"lang": "angular-html",
 		"tmpl": "index-body.html"
+	},
+	"lib.js": {
+		"lang": "angularjs",
+		"tmpl": "lib.js"
+	},
+	"main.css": {
+		"lang": "css",
+		"tmpl": "main.css"
 	}
 }

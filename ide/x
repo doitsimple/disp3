@@ -1,0 +1,97 @@
+[05/03 14:32:37]i:ignore /home/zyp/disp3/ide/server/disp.json
+[05/03 14:32:37]i:server.js
+[05/03 14:32:37]i:app.js
+[05/03 14:32:37]i:midware.js
+[05/03 14:32:37]i:service.js
+[05/03 14:32:37]i:db.js
+[05/03 14:32:37]i:lib.js
+[05/03 14:32:37]i:ctrl
+[05/03 14:32:37]i:7 files updated
+[05/03 14:32:37]i:ignore /home/zyp/disp3/ide/client/disp.json
+[05/03 14:32:37]i:main.css
+[05/03 14:32:37]i:main.js
+[05/03 14:32:37]i:p.push('');;p.push('');
+var str = "";
+if(parent.init) str = parent.init?" = " + $.eval(parent.init):"";
+;p.push('$scope.',argv,'',str,';');
+[05/03 14:32:37]i:/home/zyp/disp3/lang/angularjs/scopeVar
+[05/03 14:32:37]i:p.push('');;p.push('\n');
+if(typeof argv == "object" && Object.keys(argv).length){
+delete parent[name];
+var json = parent.json;
+delete parent.json;
+if(argv){
+	if($.isArray(argv)){
+		argv.forEach(function(e){
+			$.extend1(e, parent);
+			if(json)
+				$.extend1(e, json);
+		});
+	}else{
+		$.extend1(argv, parent);	
+		if(json)
+			$.extend1(argv, json);	
+	}
+;p.push('',$.eval(argv),'\n');
+}}
+;p.push('');
+[05/03 14:32:37]i:/home/zyp/disp3/lang/base/extend
+[05/03 14:32:37]i:p.push('');;p.push('');
+var str = "";
+if(parent.init) str = parent.init?" = " + $.eval(parent.init):"";
+;p.push('$scope.',argv,'',str,';');
+[05/03 14:32:37]i:/home/zyp/disp3/lang/angularjs/scopeVar
+[05/03 14:32:37]i:p.push('');;p.push('');
+if(global.routers)
+	$.extend(global, {angularDeps: {"ngRoute": 1}});
+var str = "";
+if(global.angularDeps){
+str+=$.eval({evalStringArray: Object.keys(global.angularDeps), sep:","});
+};p.push('var app = angular.module(\'app\', \[',str,'\]);\n',$.eval({evalDic: global.angularDeps}),'\n');
+for(var key in global.controllers){
+ var ctrl = global.controllers[key];
+ ctrl.deps = {};
+ str3 = $.eval({extend: ctrl.content, error: ctrl.error, success:ctrl.success, deps: ctrl.deps});
+ var str2 = "";
+ for(var key2 in ctrl.deps){
+	 if(ctrl.deps[key2] == "lib")
+		 deps[key2] = 1;
+	str2 += ", " + key2;
+ }
+;p.push('app.controller("',key,'Controller", function($scope',str2,')\{\n',str3,'\n\});\n\n');};p.push('');
+for(var key in global.angularLib){
+ var toeval = {};
+ toeval[key] = global.angularLib[key];
+;p.push('',$.eval(toeval),'; \n');};p.push('',$.eval(content),'\n');
+[05/03 14:32:37]i:/home/zyp/disp3/arch/client/angularjs/main.js
+[05/03 14:32:37]i:p.push('');;p.push('');
+var str = "";
+if(parent.init) str = parent.init?" = " + $.eval(parent.init):"";
+;p.push('$scope.',argv,'',str,';');
+[05/03 14:32:37]i:/home/zyp/disp3/lang/angularjs/scopeVar
+[05/03 14:32:37]i:p.push('');;p.push('\n');
+if(typeof argv == "object" && Object.keys(argv).length){
+delete parent[name];
+var json = parent.json;
+delete parent.json;
+if(argv){
+	if($.isArray(argv)){
+		argv.forEach(function(e){
+			$.extend1(e, parent);
+			if(json)
+				$.extend1(e, json);
+		});
+	}else{
+		$.extend1(argv, parent);	
+		if(json)
+			$.extend1(argv, json);	
+	}
+;p.push('',$.eval(argv),'\n');
+}}
+;p.push('');
+[05/03 14:32:37]i:/home/zyp/disp3/lang/base/extend
+[05/03 14:32:37]i:p.push('');;p.push('');
+var str = "";
+if(parent.init) str = parent.init?" = " + $.eval(parent.init):"";
+;p.push('$scope.',argv,'',str,';');
+[05/03 14:32:37]i:/home/zyp/disp3/lang/angularjs/scopeVar

@@ -163,7 +163,7 @@ Disp.prototype.genProj = function(filelist, config){
 	self.genProjSub(filelist, {
 		src: config.src,
 		target: config.target,
-		isPseudo: true
+		isPseudo: 1
 	});
 	self.genProjSub(filelist, {
 		src: config.src,
@@ -226,7 +226,7 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 	var self = this;
 	if(!partConfig.lang)
 		partConfig.lang = "base";
-	if(config.isPseudo){
+	if(config.isPseudo == 1){
 		if(partConfig.name){
 			if(libObject.isArray(partConfig.name)){
 				for(var i in partConfig.name){
@@ -248,6 +248,7 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 			dispConfig.ignoreDispJson = 1;
 		if(partConfig.impl)
 			dispConfig.global.impl = partConfig.impl;
+		dispConfig.global.dev = self.global.dev;
 		var tmpenv = self.getEnv(partConfig);
 		for(var key in partConfig.global){
 			var oldkey = partConfig.global[key];
@@ -366,7 +367,9 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 			self.addExport(key, lib, reqconfig);
 		}
 	}, lang, {});
-
+	if(config.isPseudo){
+		return;
+	}
   libFile.mkdirpSync(path.dirname(tfilename)); //to be acc
   if(fs.existsSync(tfilename))
     fs.unlinkSync(tfilename);
@@ -528,7 +531,7 @@ Disp.prototype.getLangFile = function(name, lang, ignoreOnce){
 	}
 }
 
-Disp.prototype.eval = function(json, lang, deps, isPseudo){
+Disp.prototype.eval = function(json, lang, deps, pseudoFlag){
 	var self = this;
 	if(json === undefined || json === null || json === "") return "";
 	var type = typeof json;
@@ -603,17 +606,24 @@ Disp.prototype.eval = function(json, lang, deps, isPseudo){
 
 	var file = self.getLangFile(name, searchlang, ignoreOnce);
 	if(!file){
-		if(isPseudo)
-			return "";
-		else
+		if(pseudoFlag){
+			if(pseudoFlag == 2){
+				return {
+					valid: ""
+				};
+			}else{
+				return "";
+			}
+		}else{
 			return self.callback(lang + " " + name + " not exist\n" + JSON.stringify(json));
+		}
 	}
 //begin eval
 //	tmpl.extendMethods("eval", 
-	var evalFunc = function(json2, lang2){
+	var evalFunc = function(json2, lang2, pseudoFlag){
 		if(json.deps && typeof json2 == "object") json2.deps = json.deps;
-		if(lang2) return self.eval(json2, lang2, deps);
-		return self.eval(json2, lang, deps);
+		if(lang2) return self.eval(json2, lang2, deps, pseudoFlag);
+		return self.eval(json2, lang, deps, pseudoFlag);
 	}
 	var data = {
 		name: name,
@@ -652,9 +662,15 @@ Disp.prototype.eval = function(json, lang, deps, isPseudo){
 		}
 	}
 
-	if(!isPseudo)
+	if(!pseudoFlag){
 		return rtnstr;
-	else
+	}else if(pseudoFlag == 2){
+		return {
+			"valid": 1,
+			"content": rtnstr
+		}
+	}else{
 		return 1;
+	}
 	
 }

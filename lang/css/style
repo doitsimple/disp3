@@ -1,5 +1,0 @@
-^^
-for(var key in argv){
- var newo = {};
- newo[key] = argv[key]
-$$^^=~newo$$^^}$$

@@ -1,0 +1,14 @@
+^^
+var str = "";
+for(var key in argv){
+	var tmp = {};
+	tmp[key] = argv[key];
+	var rtn = $.eval(tmp, "css", 2);
+	if(rtn.valid){
+		str += rtn.content;
+	}else{
+		str += key + ':' + argv[key] + ';';
+	}
+}
+$$
+style="^^=str$$"

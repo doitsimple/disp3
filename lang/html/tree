@@ -23,7 +23,8 @@ $$
  }
 $$</ol>^^
 }
+$.extend(argv, {class: {tree:1}});
 $$
-<div class="tree">
+<div^^=~makeAttr: parent$$>
 ^^expand(argv, "root")$$
 </div>

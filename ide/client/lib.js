@@ -49,3 +49,25 @@ app.directive('jsonModifier', function($compile) {
   	},
   };
 });
+; 
+app.directive('jsonDisplay', function() {
+	return {
+  	require: 'ngModel',
+    replace: true,
+		template: "<div>{{v}}</div>",
+		scope: {
+			v: '=ngModel'
+		},
+    link: function(scope, elm, attrs, ngModelCtrl) {
+/*
+    	ngModelCtrl.$formatters.unshift(function (modelValue) {
+    		return modelValue;
+    	});
+*/
+    	ngModelCtrl.$parsers.unshift(function(viewValue) {
+    		return JSON.stringify(viewValue, undefined, 2);
+    	});
+  	},
+  };
+});; 
+

@@ -1,0 +1,1 @@
+^^$.extend(parent.origin, {style: {"display":"none"}});$$

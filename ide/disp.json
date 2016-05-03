@@ -3,24 +3,20 @@
   "impl": "mean",
   "servers": {
     "server": {
-			"instances": {
-				"main": {
-					"port": 8088
-				}
+			"config": {
+				"port": 8088
 			},
 			"routers": {
 				"/": {
-					"staticSite": {"path": "../client"}
+					"staticSite": {"string": "../client"}
 				},
 				"/vendor": {
-					"staticSite": {"path": "../vendor"}
+					"staticSite": {"string": "../vendor"}
 				},
 				"/api": {
-					"newRouter": {
-						"Lroute": {
-							"/get": {
-								"midware": {"send": {"val": {"a":1}}}
-							}
+					"routers": {
+						"/get": {
+							"midware": {"send": {"val": {"a":1}}}
 						}
 					}
 				}
@@ -29,48 +25,65 @@
   },
 	"clients": {
 		"client": {
-			"htmlVendorDir": "/vendor",
-			"main": [{
-			  "controller": {
-					"name": "main",
-					"code": [{
-						"initModel": "y",
-						"eval": {}
-					}],
-					"content": {
-						"div": {
-							"name": "container",
-							"style": {"heightpx": "800", "widthpx": "600"},
-							"content": [
-								{
-									"jsonModifierView": {
-										"model": "y"
-									}
-								},
-								{
-									"jsonDisplayView": {
-										"model": "y"
-									}
-								},
-								{
-									"div": {
-										"name": "nav",
-										"style": {"height": 1, "width": 0.4, "color": "white"},
-										"content": {
+			"controllers": {
+				"main": {
+					"content": [
+						{
+							"scopeVar": "y",
+							"init": {
+								"val": {
+									"a": 1,
+									"b": 2,
+									"c": {
+										"a": 1,
+										"b": 2,
+										"c": {
+											"a": 1
 										}
 									}
 								}
-							]
+							}
 						}
+					]
+				}
+			},
+			"layout": [
+				{
+					"div": {
+						"controller": "main"
+					},
+					"layout": {
+						"div": {
+							"id": "container",
+							"style": {"heightpx": "800", "widthpx": "600"}
+						},
+						"layout": [
+							{
+								"jsonModifierView": {
+									"model": "y"
+								}
+							},
+							{
+								"jsonDisplayView": {
+									"model": "y"
+								}
+							},
+							{
+								"div": {
+									"id": "nav",
+									"style": {"height": 1, "width": 0.4, "color": "white"}
+								}
+							}
+						]
 					}
-				}										 
-			}]
+				}
+			]
+
 		}
 	},
 	"databases": {
 		"db": {
-			"mongodb": {
-			}
+			"mongodb": {}
 		}
 	}
 }

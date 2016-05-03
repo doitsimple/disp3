@@ -1,0 +1,5 @@
+^^
+var str = Object.keys(argv).join(" ");
+$.extend(global, {cssClass: argv});
+$$
+class="^^=str$$"

@@ -1,7 +1,20 @@
 ^^
 var str = "";
 for(var key in argv){
-	str += " "+key + '="' + argv[key] + '"';
+	var tmp = {};
+	tmp[key] = argv[key];
+	tmp.origin = argv;
+	$.eval(tmp, lang, 1);
+}
+for(var key in argv){
+  var tmp = {};
+  tmp[key] = argv[key];
+  tmp.origin = parent[name];
+  var rtn = $.eval(tmp, lang, 2);
+	if(rtn.valid)
+		str += " "+rtn.content;
+	else
+		str += " "+key + '="' + argv[key] + '"';
 }
 $$
 ^^=str$$
