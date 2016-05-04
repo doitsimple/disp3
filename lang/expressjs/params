@@ -39,11 +39,11 @@ return;
 ^^}$$
 }
 ^^}$$
-^^}$$
 ^^if(config.type == "string" && config.regex){$$
 if(!^^=key$$.match(/^^=config.regex$$/)){
 ^^=~extend: parent.error, error: key + "不符合格式"$$
 return;
 }
+^^}$$
 ^^}$$
 ^^=~parent.success$$
