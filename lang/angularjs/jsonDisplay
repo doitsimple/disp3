@@ -1,5 +1,6 @@
 app.directive('jsonDisplay', function() {
 	return {
+		restrict: 'A',
   	require: 'ngModel',
     replace: true,
 		template: "<div>{{v}}</div>",

@@ -1,4 +1,4 @@
 ^^
 $.extend(global, {angularLib: {jsonDisplay: 1}});
 $$
-<json-display^^=~makeAttr: argv$$></json-display>
+<div json-display^^=~makeAttr: argv$$></div>

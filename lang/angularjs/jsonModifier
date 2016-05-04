@@ -1,6 +1,7 @@
 app.directive('jsonModifier', function($compile) {
 	return {
   	require: 'ngModel',
+		restrict: 'A',
     replace: true,
 		scope: {
 			v: '=ngModel',
@@ -18,7 +19,7 @@ app.directive('jsonModifier', function($compile) {
     	});*/
       ngModelCtrl.$render = function() {
 				var v = scope.v;
-				var html ='<ol>';
+				var html ='';
 				if(!scope.prefix) scope.prefix= "root";
 				var prefix = scope.prefix;
 				var i=0;
@@ -28,7 +29,7 @@ app.directive('jsonModifier', function($compile) {
 					if(typeof tmp == "object"){
 						html+='<li class="branch"><label for="'+id+'">'+key+'</label>';
 						html+='<input type="checkbox" id="'+id+'"/>';
-						html+='<json-modifier ng-model="v[\''+key+'\']" prefix="'+id+'"/>';
+						html+='<ol json-modifier ng-model="v[\''+key+'\']" prefix="'+id+'"></ol>';
 						html+='</li>'
 					}else{
 						html+='<li class="leaf"><label for="'+id+'">'+key+'</label>';
@@ -37,14 +38,9 @@ app.directive('jsonModifier', function($compile) {
 					}
 					i++;
 				}
-				html += '</ol>';
         var e =$compile(html)(scope);
-				if(prefix == "root"){
-					elm.empty();
-					elm.append(e);
-				}else{
-					elm.replaceWith(e);
-				}
+				elm.empty();
+				elm.append(e);
       };
   	},
   };

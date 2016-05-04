@@ -1,5 +1,5 @@
 #!/bin/bash
-DISP3=^^=global.dispBin$$
+DISP3=^^=global._dispBin$$
 DATE=`date +%Y%m%d`
 ^^
 if(!local.remote.port){

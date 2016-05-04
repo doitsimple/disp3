@@ -20,7 +20,7 @@
 								{
 									"var": "json",
 									"init": {
-										"readFile": "../workspace/yangold/disp.json"
+										"readFile": "../workspace/yangold/global.json"
 									},
 									"success": {
 										"assign": "json",

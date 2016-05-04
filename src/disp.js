@@ -398,6 +398,19 @@ Disp.prototype.genPlugin = function(){
 }
 Disp.prototype.dispose = function(){
 	var self = this;
+	if(self.global._isRoot)
+		fs.writeFileSync(
+			self.projectDir + "/global.json", 
+			JSON.stringify(self.global, function(key, value){
+				if(key == "local" 
+					 || key == "global" 
+					 || key == "origin" 
+					 || key[0] == "_")
+					return undefined;
+				else
+					return value;
+			}, 2)
+		);
 	log.i(self.fileCount + " files updated");
 	log.v("dispose success");
 }

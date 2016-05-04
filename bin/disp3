@@ -16,8 +16,9 @@ function parseArgv(){
 		"P": "production",
 		"v": "verbose mode"
 	}
-	env.global.nodeBin = process.argv.shift();
-	env.global.dispBin = process.argv.shift();
+	env.global._nodeBin = process.argv.shift();
+	env.global._dispBin = process.argv.shift();
+	env.global._isRoot = 1;
 	var op = process.argv.shift();
 	while(op){
 		switch(op){
