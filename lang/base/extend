@@ -1,4 +1,3 @@
-
 ^^
 if(typeof argv == "object" && Object.keys(argv).length){
 delete parent[name];

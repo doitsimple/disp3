@@ -1,0 +1,2 @@
+^^deps.fs =1;$$
+fs.readFileSync(^^=~string: argv$$).toString()

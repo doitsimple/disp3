@@ -1,0 +1,5 @@
+.tree-default li label {
+	color: #333;
+	background-color: #fff;
+	border-color: #ccc;
+}

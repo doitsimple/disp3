@@ -6,24 +6,19 @@ app.directive('jsonModifier', function($compile) {
 			v: '=ngModel',
 			prefix: '=prefix'
 		},
+		priority: 10,
     link: function(scope, elm, attrs, ngModelCtrl) {
-			console.log(attrs);
 /*
     	ngModelCtrl.$formatters.unshift(function (modelValue) {
+				console.log(modelValue);
     		return modelValue;
     	});
     	ngModelCtrl.$parsers.unshift(function(viewValue) {
-    		return viewValue;
-    	});
-*/
+    		return JSON.stringify(viewValue);
+    	});*/
       ngModelCtrl.$render = function() {
 				var v = scope.v;
-				var html;
-				if(attrs.class){
-					html = '<ol class="'+attrs.class+'">';
-				}else{
-					html ='<ol>';
-				}
+				var html ='<ol>';
 				if(!scope.prefix) scope.prefix= "root";
 				var prefix = scope.prefix;
 				var i=0;
@@ -44,7 +39,12 @@ app.directive('jsonModifier', function($compile) {
 				}
 				html += '</ol>';
         var e =$compile(html)(scope);
-				elm.replaceWith(e);
+				if(prefix == "root"){
+					elm.empty();
+					elm.append(e);
+				}else{
+					elm.replaceWith(e);
+				}
       };
   	},
   };

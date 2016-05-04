@@ -1,1 +1,1 @@
-^^=~argv[0]$$ = ^^=~argv[1]$$;
+^^=~get: argv$$ = ^^=~parent.init$$;

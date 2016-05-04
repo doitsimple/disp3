@@ -16,7 +16,27 @@
 				"/api": {
 					"routers": {
 						"/get": {
-							"midware": {"send": {"val": {"a":1}}}
+							"midwareLast": [
+								{
+									"var": "json",
+									"init": {
+										"readFile": "../workspace/yangold/disp.json"
+									},
+									"success": {
+										"assign": "json",
+										"init": {
+											"jsonParse": {
+												"replace": {"get": "json"},
+												"regex": "\^\^=([^$]+)\$\$",
+												"with": "{\"expr\":$1}"
+											}
+										}
+									}
+								},
+								{
+									"send": {"get": "json"}
+								}
+							]
 						}
 					}
 				}
@@ -29,20 +49,21 @@
 				"main": {
 					"content": [
 						{
-							"scopeVar": "y",
-							"init": {
-								"val": {
-									"a": 1,
-									"b": 2,
-									"c": {
-										"a": 1,
-										"b": 2,
-										"c": {
-											"a": 1
-										}
+							"reqop": {
+								"url": "/api/get",
+								"method": "get"								
+							},
+							"success": [
+								{
+									"scopeVar": "y",
+									"init": {
+										"get": "result"
 									}
+								},
+								{
+									"viewRefresh": 1
 								}
-							}
+							]
 						}
 					]
 				}
@@ -60,11 +81,15 @@
 						"layout": [
 							{
 								"jsonModifierView": {
+									"class": {
+										"treeDefault": 1
+									},
 									"model": "y"
 								}
 							},
 							{
 								"jsonDisplayView": {
+									"hide":1,
 									"model": "y"
 								}
 							},

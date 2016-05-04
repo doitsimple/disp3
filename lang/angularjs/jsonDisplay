@@ -7,11 +7,7 @@ app.directive('jsonDisplay', function() {
 			v: '=ngModel'
 		},
     link: function(scope, elm, attrs, ngModelCtrl) {
-/*
-    	ngModelCtrl.$formatters.unshift(function (modelValue) {
-    		return modelValue;
-    	});
-*/
+
     	ngModelCtrl.$parsers.unshift(function(viewValue) {
     		return JSON.stringify(viewValue, undefined, 2);
     	});

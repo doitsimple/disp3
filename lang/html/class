@@ -1,5 +1,15 @@
 ^^
 var str = Object.keys(argv).join(" ");
+var str = "";
+var lastkey = $.lastkey(argv);
+for(var key in argv){
+	var toext = {};
+	toext[key]= argv[key];
+	$.extend(global, {css: toext});
+	str += $.uc2dash(key);
+	if(key != lastkey)
+		str += " ";
+}
 $.extend(global, {cssClass: argv});
 $$
 class="^^=str$$"
