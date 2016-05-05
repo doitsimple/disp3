@@ -1,4 +1,0 @@
-^^
-$.extend(global, {angularLib: {jsonDisplay: 1}});
-$$
-<div json-display^^=~makeAttr: argv$$></div>

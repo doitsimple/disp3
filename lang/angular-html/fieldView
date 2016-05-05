@@ -1,0 +1,51 @@
+^^
+var type = argv.type;
+var f = argv;
+var model = parent.model;
+$$
+^^if(type == "date"){$$
+	{{^^=model$$ | stddate}}
+
+^^}else if(type == "datetime"){$$
+	{{^^=model$$ | date:'yyyy/MM/dd HH:mm'}}
+
+^^}else if(type == "image"){$$
+<img ng-show="^^=model$$ != '' &amp;&amp; ^^=model$$ != undefined" class="img-thumbnail" ng-src="/^^=f.path$$/{{^^=model$$}}" ng-click="ui.openImageModal('/^^=f.path$$/'+^^=model$$)">
+^^}else if(type == "video"){$$
+<div ng-show="^^=model$$ == '' || ^^=model$$ == undefined" class="ng-hide">没有视频</div>
+<video controls ng-show="^^=model$$ != '' &amp;&amp; ^^=model$$ != undefined" class="img-thumbnail" ng-src="{{'/^^=f.path$$/'+^^=model$$}}"></video>
+<p><a class="btn btn-default" ng-href="/^^=f.path$$/{{^^=model$$}}">下载视频</a></p>
+
+^^}else if(type == "file"){$$
+<a class="btn btn-default" ng-href="/^^=f.path$$/{{^^=model$$}}">{{^^=model$$}}</a>
+
+^^}else if(type == "ObjectId" && f.ref){$$
+<div ng-show="!!^^=model$$">
+<a class="btn btn-xs btn-default" ng-click="ui.openInfoModal('^^=f.ref$$', '^^=f.reffield || '_id'$$', ^^=model$$)">{{^^=model$$ | last:4}}</a>
+	<a class="btn btn-xs btn-warning" ng-href="#/^^=f.ref$$_details/{{^^=model$$}}" target="_blank"><i class="fa fa-folder-open"></i></a>
+</div>
+
+^^}else if(f.ref){$$
+<div ng-show="!!^^=model$$">
+<a class="btn btn-xs btn-default" ng-click="ui.openInfoModal('^^=f.ref$$', '^^=f.reffield || '_id'$$', ^^=model$$)">{{^^=model$$}}</a>
+</div>
+
+^^}else{$$
+  ^^if(f.ondemand && type == "ObjectId" && fields){$$
+	<a ng-show="!!^^=model$$" class="btn btn-xs btn-default" ng-click="^^=fields$$.showrow^^=name$$=true" ng-hide="^^=fields$$.showrow^^=name$$">{{^^=model$$ | last:4}}</a>
+	<div ng-click="^^=fields$$.showrow^^=name$$=false" ng-show="^^=fields$$.showrow^^=name$$">{{^^=model$$}}</div>
+
+  ^^}else if(f.encrypt){$$
+	<a class="btn btn-default btn-xs"><i class="fa fa-lock"></i></a>
+
+  ^^}else if(f.href){$$
+  <a ng-href="^^=f.href$${{row.^^=name$$}}">{{^^=model$$}}</a>
+
+  ^^}else if(f.enums && fields){$$
+	{{^^=model$$ | fenums:^^=fields+'.'+f.name$$.enums}}
+
+  ^^}else{$$
+	{{^^=model$$}}
+
+  ^^}$$
+^^}$$

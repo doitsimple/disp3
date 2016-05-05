@@ -1,0 +1,5 @@
+^^
+$.extend(global, {angularLib: {navbarItemDirective: 1}});
+$$
+<ul navbar-item^^=~makeAttr: argv, before: {class:{nav:1, "navbar-nav":1}}$$>
+</ul>

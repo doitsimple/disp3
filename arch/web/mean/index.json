@@ -10,7 +10,7 @@
 		},
 		{
 			"arch": "client",
-			"impl": "angularjs",
+			"impl": "angular",
 			"envkey": "clients",
 			"global": {
 				"databases": 1

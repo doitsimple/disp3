@@ -1,4 +1,11 @@
 ^^
+if(parent.before){
+	var newbefore = $.copy(parent.before);
+	$.extend(newbefore, argv);
+	argv = newbefore;
+}else if(parent.after){
+	$.extend(argv. parent.after);
+}
 var str = "";
 for(var key in argv){
 	var tmp = {};

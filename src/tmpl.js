@@ -94,8 +94,8 @@ function render(config, data){
 	data.$ = libObject.copy1(methods);
 	if(data.extend)
 		libObject.extend1(data.$, data.extend);
-	if(config.file)
-		data.file = config.file;
+//	if(config.file)
+//		data.file = config.file;
 	data.p=[];
 ///////////
 

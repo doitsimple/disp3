@@ -1,0 +1,4 @@
+^^
+$.extend(global, {angularLib: {jsonDirective: 1}});
+$$
+<div json^^=~makeAttr: argv$$></div>

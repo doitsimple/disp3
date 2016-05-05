@@ -1,0 +1,288 @@
+^^function loadraw(addon){$$
+ ^^
+  if(!addon.text) addon.text = "";
+  var attrstr = local.makeng(addon);
+ $$
+<^^=addon.tag$$ ^^=attrstr$$ >^^=addon.text$$</^^=addon.tag$$>
+ 
+^^}$$
+
+^^function makeitem(config, prefix, fieldsconfig){$$
+  ^^for(var sname in config.fields){
+   var f = config.fields[sname];
+   if(f.hidden) continue;
+   if(f.type == "func") continue;
+   if(f.type == "row"){
+   		$$
+   		^^local.makefunc(f,'sm')$$
+   		^^
+   		continue;
+   }
+   if(f.type == "jsonrow"){
+   		$$
+   		<div class="col-sm-^^=12/config.perline$$" uib-tooltip="^^=f.text || f.name$$">
+   		 <ul class="list-group">
+   		^^local.makejson(f, prefix+"."+f.name, fieldsconfig)$$
+   		</ul>
+   		</div>
+   		^^
+   		continue;
+   }
+  $$
+	<div class="col-sm-^^=12/config.perline$$" uib-tooltip="^^=f.text || f.name$$">
+		^^bytype(f, prefix+"."+f.name, fieldsconfig)$$
+	</div>
+  ^^}$$
+^^}$$
+
+^^local.makeng = function(sube){
+	if(!sube) return "";
+  var addonstr = "";
+  if(sube.click)
+  addonstr += 'ng-click="' + sube.click + '" ';
+  if(sube.class)
+  addonstr += 'ng-class="' + sube.class + '" ';
+  if(sube.repeat)
+  addonstr += 'ng-repeat="' + sube.repeat + '" ';
+  if(sube.href)
+  addonstr += 'ng-href="' + sube.href + '" ';
+  if(sube.show)
+  addonstr += 'ng-show="' + sube.show + '" ';
+  if(sube.model)
+	addonstr += 'ng-model="' + sube.model + '" ';
+	if(sube.attr)
+	addonstr += sube.attr + ' ';
+	return addonstr;
+}$$
+
+
+^^local.makefunc = function(col, size){$$
+	 ^^if(col.elements) for(var subname in col.elements){
+     var sube = col.elements[subname];
+     var addonstr = local.makeng(sube);  
+   $$
+    ^^if(sube.type == "button"){$$
+  		<a class="btn btn-^^=size$$ btn-primary" ^^=addonstr$$>^^=sube.text || sube.name$$</a>
+    ^^}else if(sube.type == "input"){$$
+			<input class="form-control" placeholder="^^=sube.text || ''$$" ^^=addonstr$$>
+    ^^}else{$$
+			^^loadraw(sube)$$
+    ^^}$$
+   ^^}$$
+^^}$$
+^^local.makejson = function(col, model, fieldsconfig){
+	var fconfig = fieldsconfig+"."+col.name;
+	var mdconfig = model;
+$$
+	 ^^for(var key in col.fields){$$
+			<li class="list-group-item row">
+	 	^^var ch = col.fields[key];
+		var md = mdconfig+"."+ key;
+		var conf = fconfig+".fields."+ key;
+	 	if(ch.type=="json"){
+	 	ch.name = key;
+		$$
+	 		<!-- <div class="row">
+	 			^^=md$$|^^=conf$$,
+			</div> -->
+	 			<div class="col-sm-3">^^=ch.text$$</div>
+	 			<div class="col-sm-9">
+		 			<ul class="list-group">
+		 				^^makejson(ch,md,conf)$$
+		 			</ul>
+	 			</div>
+	 	^^}else if(ch.type=="jsonlist"){
+	 	$$
+				<div class="col-sm-3">
+				^^=ch.text$$
+				</div>
+				<div class="col-sm-9">
+					<ul class="list-group">
+						<li class="list-group-item row">
+							^^for(var key in ch.fields){$$
+								<div class="col-sm-^^=parseInt(12/Object.keys(ch.fields).length)$$">　^^=ch.fields[key].text$$</div>
+							^^}$$
+						</li>
+						<li class="list-group-item row" ng-repeat="row in ^^=md$$">
+							^^for(var key in ch.fields){$$
+								<div class="col-sm-^^=parseInt(12/Object.keys(ch.fields).length)$$">{{row.^^=key$$}}</div>
+							^^}$$
+						</li> 
+					</ul>
+	 			</div>
+	 	^^}else{
+	 	$$
+			<div class="col-sm-6">
+			^^=ch.text$$
+			</div>
+			<div class="col-sm-6">
+				^^
+				var fields = fieldsconfig+".fields."+key;
+				if(ch.type=="int" && ch.enums){$$
+				{{^^=model+"."+key$$ | fenums:^^=fields$$.enums}}
+				^^}else{$$
+					{{^^=model+"."+key$$}}
+				^^}
+				$$
+			</div>
+	 	^^}$$
+	 	</li>
+	^^}$$ 
+^^}$$
+
+^^local.panel = function(config){
+if(!config.perline) config.perline = 3;
+if(!config.width) config.width = 12;
+var showstr="";
+var hidestr="ng-hide=1";
+if(config.show){
+			showstr = "ng-show=\"" + config.show +"\"";
+			hidestr = "ng-hide=\"" + config.show +"\"";
+}
+appendconfig(config);
+$$
+<div class="panel panel-primary">
+<div class="panel-heading">^^=config.text || config.name$$</div>
+<div class="panel-body" ^^=hidestr$$>
+该项目未认证或未开通
+</div>
+<div class="panel-body" ^^=showstr$$>
+	<div class="col-sm-^^=config.width$$">
+ ^^if(!config.islist){$$
+		<div class="row">
+  ^^makeitem(config, "schemas."+config.withSchema, "schemafields."+config.withSchema)$$
+		</div>
+ ^^}else{$$
+  ^^
+  var repeat, fieldp;
+  if(!config.withSchema){
+  	repeat = config.repeat;
+  	fieldp = undefined;
+  }else{
+  	repeat = "schemas."+config.withSchema;
+  	fieldp = "schemafields."+config.withSchema;
+  }
+  $$
+ 			<div class="row" ng-repeat="row in ^^=repeat$$">
+  ^^makeitem(config, "row", fieldp)$$
+			</div>
+ ^^}$$
+		<div class="row text-center" style="padding:10px">
+  ^^for(var sname in config.fields){
+   var f = config.fields[sname];
+   if(f.hidden) continue;
+   if(f.type != "func") continue;
+  $$
+	 ^^local.makefunc(f, 'md')$$
+  ^^}$$
+		</div>
+	</div>
+	<div class="col-sm-^^=12-config.width$$">
+		^^for(var addname in config.addons){$$
+		^^loadraw(config.addons[addname]);$$	
+		^^}$$
+	</div>
+</div>
+</div>
+^^}$$
+
+
+^^local.form = function(config){$$
+^^if(config.tpl){$$
+<script type="text/ng-template" id="^^=config.tpl$$">
+^^}$$
+<div class="row" style="padding:10px;">
+<form role="form" style="padding:15px;max-width:400px;">
+  <fieldset>
+^^for(var fname in config.fields){
+ var f=config.fields[fname];
+ var ngstr = local.makeng(f);$$
+ ^^if(f.type == "input"){$$
+    <div class="form-group">
+      <input style="min-width:100px" class="form-control" type="^^=f.inputtype || 'text'$$" ^^=ngstr$$ placeholder="^^=f.text || f.name$$">
+    </div>
+ ^^}else if(f.type == "button"){if(!f.style) f.style = "default";$$
+    <button class="btn btn-md btn-^^=f.style$$" ^^=ngstr$$>^^=f.text$$</button>
+ ^^}else{$$
+		^^loadraw(f)$$
+ ^^}$$
+^^}$$
+  </fieldset>
+</form>
+</div>
+^^if(config.tpl){$$
+</script>
+^^}$$
+^^}$$
+^^local.makequery = function(config){$$
+	<div class="row">
+		<div class="col-sm-8">
+			<div class="btn-group" role="group">
+				<a class="btn btn-default" ng-click="^^=config.name$$.loadSave()">default</a>
+				<a ng-repeat="save in ^^=config.name$$.savequerys" class="btn btn-default" ng-click="^^=config.name$$.loadSave(save)">{{save.name}}</a>
+			</div>
+		</div>
+		<div class="col-sm-4 text-right">
+			<div class="btn-group" role="group">
+				<a class="btn btn-default" uib-tooltip="刷新" ng-click="^^=config.name$$.refresh()"><i class="fa fa-refresh"></i></a>
+				<a class="btn btn-default" uib-tooltip="搜索" ng-click="showquery=!showquery"><i class="fa fa-search"></i></a>
+				<a class="btn btn-default" uib-tooltip="统计（TODO）" ng-click="showstat=!showstat"><i class="fa fa-calculator"></i></a>
+^^if(config.insert){$$
+				<a class="btn btn-danger" uib-tooltip="添加" ng-click="^^=config.name$$.showadd()"><i class="fa fa-plus"></i></a>
+^^}$$
+			</div>
+		</div>
+		<div class="col-sm-6" ng-show="showsave" style="padding: 10px;border:1px;">
+			<div class="form-group">
+				<input class="form-control" placeholder="请为这次存储命名" ng-model="savename">
+				<a class="form-control btn btn-default" ng-click="^^=config.name$$.save(savename)"></a>
+			</div>
+		</div>
+		<div class="col-sm-6 borderbox" ng-show="showquery" style="padding: 10px;">
+			<div class="btn-group" role="group">
+		^^for(var key in config.reflist){$$
+			<a class="btn btn-default" ng-click="^^=config.name$$.addRawQuery('^^=key$$')"><i class="fa fa-plus">^^=key$$</i></a>
+    ^^}$$
+			<a class="btn btn-default" ng-click="^^=config.name$$.addRawQuery()"><i class="fa fa-plus"></i></a>
+			</div>
+			<div class="btn-group" role="group">
+			<a class="btn btn-default" ng-click="^^=config.name$$.rawquerys = []">Clear</a>
+			<a class="btn btn-default" ng-click="^^=config.name$$.refresh()">Go</a>
+			<a class="btn btn-default" ng-click="^^=config.name$$.saveQuery()"><i class="fa fa-save"></i></a>
+			<input class="form-control" ng-model="^^=config.name$$.savename" placeholder="标识">
+			</div>
+			<form class="form-inline">
+				<div class="form-group" style="padding:10px" ng-repeat="rawquery in ^^=config.name$$.rawquerys track by $index">
+					<div class="input-group" ng-show="!rawquery.by">
+						<select class="form-control" ng-model="rawquery.field" ng-options="key for key in ^^=config.name$$.fieldlist"></select>
+						<select class="form-control" style="width:auto" ng-model="rawquery.op" ng-options="key for key in ^^=config.name$$.oplist"></select>
+ ^^for(var fname in config.fields){
+  var f=config.fields[fname];$$
+						<div ng-show="rawquery.field == '^^=f.name$$'">
+						^^newbytype(f, "rawquery.v"+f.name, config.name+".fields");$$
+						</div>
+ ^^}$$
+					<a class="btn btn-default" ng-click="^^=config.name$$.rawquerys.splice($index, 1)"><i class="fa fa-minus"></i></a>
+					</div>
+					<div class="input-group" ng-show="!!rawquery.by">
+						<div class="input-group-addon">{{rawquery.by}}</div>
+						<select class="form-control" ng-model="rawquery.field" ng-options="key for key in ^^=config.name$$.refs[rawquery.by].fieldlist"></select>
+						<select class="form-control" style="width:auto" ng-model="rawquery.op" ng-options="key for key in ^^=config.name$$.oplist"></select>
+ ^^for(var key in config.reflist){var s=config.reflist[key];$$
+  ^^for(var fname in global.proto.schemas[key].fields){var f=global.proto.schemas[key].fields[fname];$$
+						<div ng-show="rawquery.field == '^^=f.name$$' && rawquery.by == '^^=key$$'">
+						^^newbytype(f, "rawquery.v"+key+f.name, config.name+".refs."+key);$$
+						</div>
+  ^^}$$
+ ^^}$$
+					<a class="btn btn-default" ng-click="^^=config.name$$.rawquerys.splice($index, 1)"><i class="fa fa-minus"></i></a>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="col-sm-6 borderbox" ng-show="showstat">
+			TODO
+		</div>
+	</div>
+^^}$$
+

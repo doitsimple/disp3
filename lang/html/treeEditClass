@@ -1,0 +1,2 @@
+^^$.extend(global, {css: {treeEdit:1}})$$
+^^$.extend(parent.origin, {class: {treeEdit: 1}})$$

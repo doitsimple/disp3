@@ -1,0 +1,28 @@
+^^deps.bootstrap3 = 1;
+var pclass = {
+	"panel": 1
+}
+var heading;
+if(argv.heading){
+	heading = argv.heading;
+	delete argv.heading;
+}
+var body;
+if(argv.body){
+	body = argv.body;
+	delete argv.body;
+}
+if(argv.style){
+ pclass["panel-"+argv.style] = 1;
+delete argv.style;
+}else{
+ pclass["panel-default"] = 1;
+}
+$$
+<div ^^=~makeAttr: argv, before: {class: pclass}$$>
+<div ^^=~makeAttr: heading, before: {class: {"panel-heading": 1}}$$>^^=title$$</div>
+<div ^^=~makeAttr: body, before: {class: {"panel-body": 1}}$$>
+^^=~parent.layout$$
+</div>
+</div>
+</div>

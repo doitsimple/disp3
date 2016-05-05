@@ -80,15 +80,12 @@
 						},
 						"layout": [
 							{
-								"jsonModifierView": {
-									"class": {
-										"treeDefault": 1
-									},
+								"jsonEditView": {
 									"model": "y"
 								}
 							},
 							{
-								"jsonDisplayView": {
+								"jsonView": {
 									"hide":1,
 									"model": "y"
 								}

@@ -1,4 +1,4 @@
-app.directive('jsonModifier', function($compile) {
+app.directive('jsonEdit', function($compile) {
 	return {
   	require: 'ngModel',
 		restrict: 'A',
@@ -20,19 +20,18 @@ app.directive('jsonModifier', function($compile) {
       ngModelCtrl.$render = function() {
 				var v = scope.v;
 				var html ='';
-				if(!scope.prefix) scope.prefix= "root";
-				var prefix = scope.prefix;
+				var prefix = attrs.prefix?attrs.prefix:"root";
 				var i=0;
 				for(var key in v){
 				  var tmp = v[key];
 					var id = prefix + "-" + i;
 					if(typeof tmp == "object"){
-						html+='<li class="branch"><label for="'+id+'">'+key+'</label>';
+						html+='<li class="branch"><label for="'+id+'" title="' + key + '">'+key+'</label>';
 						html+='<input type="checkbox" id="'+id+'"/>';
-						html+='<ol json-modifier ng-model="v[\''+key+'\']" prefix="'+id+'"></ol>';
+						html+='<ol json-edit ng-model="v[\''+key+'\']" prefix="'+id+'"></ol>';
 						html+='</li>'
 					}else{
-						html+='<li class="leaf"><label for="'+id+'">'+key+'</label>';
+						html+='<li class="leaf"><label for="'+id+'" title="' + key + '">'+key+'</label>';
 						html+='<input type="text" id="'+id+'" ng-model="v[\'' + key + '\']"/>';
 						html+='</li>'
 					}

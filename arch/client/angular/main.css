@@ -1,8 +1,7 @@
 ^^
 for(var key in global.css){
-
  var toeval = {};
- toeval[key] = global.css[key];
+ toeval[key+".lib"] = global.css[key];
 $$
 ^^=~toeval$$
 ^^}$$

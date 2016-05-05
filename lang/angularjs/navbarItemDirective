@@ -1,0 +1,27 @@
+app.directive('navbarItem', function($compile) {
+	return {
+		restrict: 'A',
+  	require: 'ngModel',
+    replace: true,
+		scope: {
+			v: '=ngModel'
+		},
+    link: function(scope, elm, attrs, ngModelCtrl) {
+			scope.isActive = function(href){
+				return window.location.href.match(new RegExp(href+"$"));
+			}
+      ngModelCtrl.$render = function() {
+				var v = scope.v;
+				var html = '';
+				for(var key in v){
+				  var tmp = v[key];
+					html += '<li ng-class="{\'active\': isActive(\'' + tmp.href + '\')}">';
+					html += '<a href="' + tmp.href + '">' + tmp.text + '</a></li>'
+				}
+        var e =$compile(html)(scope);
+				elm.empty();
+				elm.append(e);
+			}
+  	}
+  };
+});

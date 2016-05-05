@@ -1,23 +1,22 @@
-/* CSS Tree menu styles */
-.tree
+/* CSS Tree-Edit menu styles */
+.tree-edit
 {
 	padding: 0 0 0 30px;
-	width: 300px;
 }
-.tree	li 
+.tree-edit	li 
 { 
 	position: relative; 
 	margin-left: -1em;
 	list-style: none;
 }
-.tree	li.leaf a
+.tree-edit	li.leaf a
 {
 	color: black;
 	padding-left: 1em;
 	text-decoration: none;
 	display: inline-block;
 }
-.tree	li label
+.tree-edit	li label
 {
 	cursor: pointer;
 	display: inline-block;	
@@ -44,15 +43,15 @@
 	border-radius: 4px;
 
 }
-.tree	li.leaf > input
+.tree-edit	li.leaf > input
 {
 	margin-left:0.5em;
 	padding-left:0.1em;
-	text-align:center;
+	text-align:left;
 	border:none;
-	width:3em;
+//	width:8em;
 }
-.tree	li.branch > input
+.tree-edit	li.branch > input
 {
 	position: absolute;
 	left: 0;
@@ -62,20 +61,26 @@
 	cursor: pointer;
 	top: 0;
 }
-.tree	li.branch > input + ol > li { 
+.tree-edit	li.branch > input + ol > li { 
 	display: none; 
 //	margin-left: -1em !important; 
 }
-.tree li.branch > input:checked + ol
+.tree-edit li.branch > input:checked + ol
 {
 	margin: -1.5em 0 0 -3em; 
 	padding: 1.5em 0 0 5em;
 	height: auto;
 }
-.tree	li.branch > input:checked + ol > li { 
+.tree-edit	li.branch > input:checked + ol > li { 
 	display: block; 
 //	margin: 0 0 0.125em;  /* 2px */
 }
-.tree li.branch > input:checked + ol > li:last-child { 
+.tree-edit li.branch > input:checked + ol > li:last-child { 
 //	margin: 0 0 0.063em; /* 1px */ 
+}
+
+.tree-edit li label {
+	color: #333;
+	background-color: #fff;
+	border-color: #ccc;
 }

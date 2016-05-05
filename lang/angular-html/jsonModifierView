@@ -1,8 +1,0 @@
-^^
-$.extend(global, {angularLib: {jsonModifier: 1}});
-var newargv = {
-	class: {tree: 1}
-}
-$.extend(newargv, argv);
-$$
-<ol json-modifier ^^=~makeAttr: newargv$$></ol>

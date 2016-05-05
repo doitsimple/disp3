@@ -1,4 +1,4 @@
-app.directive('jsonDisplay', function() {
+app.directive('json', function() {
 	return {
 		restrict: 'A',
   	require: 'ngModel',
@@ -12,6 +12,6 @@ app.directive('jsonDisplay', function() {
     	ngModelCtrl.$parsers.unshift(function(viewValue) {
     		return JSON.stringify(viewValue, undefined, 2);
     	});
-  	},
+  	}
   };
 });

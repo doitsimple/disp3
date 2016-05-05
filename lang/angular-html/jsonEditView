@@ -1,0 +1,8 @@
+^^
+$.extend(global, {angularLib: {jsonEditDirective: 1}});
+var newargv = {
+	treeEditClass: 1
+}
+$.extend(newargv, argv);
+$$
+<ol json-edit ^^=~makeAttr: newargv$$></ol>

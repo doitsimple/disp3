@@ -139,5 +139,28 @@
 				}
 			]
 		}
+	},
+	"/delete": {
+		"post": {
+			"midwareLast": [
+				{
+					"params": {
+						"_id": "ObjectId"
+					}
+				},
+				{
+					"dbop": {
+						"schema": "^^=argv$$",
+						"method": "delete",
+						"arg1":{
+							"makeJson": {"_id": {"get": "_id"}}
+						}
+					},
+					"success": {
+						"sendSuccess": 1
+					}
+				}
+			]
+		}
 	}
 }

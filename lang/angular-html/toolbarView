@@ -1,0 +1,67 @@
+<div class="row">
+	<div class="col-sm-12">
+		<div class="btn-group" role="group">
+		^^for(var key in parent.items){
+		   var item = parent.items[key];
+		   item.
+		$$
+			<a class="btn btn-default" uib-tooltip="刷新" ng-click="^^=config.name$$.refresh()"><i class="fa fa-refresh"></i></a>
+    ^^}$$
+			<a class="btn btn-default" uib-tooltip="搜索" ng-click="showquery=!showquery"><i class="fa fa-search"></i></a>
+^^if(config.insert){$$
+			<a class="btn btn-danger" uib-tooltip="添加" ng-click="^^=config.name$$.showadd()"><i class="fa fa-plus"></i></a>
+^^}$$
+			</div>
+		</div>
+		<div class="col-sm-6" ng-show="showsave" style="padding: 10px;border:1px;">
+			<div class="form-group">
+				<input class="form-control" placeholder="请为这次存储命名" ng-model="savename">
+				<a class="form-control btn btn-default" ng-click="^^=config.name$$.save(savename)"></a>
+			</div>
+		</div>
+		<div class="col-sm-6 borderbox" ng-show="showquery" style="padding: 10px;">
+			<div class="btn-group" role="group">
+		^^for(var key in config.reflist){$$
+			<a class="btn btn-default" ng-click="^^=config.name$$.addRawQuery('^^=key$$')"><i class="fa fa-plus">^^=key$$</i></a>
+    ^^}$$
+			<a class="btn btn-default" ng-click="^^=config.name$$.addRawQuery()"><i class="fa fa-plus"></i></a>
+			</div>
+			<div class="btn-group" role="group">
+			<a class="btn btn-default" ng-click="^^=config.name$$.rawquerys = []">Clear</a>
+			<a class="btn btn-default" ng-click="^^=config.name$$.refresh()">Go</a>
+			<a class="btn btn-default" ng-click="^^=config.name$$.saveQuery()"><i class="fa fa-save"></i></a>
+			<input class="form-control" ng-model="^^=config.name$$.savename" placeholder="标识">
+			</div>
+			<form class="form-inline">
+				<div class="form-group" style="padding:10px" ng-repeat="rawquery in ^^=config.name$$.rawquerys track by $index">
+					<div class="input-group" ng-show="!rawquery.by">
+						<select class="form-control" ng-model="rawquery.field" ng-options="key for key in ^^=config.name$$.fieldlist"></select>
+						<select class="form-control" style="width:auto" ng-model="rawquery.op" ng-options="key for key in ^^=config.name$$.oplist"></select>
+ ^^for(var fname in config.fields){
+  var f=config.fields[fname];$$
+						<div ng-show="rawquery.field == '^^=f.name$$'">
+						^^newbytype(f, "rawquery.v"+f.name, config.name+".fields");$$
+						</div>
+ ^^}$$
+					<a class="btn btn-default" ng-click="^^=config.name$$.rawquerys.splice($index, 1)"><i class="fa fa-minus"></i></a>
+					</div>
+					<div class="input-group" ng-show="!!rawquery.by">
+						<div class="input-group-addon">{{rawquery.by}}</div>
+						<select class="form-control" ng-model="rawquery.field" ng-options="key for key in ^^=config.name$$.refs[rawquery.by].fieldlist"></select>
+						<select class="form-control" style="width:auto" ng-model="rawquery.op" ng-options="key for key in ^^=config.name$$.oplist"></select>
+ ^^for(var key in config.reflist){var s=config.reflist[key];$$
+  ^^for(var fname in global.proto.schemas[key].fields){var f=global.proto.schemas[key].fields[fname];$$
+						<div ng-show="rawquery.field == '^^=f.name$$' && rawquery.by == '^^=key$$'">
+						^^newbytype(f, "rawquery.v"+key+f.name, config.name+".refs."+key);$$
+						</div>
+  ^^}$$
+ ^^}$$
+					<a class="btn btn-default" ng-click="^^=config.name$$.rawquerys.splice($index, 1)"><i class="fa fa-minus"></i></a>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="col-sm-6 borderbox" ng-show="showstat">
+			TODO
+		</div>
+	</div>

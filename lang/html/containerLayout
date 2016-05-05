@@ -1,0 +1,27 @@
+^^
+deps.bootstrap3 = 1;
+$.append(parent, {
+	loading: {
+		"layout": {
+			"textView": "loading"
+		}
+	},
+	"container": {
+	},
+	header: {
+	},
+	content: {
+	},
+	footer: {
+	}
+});
+$$
+<div^^=~makeAttr: argv$$>
+<div^^=~makeAttr: parent.loading.attr, before: {id: "loading"}$$>^^=~parent.loading.layout$$</div>
+<div^^=~makeAttr: parent.container.attr, before: {id: "container", hide: 1, class: {"container":1}}$$>
+<div^^=~makeAttr: parent.header.attr, before: {id: "top"}$$>^^=~parent.header.layout$$</div>
+<div^^=~makeAttr: parent.content.attr, before: {id: "content"}$$>^^=~parent.content.layout$$</div>
+<div^^=~makeAttr: parent.footer.attr, before: {id: "bottom"}$$>^^=~parent.footer.layout$$</div>
+</div>
+</div>
+</div>

@@ -1,0 +1,8 @@
+^^
+var newargv = {
+	"button": "default"
+	
+}
+$.extend(newargv, argv);
+$$
+<a class="btn btn-default" title="刷新"><i class="fa fa-refresh"></i></a>

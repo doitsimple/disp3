@@ -589,7 +589,6 @@ Disp.prototype.eval = function(json, lang, deps, pseudoFlag){
 			return str;
 		}
 	}
-
 	var name = Object.keys(json)[0];
 	if(!name) return "";
 	if(name[0] == "L"){

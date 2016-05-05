@@ -16,6 +16,7 @@ $.append(parent, {
 });
 $$
 ^^=~appendSchema:1, config: parent$$
+
 <div class="panel panel-primary"^^=~makeAttr: argv$$>
 <div class="panel-heading"^^=~makeAttr: parent.heading$$>^^=title$$</div>
 <div class="panel-body"^^=~makeAttr: parent.body$$>
