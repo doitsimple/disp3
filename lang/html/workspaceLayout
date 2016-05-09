@@ -1,0 +1,19 @@
+^^
+deps.bootstrap3 = 1;
+var title = parent.title || parent.name;
+var model = argv.model;
+$$
+^^=~appendSchema:1, config: parent$$
+^^
+var layout = {
+	bootstrapLayout: [9, 3, 6, 6, 12, 6, 6],
+	block0: parent.toolbar,
+	block1: parent.search,
+	block2: parent.topleft,
+	block3: parent.topright,
+	block4: parent.main,
+	block5: parent.bottomleft,
+	block6: parent.bottomright
+}
+$$
+^^=~layout$$

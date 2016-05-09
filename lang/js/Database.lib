@@ -37,7 +37,7 @@ function Database(methods){
 		else return internalMethods[op];
 	}
 	function getOp(op){
-		if(!db)
+		if(!db){
 			return function(){
 				var arg = arguments;
 				var lastarg = arguments[arguments.length - 1];
@@ -51,7 +51,7 @@ function Database(methods){
 					_getOp(op).apply(self, arg);
 				});
 			}
-		else{
+		}else{
 			return function(){
 				var arg = arguments;
 				formatArgs(op, arg);

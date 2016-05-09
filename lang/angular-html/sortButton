@@ -1,0 +1,3 @@
+<a style="padding: 0 5px;" ng-click="^^=model$$.changeSort('^^=name$$')">
+	<i class="fa" ng-class="{'fa-sort-asc':^^=model$$.sort.^^=fname$$ === 1,'fa-sort-desc': ^^=model$$.sort.^^=fname$$ === -1,'fa-sort':!^^=model$$.sort.^^=fname$$}"></i>
+	</a>

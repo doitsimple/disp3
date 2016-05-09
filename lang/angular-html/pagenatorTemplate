@@ -1,0 +1,9 @@
+^^var model =argv.model$$
+^^delete argv.model$$
+<div^^=~makeAttr: argv$$>
+<ul class="pagination" style="margin:2px 0;">
+  <li><a ng-click="^^=model$$.gotoFirst()" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+  <li ng-class="{active: p===^^=model$$.currPage}" ng-repeat="p in ^^=model$$.adj()"><a style="cursor:pointer;" ng-click="^^=model$$.gotoPage(p)">{{p}}</a></li>
+  <li><a ng-click="^^=model$$.gotoLast()" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+</ul>
+</div>

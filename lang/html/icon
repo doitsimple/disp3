@@ -1,0 +1,7 @@
+^^
+deps["font-awesome"] = 1;
+var newargv = {class: {fa: 1}};
+if(typeof argv == "string")
+	newargv.class["fa-"+argv] = 1;
+$$
+<i^^=~makeAttr: newargv$$></i>

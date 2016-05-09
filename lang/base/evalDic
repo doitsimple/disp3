@@ -1,6 +1,8 @@
 ^^for(var key in argv){
-var newjson = {};
-newjson[key] = argv[key];
-$$
+ var newjson = {};
+ newjson[key] = argv[key];$$
+ ^^if(parent.extend){$$
+^^=~extend: newjson, json: parent.extend$$
+^^}else{$$
 ^^=~newjson$$
-^^}$$
+^^}}$$

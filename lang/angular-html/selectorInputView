@@ -1,0 +1,8 @@
+^^
+deps.bootstrap3 = 1;
+if(argv.small){
+	$.extend(argv, {class: {inputSm:1}});
+	delete argv.small;
+}
+$$
+<select^^=~makeAttr:argv$$></select>

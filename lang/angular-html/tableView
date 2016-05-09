@@ -113,11 +113,6 @@ $$
 
 
  ^^function pagenator(config){$$
-<ul class="pagination" style="margin:2px 0;">
-  <li><a ng-click="^^=config.name$$.gotoFirst()" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
-  <li ng-class="{active: p===^^=config.name$$.currPage}" ng-repeat="p in ^^=config.name$$.adj()"><a style="cursor:pointer;" ng-click="^^=config.name$$.gotoPage(p)">{{p}}</a></li>
-  <li><a ng-click="^^=config.name$$.gotoLast()" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
-</ul>
  ^^}$$
 
 

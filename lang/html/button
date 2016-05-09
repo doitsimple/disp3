@@ -1,6 +1,12 @@
 ^^
 var tmp = {div: argv};
-tmp.tagname = "button";
+tmp.tagname = "a";
 tmp.layout = parent.layout;
+$.extend(argv, {class:{"btn":1,"btn-default" :1}})
+if(argv.small){
+	delete argv.small;
+	argv.class["btn-xs"] = 1;
+}
+	
 $$
 ^^=~tmp$$

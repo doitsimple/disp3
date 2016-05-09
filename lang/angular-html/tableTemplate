@@ -1,0 +1,37 @@
+^^
+deps.bootstrap3 = 1;
+var title = parent.title || parent.name;
+var model = argv.model;
+$$
+^^=~appendSchema:1, config: parent$$
+^^
+var layout = {
+	"workspaceLayout": 1,
+	"toolbar": [
+{"button": {"click": model+".refresh()"},"layout": {"icon": "refresh"}},
+{"button": {"click": model+".insert()"},"layout": {"icon": "plus"}},
+	],
+	"main": {
+		"table": 1,
+		"header": {
+			tableHeaderTemplate: {fields: parent.fields}, 
+			"toolbarCol": [{
+				"sortButton": 1
+			}]
+		},
+		"body": {tableBodyTemplate: {fields: parent.fields, model: model}},
+		"toolbarRow": []
+	},
+	"topleft": {selectorInputView: {model: model+".perPage", options: model+".perPages", class: {formItem: 1}, small: 1}},
+	"topright": {pagenatorTemplate: {model: model, class: {"text-right":1}}},
+	"bottomleft": {textView: "Total: %"+model+".count%"},
+	"bottomright": {pagenatorTemplate: {model: model, class: {"text-right": 1}}}
+}
+if(parent.toolbar)
+ layout.toolbar = $.concat(layout.toolbar, parent.toolbar);
+if(parent.toolbarRow)
+ layout.main.toolbarRow = $.concat(layout.main.toolbarRow, parent.toolbarRow);
+if(parent.toolbarCol)
+ layout.main.header.toolbarCol = $.concat(layout.main.header.toolbarCol, parent.toolbarCol);
+$$
+^^=~layout$$

@@ -1,5 +1,7 @@
 ^^var tag = parent.tagname || "div";
 if(typeof argv == "string")
 	argv = {id: argv};
+var name = argv.name;
+delete argv.name;
 $$
 <^^=tag$$^^=~makeAttr:argv$$>^^=~parent.layout$$</^^=tag$$>

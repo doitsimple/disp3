@@ -1,0 +1,5 @@
+^^for(var fname in argv.fields){var col = argv.fields[fname];$$
+ <th>
+^^=col.text || fname$$<br/>^^=fname$$
+</th>
+^^}$$

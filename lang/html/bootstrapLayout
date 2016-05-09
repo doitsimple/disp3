@@ -1,0 +1,7 @@
+<div class="row">
+^^for(var i in argv){$$
+	<div class="col-sm-^^=argv[i]$$">
+	^^=~parent["block"+i]$$
+	</div>
+^^}$$
+</div>

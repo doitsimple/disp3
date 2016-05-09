@@ -1,0 +1,16 @@
+^^
+deps.bootstrap3 = 1;
+$$
+<table^^=~makeAttr: argv, before: {class: {table:1, "table-striped": 1, "table-bordered": 1}, style: {"vertical-align": "middle"}}$$>
+	<thead>
+		^^=~parent.header$$
+^^if(parent.toolbarRow && parent.toolbarRow.length){$$
+		<th></th>
+^^}$$
+	</thead>
+  <tbody>
+		^^=~extend: parent.body, toolbarRow: parent.toolbarRow$$
+	</tbody>
+</table>
+
+

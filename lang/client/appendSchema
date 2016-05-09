@@ -11,8 +11,16 @@ if (schema) {
   $.append(fields, global.databases[dbname].schemas[schema].fields);
  }
 }
-for(var f in fields){
- fields[f].name = f;
+var colnum = 0;
+for(var fname in fields){
+ var f = fields[fname];
+ f.name = fname;
+ if(f.hidden){
+	 delete fields[fname];
+	 continue;
+ }
+ colnum ++;
 }
+parent.config.fieldLength = colnum;
 
 $$

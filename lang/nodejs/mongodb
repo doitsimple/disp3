@@ -264,6 +264,10 @@ new function(){
       });
     });
 	}
+	self.delete = function(name, where, fn){
+		self.format(name, where);
+    self.getCol(name).remove(where, fn);
+	}
 	self.drop = function(fn){
 		conn.dropDatabase(fn);
 	}
