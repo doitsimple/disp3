@@ -8,8 +8,8 @@ str+=$.eval({evalStringArray: Object.keys(global.angularDeps), sep:","});
 var app = angular.module('app', [^^=str$$]);
 ^^=~evalDic: global.angularDeps$$
 ^^
-for(var key in global.controllers){
- var ctrl = $.copy(global.controllers[key]);
+for(var key in global.subs){
+ var ctrl = $.copy(global.subs[key]);
  ctrl.deps = {};
  str3 = $.eval({extend: ctrl.content, error: ctrl.error, success:ctrl.success, deps: ctrl.deps});
  var str2 = "";

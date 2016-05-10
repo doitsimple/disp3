@@ -17,3 +17,4 @@ var layout = {
 }
 $$
 ^^=~layout$$
+^^=~parent.layout$$

@@ -39,18 +39,7 @@ Disp.prototype.run = function(){
 	self.genPlugin();
 	self.dispose();
 }
-/*
-Disp.prototype.readPrev = function(){
-	var self = this;
-	var prev = {};
-	if(fs.existsSync(self.projectDir + "/disp.filelist.json"))
-		prev.filelist = libFile.readJSON(self.projectDir + "/disp.filelist.json");
-	else
-		prev.filelist = {};
-	log.v(prev);
-	self.prev = prev;
-}
-*/
+
 Disp.prototype.readDispJson = function(jsonFile, config){
 	var self = this;
 	if(!fs.existsSync(self.projectDir + "/" + jsonFile)){
@@ -60,7 +49,17 @@ Disp.prototype.readDispJson = function(jsonFile, config){
 	tmpl.extendMethods("eval", function(json){
 		return self.eval(json, self.global.arch);
 	});
-	var str = tmpl.render({file: self.projectDir + "/" + jsonFile}, self.global);
+	var env;
+	if(config && config.mount){
+		env = libObject.getByKey(self.global, config.mount);
+		if(!env){
+			env = {};
+			libObject.setByKey(self.global, config.mount, env);
+		}
+	}else{
+		env = self.global;
+	}
+	var str = tmpl.render({file: self.projectDir + "/" + jsonFile}, env);
 	var toextend;
 	try {
 		toextend = JSON.parse(str);
@@ -125,8 +124,7 @@ Disp.prototype.extendGlobal = function(){
 		self.global.arch = "raw";
 	if(!self.global.impl)
 		self.global.impl = "basic";
-	log.v("global");
-	log.v(self.global);
+	log.v("extend global done");
 }
 Disp.prototype.genArch = function(){
 	var self = this;
@@ -172,6 +170,7 @@ Disp.prototype.genProj = function(filelist, config){
 }
 Disp.prototype.genProjSub = function(filelist, config){
 	var self = this;
+	log.v("genProjSub");
   for (var orifilename in filelist){
     var partConfig = filelist[orifilename];
 		if(libObject.isArray(partConfig)){
@@ -185,6 +184,7 @@ Disp.prototype.genProjSub = function(filelist, config){
 }
 Disp.prototype.genFilePre = function(orifilename, partConfig, config){
 	var self = this;
+	log.v("genFilePre "+orifilename);
 	if(orifilename.match(/\^\^.*\$\$/)){
 		var env = self.getEnv(partConfig);
 		var tfilename;
@@ -224,6 +224,8 @@ Disp.prototype.addStr = function(c, lang, deps){
 }
 Disp.prototype.genFile = function(partConfig, filename, config){
 	var self = this;
+	log.v("genFile "+filename);
+	log.v(config);
 	if(!partConfig.lang)
 		partConfig.lang = "base";
 	if(config.isPseudo == 1){
@@ -582,6 +584,7 @@ Disp.prototype.eval = function(json, lang, deps, pseudoFlag){
 				}
 			}
 			for(var i in json){
+				if(!json[i]) continue;
 				json[i].index = i;
 				utils.extend(json[i], toextend);
 				str += self.eval(json[i], lang, deps) + "\n";

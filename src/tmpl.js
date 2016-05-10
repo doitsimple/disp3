@@ -74,7 +74,7 @@ function render(config, data){
 
 // init data
 	if(!data){
-		log.e("render with undefined data");
+		log.e("tmpl.render, params data undefined");
 		return "";
 	};
 	if(typeof data !="object"){
@@ -85,8 +85,10 @@ function render(config, data){
 		log.e("variable p, originstr, evalstr is not allowed!!!!");
 		return "";
 	}
-	data.local = data;
-	data.origin = {};
+	var datanew = libObject.copy1(data);
+	datanew.local = data;
+	datanew.origin = {};
+	data = datanew;
 	for(var key in data.local){
 		if(reservedKey[key]) continue;
 		data.origin[key] = data.local[key];
@@ -98,7 +100,6 @@ function render(config, data){
 //		data.file = config.file;
 	data.p=[];
 ///////////
-
 	var win, wout;
 	var evalstr = "p.push('";
 	with(data){

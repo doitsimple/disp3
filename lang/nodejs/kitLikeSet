@@ -9,6 +9,6 @@ libDb.^^=db$$.select("^^=schema$$", keypair, function(err, result){
 	if(!result){
 		libDb.^^=db$$.insert("^^=schema$$", keypair, ^^=~makeCallback: parent$$);
 	}else{
-		libDb.^^=db$$.update("^^=schema$$", keypair, {like: 0}, ^^=~makeCallback: parent$$);
+		libDb.^^=db$$.update("^^=schema$$", keypair, {like_flag: 0}, ^^=~makeCallback: parent$$);
 	}
 })

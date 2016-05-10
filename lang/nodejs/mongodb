@@ -120,12 +120,22 @@ new function(){
 	self.getCache = function(name, key, fn){
 		if(!colDataCache[name]) colDataCache[name] = {};
 		var cache = colDataCache[name];
-		if(cache[key]) return fn(null, cache[key]);
+		if(cache[key]){
+			if(!cache[key].needUpdate) return fn(null, cache[key]);
+			delete cache[key].needUpdate;
+		}
 		self.selectx(name, {$match: {_id: key}, $limit:1}, function(err, result){
 			if(err) return fn(err);
 			cache[key] = result[0];
-			fn(null, result[0]);
+			fn(null, cache[key]);
 		});
+	}
+	self.updateCache = function(name, key){
+		key = key.toString();
+		if(!colDataCache[name]) return;
+		var cache = colDataCache[name];
+		if(!cache[key]) return;
+		cache[key].needUpdate = 1;
 	}
 	self.aggr = function(name, arr, fn){
 		self.getCol(name).aggregate(arr, fn);
@@ -197,6 +207,8 @@ new function(){
       var rtn;
       if(result) rtn = result.result;
       else rtn = {n: 0};
+			if(where._id)
+				self.updateCache(name, where._id);
       fn(err, rtn);
     });
 	}
@@ -215,6 +227,8 @@ new function(){
       var rtn;
       if(result) rtn = result.result;
       else rtn = {n: 0};
+			if(where._id)
+				self.updateCache(name, where._id);
       fn(err, rtn);
     });
 	}
@@ -232,6 +246,8 @@ new function(){
     self.getCol(name).findAndModify(where, [], op, function(err, doc){
       if(err) return fn(err);
       if(!doc) return fn(null, doc);
+			if(where._id)
+				self.updateCache(name, where._id);
       fn(null, doc.value);
     });
 	}

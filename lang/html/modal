@@ -1,0 +1,35 @@
+^^deps.bootstrap3 = 1;
+if(typeof argv == "string")
+	argv = {id: argv};
+var heading;
+if(argv.header){
+	heading = argv.header;
+	delete argv.header;
+}
+var body;
+if(argv.body){
+	body = argv.body;
+	delete argv.body;
+}
+var footer;
+if(argv.footer){
+	footer = argv.footer;
+	delete argv.footer;
+}
+
+$$
+<div^^=~makeAttr: argv, before: {class: {"modal": 1, fade:1}, role:"dialog"}$$>
+ <div class="modal-dialog">
+  <div class="modal-content">
+   <div^^=~makeAttr: body, before: {class: {"modal-header": 1}}$$>
+	 	^^=~parent.header$$
+   </div>
+   <div^^=~makeAttr: body, before: {class: {"modal-body": 1}}$$>
+	 	^^=~parent.layout$$
+   </div>
+   <div^^=~makeAttr: body, before: {class: {"modal-footer": 1}}$$>
+	 	^^=~parent.footer$$
+   </div>
+  </div>
+ </div>
+</div> 

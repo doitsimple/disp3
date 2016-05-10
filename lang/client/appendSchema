@@ -1,4 +1,5 @@
 ^^
+if(!parent.config.fields) parent.config.fields = {};
 var fields = parent.config.fields;
 var schema = parent.config.schema;
 var dbname = parent.config.db || "main";
@@ -22,5 +23,4 @@ for(var fname in fields){
  colnum ++;
 }
 parent.config.fieldLength = colnum;
-
 $$

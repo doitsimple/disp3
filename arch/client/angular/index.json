@@ -6,7 +6,7 @@
 	"partial/^^=argv$$.html": {
 		"lang": "angular-partial-html",
 		"tmpl": "partial.html",
-		"envkey": "tmpls"
+		"envkey": "subs"
 	},
 	"index.html": {
 		"lang": "angular-html",
