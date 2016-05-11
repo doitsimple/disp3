@@ -11,7 +11,7 @@ deps["form-data"] = 1
 $$
 function ajax(config, fn){
 	if(!config.headers) config.headers = {};
-	if(config.bearer){
+	if(config.hasOwnProperty("bearer")){
 		config.headers["authorization"] = "Bearer " + config.bearer;
 	}
 	if(config.multipart){

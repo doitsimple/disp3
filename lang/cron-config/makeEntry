@@ -5,6 +5,6 @@ if(config.text) str += "#" + config.text + "\n";
 if(!config.min) config.min = "*";
 if(!config.hour) config.hour = "*";
 if(!config.day) config.day = "*";
-str += config.min + " " + config.hour + " " + config.day + " * * nohup node " + global.targetBaseDir + "/crons/" + parent.name + ".js";
+str += config.min + " " + config.hour + " " + config.day + " * * nohup node " + path.resolve(global.targetDir) + "/crons/" + parent.name + ".js";
 $$
 ^^=str$$

@@ -1,1 +1,1 @@
-<input^^=~makeAttr:argv$$>
+<input^^=~makeAttr:argv, before: {class:{"form-control": 1}}$$>

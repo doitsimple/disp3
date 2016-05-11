@@ -2,8 +2,10 @@
 deps.libDb = 1;
 var tokenField = argv.tokenField || "token";
 $$
+function(token, fn){
 libDb.^^=argv.db || "main"$$.select("^^=argv.schema$$", {^^=tokenField$$: token}, function (err, user) {
-  if (err) { ^^=~extend: parent.error, error: {get: "err"}$$ return; }
-  if (!user) { console.log("unauthorized "+token); ^^=~extend: parent.success, result: false$$ return;  }
-	^^=~extend: parent.success, result: {"get": "user._id"}$$ return;
+  if (err) { fn(err); return; }
+  if (!user) { console.log("unauthorized "+token); fn(null, false); return;  }
+	fn(null, user._id); return;
 });
+}

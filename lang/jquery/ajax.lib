@@ -9,7 +9,8 @@ function ajax(config, fn){
 			fn(null, result, {statusCode: status, headers: headers});
 		}
 	};
-	if(config.bearer)
+	if(config.hasOwnProperty("bearer")){
 		aconfig.headers.authorization = "Bearer "+config.bearer;
+	}
 	$.ajax(aconfig);
 };

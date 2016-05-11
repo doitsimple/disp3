@@ -8,6 +8,8 @@ $$
 ^^=~require: config$$^^
  }
 }
+if(!argv.htmlAttr)
+	argv.htmlAttr = {};
 $$
 <!DOCTYPE html>
 <html^^=~makeAttr: argv.htmlAttr.attrs$$>

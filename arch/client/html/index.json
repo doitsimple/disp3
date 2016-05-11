@@ -2,5 +2,9 @@
 	"index.html": {
 		"lang": "html",
 		"content": "main"
+	},
+	"^^=argv$$.html": {
+		"lang": "html",
+		"envkey": "subs"
 	}
 }

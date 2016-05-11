@@ -59,7 +59,7 @@ Disp.prototype.readDispJson = function(jsonFile, config){
 	}else{
 		env = self.global;
 	}
-	var str = tmpl.render({file: self.projectDir + "/" + jsonFile}, env);
+	var str = tmpl.render({file: self.projectDir + "/" + jsonFile}, {global: self.global, env: env});
 	var toextend;
 	try {
 		toextend = JSON.parse(str);

@@ -1,0 +1,19 @@
+^^
+$$
+function simpleAltAuth(){
+	var check = ^^=~kitSimpleTokenValidate: argv$$;
+	return function(req, res, next){
+		^^=~getBearerToken: 1$$
+		if(!token) return next();
+		else{
+			check(token, function(err, result){
+				if(err || !result)
+					res.status(401).end(http.STATUS_CODES[401]);
+				else{
+					req.user = result;
+					next();
+				}
+			});
+		}
+	};
+}();
