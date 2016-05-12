@@ -1,0 +1,19 @@
+^^
+$.extend(global, {angularLib: {dynamicModalDirective: 1}});
+var id = "";
+if(argv.id){
+	id = argv.id;
+	delete argv.id;
+}
+$$
+<div dynamic-modal class="modal fade" role="dialog" id="^^=id$$" ng-model="^^=argv.model$$">
+	<div class="modal-dialog">
+		<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		</div>
+		<div class="modal-body">
+		</div>
+		</div>
+	</div>
+</div>

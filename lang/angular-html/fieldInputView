@@ -1,21 +1,19 @@
-	^^if(type == "date"){$$
+	^^if(type == "datetime"){$$
 <input class="form-control" type="date" ng-model="^^=model$$"></input>
-	^^}else if(type == "datetime"){$$
-<input class="form-control" ng-model="^^=model$$"></input><pre>example: 2015/09/10 09:30</pre>
+
   ^^}else if(type == "image" || type=="video" || type=="file"){$$
 <input type="file" class="form-control" file-model="^^=f.name$$.buffer">
 <a class="btn btn-primary btn-xs" ng-click="access.saveUpload('^^=f.path$$', ^^=f.name$$, ^^=$.stem(model)$$, '^^=$.leaf(model)$$')">上传</a>
     ^^bytype(f, model, fields)$$
   ^^}else if(type == "float"){$$
+
 <input class="form-control" ng-model="^^=model$$" ng-pattern="/^[0-9\.]+$/">
   ^^}else if(type == "int"){$$
-    ^^if(f.enums && fields){$$
-<select class="form-control" ng-model="^^=model$$" ng-init="^^=fields+'.'+f.name$$.enumsarr = ui.convert2arr(^^=fields+'.'+f.name$$.enums)" ng-options="item.key as item.val for item in ^^=fields+'.'+f.name$$.enumsarr"></select>
-    ^^}else{$$
 <input class="form-control" ng-model="^^=model$$" ng-pattern="/^[0-9]+$/">
-    ^^}$$
-  ^^}else if(type == "ObjectId" && f.ref){$$
-	<input class="form-control" ng-model="^^=model$$">
+
+  ^^}else if(type == "ObjectId"){$$
+	<input class="form-control" disabled>
+
   ^^}else{$$
     ^^if(f.encrypt){$$
 	<input class="form-control" ng-model="^^=model$$" ng-show="showencrypt">

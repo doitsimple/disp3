@@ -1,0 +1,38 @@
+^^deps.hat =1;$$
+app.directive('dynamicModal', function($compile) {
+	return {
+  	require: 'ngModel',
+		restrict: 'A',
+    replace: true,
+		scope: {
+			v: '=ngModel'
+		},
+		priority: 10,
+    link: function(scope, elm, attrs, ngModelCtrl) {
+      ngModelCtrl.$render = function() {
+				var v = scope.v;
+				var id = attrs["dynamicModal"];
+				if(!v) v = {};
+				var html =''
+				html += '<div class="modal-body">';
+				if(v.image){
+					html += '<img class="img-thumbnail" src="'+ v.image+ '">'
+				}else if(v.text){
+					html += v.text
+				}else if(v.alert){
+					html += v.text
+					html += '<a class="btn btn-success" ng-click="' + v.alert + '">确认</a>'
+				}else if(v.confirm){
+					html += v.text;
+					html += '<a class="btn btn-success" ng-click="' + v.confirm + '">确认</a>'
+					html += '<a class="btn btn-default" data-dismiss="modal">取消</a>'
+				}
+				html += '</div>';
+        var e =$compile(html)(scope);
+				var sube = elm.find(".modal-body")
+				sube.empty();
+				sube.append(e);
+      };
+  	},
+  };
+});

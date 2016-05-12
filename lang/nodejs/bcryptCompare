@@ -1,0 +1,4 @@
+^^
+deps.bcryptCompare = 1;
+$$
+bcryptCompare(^^=~argv[0]$$, ^^=~argv[1]$$)

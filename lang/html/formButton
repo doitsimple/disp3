@@ -1,0 +1,5 @@
+^^if(typeof argv != "object"){
+	argv = {};
+}
+$.extend(argv, {class: {"btn-block":1}});
+^^=~button: argv, layout: parent.layout$$

@@ -1,0 +1,26 @@
+^^
+var input = {};
+if(argv.input){
+	input = argv.input;
+	delete argv.input;
+}
+var label = {};
+if(argv.label){
+	label = argv.label;
+	delete argv.label;
+}
+var id = argv.id || $.hat();
+
+$.append(input, {
+	"type": "text",
+	"class": {"form-control":1},
+	"id": id
+})
+$.append(label, {
+	for: id
+})
+$$
+<div^^=~makeAttr: argv, before:{class: {"form-group":1}}$$>
+  <label^^=~makeAttr: label$$>^^=~parent.label$$</label>
+  <input^^=~makeAttr: input$$">
+</div>

@@ -1,0 +1,10 @@
+app.directive('video', function() {
+  return {
+    restrict: 'E',
+    link: function(scope, element, attrs) {
+      scope.$on('$destroy', function() {
+        element.prop('src', '');
+      });
+    }
+  };
+})

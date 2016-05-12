@@ -1,16 +1,17 @@
 ^^
 deps.bootstrap3 = 1;
-var title = parent.title || parent.name;
 var model = argv.model;
 $$
 ^^=~appendSchema:1, config: parent$$
 ^^
 var layout = {
 	"workspaceLayout": 1,
-	"toolbar": [
-{"button": {"click": model+".refresh()"},"layout": {"icon": "refresh"}},
-{"button": {openModal: "detail"},"layout": {"icon": "plus"}},
-	],
+	"toolbar": {
+		"buttonGroup": 1,
+		"layout": [
+{"button": {"click": model+".refresh()"},"layout": {"icon": "refresh"}}
+		]
+	},
 	"main": {
 		"table": 1,
 		"header": {
@@ -28,8 +29,10 @@ var layout = {
 	"bottomright": {pagenatorTemplate: {model: model, class: {"text-right": 1}}},
 	"layout": [
 		{
-			"modal": "detail",
-			"header": {textView: "%"+model+".header%"}
+			"dynamicModalView": {
+				"model": model+".modal",
+				"id": model+"Modal"
+			}
 		}
 	]
 }
@@ -39,5 +42,10 @@ if(parent.toolbarRow)
  layout.main.toolbarRow = $.concat(layout.main.toolbarRow, parent.toolbarRow);
 if(parent.toolbarCol)
  layout.main.header.toolbarCol = $.concat(layout.main.header.toolbarCol, parent.toolbarCol);
+if(parent.add){
+	toolbar.layout.push({
+		"button": {click: model+"openModal({form: fields})"}, "layout": {"icon": "plus"}
+	})
+}
 $$
 ^^=~layout$$

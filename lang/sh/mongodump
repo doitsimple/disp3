@@ -1,0 +1,1 @@
+mongodump --db ^^=argv.db$$ --out ^^=argv.out$$

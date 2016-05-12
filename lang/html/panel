@@ -18,14 +18,9 @@ delete argv.kit;
 }else{
  pclass["panel-default"] = 1;
 }
-var title = "";
-if(argv.title){
- title = argv.title;
- delete argv.title;
-}
 $$
-<div^^=~makeAttr: argv, before: {class: pclass}$$>
-<div^^=~makeAttr: heading, before: {class: {"panel-heading": 1}}$$>^^=title$$</div>
+<div^^=~makeAttr: argv, before: {class: pclass, style: {"overflow-x":"auto"}}$$>
+<div^^=~makeAttr: heading, before: {class: {"panel-heading": 1}}$$>^^=~parent.heading$$</div>
 <div^^=~makeAttr: body, before: {class: {"panel-body": 1}}$$>
 ^^=~parent.layout$$
 </div>

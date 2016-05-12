@@ -41,6 +41,9 @@ new function(){
 						if(f.type == "float"){
 							doc[key] = parseFloat(doc[key]);
 						}
+						if(f.type == "datetime"){
+							doc[key] = new Date(doc[key]).getTime();
+						}
 						if(f.type == "string"){
 							doc[key] = "" + doc[key];
 						}

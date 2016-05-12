@@ -9,7 +9,7 @@ if(!user){
 if(code){
 	^^=~kitSmsCodeValidate: argv, error: parent.error, success: parent.success$$
 }else if(password){
-	if(bcryptCompare(user.password, password)){
+	if(!bcryptCompare(password, user.password)){
 		^^=~extend: parent.error, error: "密码错误"$$;return;
 	}
 	^^=~parent.success$$

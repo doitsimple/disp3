@@ -1,9 +1,8 @@
 <tr ng-repeat="row in ^^=argv.model$$.data">
 ^^for(var fname in argv.fields){var col = argv.fields[fname];$$
  <td>
- 	{{row.^^=fname$$}}
- </td>
-	
+ 	^^=~fieldView: col, val: "row."+fname, model: argv.model$$
+ </td>	
 ^^}$$
 ^^if(parent.toolbarRow && parent.toolbarRow.length){$$
  <td>

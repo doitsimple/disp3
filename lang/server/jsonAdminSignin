@@ -1,8 +1,14 @@
 [
 	{
 		"params": {
-			"username": "string",
-			"password": "string"
+			"username": {
+				"type": "string",
+				"required": 1
+			},
+			"password": {
+				"type": "string",
+				"required": 1
+			}
 		}
   },
 	{
@@ -20,6 +26,10 @@
 	{
 		"ifNotReturn": "user",
 		"return": "用户不存在"
+	},
+	{
+		"ifNotReturn": {"bcryptCompare": [{"get": "password"},{"get": "user.password"}]},
+		"return": "密码错误"
 	},
 	{
 		"sendSuccess": 1,

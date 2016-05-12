@@ -1,4 +1,6 @@
 tableController = function tableController($scope, config) {
+	var name = config.name;
+	this.fields = config.fields;
 	this.$scope = $scope;
 	this.currPage = 1;
 	this.totalPage = 0;
@@ -130,5 +132,9 @@ tableController = function tableController($scope, config) {
 				$scope.$apply();
 			});
 		});
+	}
+	self.openModal = function(json){
+		self.modal = json;
+		$('#'+name+'Modal').modal();
 	}
 }
