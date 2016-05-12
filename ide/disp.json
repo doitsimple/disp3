@@ -45,7 +45,7 @@
   },
 	"clients": {
 		"client": {
-			"controllers": {
+			"subs": {
 				"main": {
 					"content": [
 						{
@@ -86,7 +86,7 @@
 							},
 							{
 								"jsonView": {
-									"hide":1,
+									"hidden":1,
 									"model": "y"
 								}
 							},

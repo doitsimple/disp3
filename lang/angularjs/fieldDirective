@@ -1,0 +1,22 @@
+app.directive('field', function($compile) {
+	return {
+  	require: 'ngModel',
+		restrict: 'A',
+    replace: true,
+		scope: {
+			v: '=ngModel',
+			config: '=config'
+		},
+    link: function(scope, elm, attrs, ngModelCtrl) {
+      ngModelCtrl.$render = function() {
+				var v = scope.v;
+				var config = scope.config;
+				console.log(config);
+				var html = ''
+        var e =$compile(html)(scope);
+				elm.empty();
+				elm.append(e);
+      };
+  	},
+  };
+});

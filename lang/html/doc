@@ -1,0 +1,6 @@
+^^for (var i in argv){var block = argv[i]$$
+<h3>^^=block.title$$</h3>
+^^for(var j in block.content){var sb = block.content[j]$$
+<p>^^=sb$$</p>
+^^}$$
+^^}$$

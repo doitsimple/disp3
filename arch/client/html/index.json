@@ -5,6 +5,7 @@
 	},
 	"^^=argv$$.html": {
 		"lang": "html",
-		"envkey": "subs"
+		"envkey": "subs",
+		"content": ""
 	}
 }

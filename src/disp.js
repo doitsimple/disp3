@@ -289,14 +289,18 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 	if(partConfig.code){
 		str += self.eval(partConfig.code, lang, deps);
 	}
-	if(partConfig.content){
+	if(partConfig.hasOwnProperty("content")){
 		var c = partConfig.content;
-		if(libObject.isArray(c)){
-			for(var i in c){
-				str += self.eval(env[c[i]], lang, deps);
+		if(c){
+			if(libObject.isArray(c)){
+				for(var i in c){
+					str += self.eval(env[c[i]], lang, deps);
+				}
+			}else{
+				str += self.eval(env[c], lang, deps);
 			}
 		}else{
-			str += self.eval(env[c], lang, deps);
+			str += self.eval(env, lang, deps);
 		}
 	}
 	if(partConfig.export){

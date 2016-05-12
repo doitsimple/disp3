@@ -1,0 +1,2 @@
+^^deps.bootstrap3 = 1;$$
+^^$.extend(parent.origin, {class: {"container":1}});$$

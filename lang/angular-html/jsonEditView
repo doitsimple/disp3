@@ -5,4 +5,4 @@ var newargv = {
 }
 $.extend(newargv, argv);
 $$
-<ol json-edit ^^=~makeAttr: newargv$$></ol>
+<ol json-edit^^=~makeAttr: newargv$$></ol>

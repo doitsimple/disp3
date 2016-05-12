@@ -1,0 +1,34 @@
+^^
+var type = argv.type;
+var val = parent.val;
+var model = parent.model;
+$$
+^^if(type == "datetime"){$$
+	{{^^=val$$ | date:'yyyy/MM/dd HH:mm'}}
+
+^^}else if(type == "image"){$$
+	<img ng-show="^^=val$$ != '' &amp;&amp; ^^=val$$ != undefined" class="img-thumbnail" ng-src="^^=argv.path$$/{{^^=val$$}}" ng-click="^^=model$$.openModal({'image': '^^=argv.path$$/'+^^=val$$})" style="min-width:50px;">
+
+^^}else if(type == "video"){$.extend(global, {angularLib: {videoDirective: 1}});$$
+<div ng-show="^^=val$$ == '' || ^^=val$$ == undefined" class="ng-hide">没有视频</div>
+<video controls ng-show="^^=val$$ != '' &amp;&amp; ^^=val$$ != undefined" class="img-thumbnail" ng-src="{{'^^=argv.path$$/'+^^=val$$}}"></video>
+<p><a class="btn btn-default" ng-href="^^=argv.path$$/{{^^=val$$}}">下载视频</a></p>
+
+^^}else if(type == "file"){$$
+<a class="btn btn-default" ng-href="^^=argv.path$$/{{^^=val$$}}">{{^^=val$$}}</a>
+
+^^}else if(type == "id"){$.extend(global, {angularLib: {lastFilter: 1}});$$
+<div ng-show="!!^^=val$$">
+<a class="btn btn-xs btn-default" ng-click="^^=model$$.openModal({text:^^=val$$})">{{^^=val$$ | last:4}}</a>
+</div>
+
+^^}else if(type == "text"){$.extend(global, {angularLib: {firstFilter: 1}});$$
+	<a ng-click="^^=model$$.openModal({text:^^=val$$})">{{^^=val$$ | first:4}}</a>
+
+^^}else if(type == "password"){$$
+	<a class="btn btn-default btn-xs"><i class="fa fa-lock"></i></a>
+
+^^}else{$$
+	{{^^=val$$}}
+
+^^}$$

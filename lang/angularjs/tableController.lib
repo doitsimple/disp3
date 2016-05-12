@@ -53,7 +53,10 @@ tableController = function tableController($scope, config) {
 		self.sort = json;
 	}
 	self.refresh = function(){
-		requestx.postx(config.api, {}, {
+		var token = $.cookie("token");
+		requestx.postx(config.api, {
+			bearer: token
+		}, {
 			schema: config.schema,
 			by: self.by,
 			options: {
@@ -79,8 +82,11 @@ tableController = function tableController($scope, config) {
 	self.upsert = function(){
 		var row = self.new;
 		var _id = row._id;
+		var token = $.cookie("token");
 		if(!_id){
-			requestx.postx(config.api, {}, {
+			requestx.postx(config.api, {
+				bearer: token
+			}, {
 				method: "insert",
 				schema: config.schema,
 				by: self.by,
@@ -102,8 +108,10 @@ tableController = function tableController($scope, config) {
 			for(var key in row){
 				if(key != "_id" && key[0] != "$")
 					newrow[key] = row[key];
-			}			
-			requestx.postx(config.api, {}, {
+			}
+			requestx.postx(config.api, {
+				bearer: token
+			}, {
 				method: "updatex",
 				schema: config.schema,
 				by: self.by,
