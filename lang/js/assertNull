@@ -1,0 +1,2 @@
+^^deps.assert = 1;$$
+assert.equal(!!^^=~argv$$, false)

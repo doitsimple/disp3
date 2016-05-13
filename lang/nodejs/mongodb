@@ -56,7 +56,7 @@ new function(){
 			if(!doc) return;
 			if(doc._id) doc._id = ObjectId(doc._id);	
 			for(var key in doc){
-				if(key.match(/_id$/)){
+				if(key.match(/_id$/) && doc[key]){					
 					doc[key] = ObjectId(doc[key]);
 				}
 				if(key.match(/password$/)){

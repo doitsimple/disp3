@@ -7,9 +7,9 @@ function simpleAltAuth(){
 		if(!token) return next();
 		else{
 			check(token, function(err, result){
-				if(err || !result)
+				if(err){
 					res.status(401).end(http.STATUS_CODES[401]);
-				else{
+				}else{
 					req.user = result;
 					next();
 				}
