@@ -1,6 +1,6 @@
 app.filter('last', function ($sce) {
     return function(str, len) {
-      if(!str || str.length < len) return "";
+      if(!str || str.length < len) return str || "";
       return str.substr(str.length-len);
     };
 });

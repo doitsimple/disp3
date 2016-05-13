@@ -5,15 +5,24 @@ app.directive('field', function($compile) {
     replace: true,
 		scope: {
 			v: '=ngModel',
-			config: '=config'
+			field: '=field',
+			edit: '=edit'
 		},
     link: function(scope, elm, attrs, ngModelCtrl) {
       ngModelCtrl.$render = function() {
+				var model = attrs.ngModel;
 				var v = scope.v;
-				var config = scope.config;
-				console.log(config);
-				var html = ''
-        var e =$compile(html)(scope);
+				var field = scope.field;
+				var edit = scope.edit;
+				var html;
+				if(!edit){
+					html = '<a>'
+					html += v;
+					html += '</a>'
+				}else{
+					html = '<input class="form-control" ng-model="'+model+'">'
+				}
+        var e = $compile(html)(scope);
 				elm.empty();
 				elm.append(e);
       };

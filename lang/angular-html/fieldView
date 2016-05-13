@@ -1,4 +1,4 @@
 ^^
 $.extend(global, {angularLib: {fieldDirective: 1}});
 $$
-<div field^^=~makeAttr: argv$$></div>
+<div field="^^=parent.model$$.fields.^^=parent.name$$" ^^=~makeAttr: argv$$></div>

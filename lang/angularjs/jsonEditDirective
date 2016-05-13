@@ -4,8 +4,7 @@ app.directive('jsonEdit', function($compile) {
 		restrict: 'A',
     replace: true,
 		scope: {
-			v: '=ngModel',
-			prefix: '=prefix'
+			v: '=ngModel'
 		},
 		priority: 10,
     link: function(scope, elm, attrs, ngModelCtrl) {

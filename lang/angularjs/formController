@@ -1,0 +1,10 @@
+^^deps.formController = 1;$$
+^^parent.deps["$routeParams"]=1;$$
+$scope.^^=argv$$ = new formController($scope, {
+	name: "^^=argv$$",
+	api: ^^=~string: parent.api$$,
+	schema: ^^=~string: parent.schema$$,
+	fields: ^^=$.stringify(global.databases.main.schemas[parent.schema].fields)$$,
+	id: $routeParams.id
+});
+$scope.^^=argv$$.refresh();

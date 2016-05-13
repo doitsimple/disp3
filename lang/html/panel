@@ -19,7 +19,7 @@ delete argv.kit;
  pclass["panel-default"] = 1;
 }
 $$
-<div^^=~makeAttr: argv, before: {class: pclass, style: {"overflow-x":"auto"}}$$>
+<div^^=~makeAttr: argv, before: {class: pclass}$$>
 <div^^=~makeAttr: heading, before: {class: {"panel-heading": 1}}$$>^^=~parent.heading$$</div>
 <div^^=~makeAttr: body, before: {class: {"panel-body": 1}}$$>
 ^^=~parent.layout$$

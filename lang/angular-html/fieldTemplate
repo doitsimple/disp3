@@ -7,7 +7,7 @@ $$
 	{{^^=val$$ | date:'yyyy/MM/dd HH:mm'}}
 
 ^^}else if(type == "image"){$$
-	<img ng-show="^^=val$$ != '' &amp;&amp; ^^=val$$ != undefined" class="img-thumbnail" ng-src="^^=argv.path$$/{{^^=val$$}}" ng-click="^^=model$$.openModal({'image': '^^=argv.path$$/'+^^=val$$})" style="min-width:50px;">
+	<img ng-show="^^=val$$ != '' &amp;&amp; ^^=val$$ != undefined" class="img-thumbnail" ng-src="^^=argv.path$$/{{^^=val$$}}" ng-click="^^=model$$.openModal({'image': '^^=argv.path$$/'+^^=val$$})" style="min-width:50px;max-height:100px">
 
 ^^}else if(type == "video"){$.extend(global, {angularLib: {videoDirective: 1}});$$
 <div ng-show="^^=val$$ == '' || ^^=val$$ == undefined" class="ng-hide">没有视频</div>

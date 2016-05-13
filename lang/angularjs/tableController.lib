@@ -2,13 +2,14 @@ tableController = function tableController($scope, config) {
 	var name = config.name;
 	this.fields = config.fields;
 	this.$scope = $scope;
+	this.api = config.api;
+	var self = this;
+
 	this.currPage = 1;
 	this.totalPage = 0;
 	this.perPage = 10; //the number of entries per page
 	this.perPages = [5, 10, 20, 50, 100]; //the number of entries per page to select
 	this.perScreen = 5; //the number of pages per screen
-	this.api = config.api;
-	var self = this;
 	self.sort = config.sort || {};
 	$scope.$watch(function() {
 		return self.perPage;

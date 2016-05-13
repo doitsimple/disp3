@@ -1,0 +1,2 @@
+^^deps["child_process"] = 1;$$
+system = child_process.exec;

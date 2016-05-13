@@ -1,0 +1,60 @@
+
+formController = function formController($scope, config) {
+	var name = config.name;
+	var api = config.api;
+	var id = config.id;
+	var self = this;
+	self.status = 1;
+	var fields = self.fields = config.fields;	
+	self.refresh = function(){
+		var token = $.cookie("token");
+		requestx.postx(config.api, {
+			bearer: token
+		}, {
+			method: "select",
+			schema: config.schema,
+			options: {"_id": id}
+		}, function(err, result) {
+			var data = result.data;
+			if(!data){
+				alert("error");
+				console.log(result);
+				return;
+			}
+			self.data = data;
+			$scope.$apply();
+		});
+	};
+	self.edit = function(){
+		self.editflag=1;
+	}
+	self.save = function(){
+		self.status = 2;
+		var savedata = {};
+		for(var key in self.data){
+			if(key=="_id")continue;
+			savedata[key] = self.data[key];
+		}
+		var token = $.cookie("token");
+		requestx.postx(config.api, {
+			bearer: token
+		}, {
+			method: "updatex",
+			schema: config.schema,
+			options: {
+				$match: {"_id": id},
+				$set: savedata
+			}
+		}, function(err, result) {
+			var data = result.data;
+			if(!data){
+				alert("error");
+				console.log(result);
+				return;
+			}
+			self.status = 1;
+			$scope.$apply();
+		});
+	};
+
+}
