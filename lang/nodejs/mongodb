@@ -47,7 +47,7 @@ new function(){
 							doc[key] = parseFloat(doc[key]);
 						}
 						if(f.type == "datetime"){
-							doc[key] = new Date(doc[key]).getTime();
+							doc[key] = new Date(parseInt(doc[key])).getTime();
 						}
 						if(f.type == "string"){
 							doc[key] = "" + doc[key];
@@ -87,6 +87,9 @@ new function(){
 								tmp[key2] = ObjectId(tmp[key2]);
 							else
 								tmp[key2] = ""
+						}
+						if(key2.match(/password$/)){
+							tmp[key2] = bcryptEncode(tmp[key2]);
 						}
 					}
 				}

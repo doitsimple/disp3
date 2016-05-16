@@ -187,17 +187,30 @@ tableController = function tableController($scope, config) {
 		self.editRowShow = 1;
 		self.new = {};
 	}
-	self.showdelete = function(id){
-		self.fields.showrow_id = true;
-		methods.openConfirmModal("确定要删除"+id+"吗", function(){
-			access.delete(config.schema, id, function(){
-				self.refresh();
-				$scope.$apply();
-			});
+	self.delete = function(id){
+		var token = $.cookie("token");
+		requestx.postx(config.api, {
+			bearer: token
+		}, {
+			method: "delete",
+			schema: config.schema,
+			options: {
+				_id: id
+			}
+		}, function(err, result) {
+			var data = result.data;
+			if(!data){
+				alert("error");
+				console.log(result);
+				return;
+			}
+			self.refresh();
+			$scope.$apply();
 		});
 	}
-	self.openModal = function(json){
+	self.openModal = function(json, params){
 		self.modal = json;
+		self.params = params;
 		$('#'+name+'Modal').modal();
 	}
 }

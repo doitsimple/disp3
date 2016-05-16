@@ -55,7 +55,9 @@ if(parent.config.update){
 }
 if(parent.config.delete){
   layout.main.toolbarRow = $.concat(layout.main.toolbarRow, {
-		"button": {click: model+".openModal({form: fields})"}, "layout": "删除"
+		"button": {
+			click: model+".openModal({confirm:'"+model+".delete("+model+".params)', text: '确定要删除吗'}, row._id)"
+		}, "layout": "删除"
 	})
 }
 $$

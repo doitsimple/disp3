@@ -33,7 +33,9 @@
 			"midwareLast": [
 				{
 					"params": {
-						"_id": "ObjectId",
+						"_id": {
+							"required": 1
+						},
 						"doc": {
 							"type": "hash",
 							"init": {"reqBody": 1}
