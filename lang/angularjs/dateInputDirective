@@ -1,0 +1,44 @@
+angular.module('ngInputDate', ['ng'])
+  .directive('input', ['dateFilter', function(dateFilter) {
+		var inputDateFormat = 'yyyy-MM-dd';
+    function parseDateString(dateString) {
+        if ('undefined' === typeof dateString || '' === dateString) {
+            return null;
+        }
+
+        var parts = dateString.split('-');
+        if (3 !== parts.length) {
+            return null;
+        }
+        var year = parseInt(parts[0], 10);
+        var month = parseInt(parts[1], 10);
+        var day = parseInt(parts[2], 10);
+
+        if (month < 1 || year < 1 || day < 1) {
+            return null;
+        }
+
+        return new Date(year, (month - 1), day);
+    }
+
+    return {
+      restrict: 'E',
+        require: '?ngModel',
+        link: function(scope, element, attrs, ngModel) {
+          if (
+            'undefined' !== typeof attrs.type
+            && 'date' === attrs.type
+            && ngModel
+          ) {
+            ngModel.$formatters.push(function(modelValue) {
+						console.log(modelValue);
+              return dateFilter(new Date(modelValue), inputDateFormat);
+            });
+
+	          ngModel.$parsers.push(function(viewValue) {
+              return parseDateString(viewValue);
+            });
+  	    }
+      }
+    }
+  }]);

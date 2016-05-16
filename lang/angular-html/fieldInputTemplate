@@ -4,32 +4,39 @@ var val = parent.val;
 var model = parent.model;
 $$
 ^^if(type == "datetime"){$$
-	<input class="form-control" type="date" ng-model="^^=val$$">
+	<input type="datetime-local" class="form-control" ng-model="^^=val$$">
+
+^^}else if(type == "date"){$$
+	<input type="date" class="form-control" ng-model="^^=val$$">
 
 ^^}else if(type == "image" || type == "video" || type == "file"){$.extend(global, {angularLib: {fileModelDirective: 1}})$$
-	<input type="file" class="form-control">
-	<a class="btn btn-primary btn-xs" ng-click="">上传</a>
-	<input class="form-control" ng-model="^^=val$$">
+	<input type="file" class="form-control" style="min-width: 75px" file-model="^^=model$$.buffer">
+	<a class="btn btn-primary btn-xs" ng-click="^^=model$$.uploadFile('^^=parent.key$$')">上传</a>
+	<input class="form-control" ng-model="^^=val$$" style="min-width: 75px">
 	 ^^=~fieldTemplate: argv, model: model, val: val$$
 
 ^^}else if(type == "id"){$$
+	^^if(argv.index){$$
 	<input class="form-control" ng-model="^^=val$$" disabled>
+	^^}else{$$
+	<input class="form-control" ng-model="^^=val$$" style="min-width: 75px">
+	^^}$$
 
 ^^}else if(type == "text"){$$
 	<textarea class="form-control" ng-model="^^=val$$" style="width: auto;height:auto"></textarea>
 
 ^^}else if(type == "password"){$$
-	<input class="form-control" ng-model="^^=val$$" ng-show="showencrypt">
+	<input class="form-control" ng-model="^^=val$$" ng-show="showencrypt" style="min-width: 75px">
 	<a class="btn btn-default btn-xs" ng-click="showencrypt = !showencrypt"><i class="fa fa-lock"></i></a>
 
   ^^}else if(type == "float"){$$
-<input class="form-control" ng-model="^^=val$$" ng-pattern="/^[0-9\.]+$/">
+<input type="text" class="form-control" ng-model="^^=val$$" ng-pattern="/^[0-9\.]+$/" style="min-width: 75px">
 
   ^^}else if(type == "int"){$$
-<input class="form-control" ng-model="^^=val$$" ng-pattern="/^[0-9]+$/">
+<input type="text" class="form-control" ng-model="^^=val$$" ng-pattern="/^[0-9]+$/" style="min-width: 75px">
 
 ^^}else{$$
-<input class="form-control" ng-model="^^=val$$">
+<input type="text" class="form-control" ng-model="^^=val$$" style="min-width: 75px">
 
 ^^}$$
 

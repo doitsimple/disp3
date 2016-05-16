@@ -1,5 +1,5 @@
 	^^if(type == "datetime"){$$
-<input class="form-control" type="date" ng-model="^^=model$$"></input>
+<input class="form-control" type="date" ng-model="^^=model$$">
 
   ^^}else if(type == "image" || type=="video" || type=="file"){$$
 <input type="file" class="form-control" file-model="^^=f.name$$.buffer">

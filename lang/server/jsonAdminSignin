@@ -31,11 +31,17 @@
 		"ifNotReturn": {"bcryptCompare": [{"get": "password"},{"get": "user.password"}]},
 		"return": "密码错误"
 	},
+  {
+    "kitSimpleTokenSet": {
+      "schema": "admins",
+      "user_id": "user._id"
+    }
+  },
 	{
 		"sendSuccess": 1,
 		"data": {
 			"makeJson": {
-				"token": {"get": "user.token"}
+				"token": {"get": "token"}
 			}
 		}
 	}

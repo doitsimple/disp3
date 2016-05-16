@@ -12,5 +12,17 @@ function ajax(config, fn){
 	if(config.hasOwnProperty("bearer")){
 		aconfig.headers.authorization = "Bearer "+config.bearer;
 	}
+	if(config.hasOwnProperty("multipart")){
+		var form = new FormData();
+		for(var key in config.data){
+			var c = config.data[key];
+			form.append(key, c);
+		}
+		console.log(form);
+		aconfig.cache = false;
+    aconfig.contentType = false;
+    aconfig.processData = false;
+		aconfig.data = form;
+	}
 	$.ajax(aconfig);
 };

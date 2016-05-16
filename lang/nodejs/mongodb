@@ -34,7 +34,12 @@ new function(){
 						else
 							doc[key] = f.default;
 					}
+					if(doc.hasOwnProperty(key) && doc[key] == null){
+					  delete doc[key];
+					  continue;
+					}
 					if(doc.hasOwnProperty(key)){
+							
 						if(f.type == "int"){
 							doc[key] = parseInt(doc[key]);
 						}
@@ -56,8 +61,16 @@ new function(){
 			if(!doc) return;
 			if(doc._id) doc._id = ObjectId(doc._id);	
 			for(var key in doc){
-				if(key.match(/_id$/) && doc[key]){					
-					doc[key] = ObjectId(doc[key]);
+				if(doc[key] == null){
+				  delete doc[key];
+				  continue;
+				}
+				if(key.match(/_id$/)){
+					if(doc[key]){
+						doc[key] = ObjectId(doc[key]);
+					}else{
+						doc[key] = "";
+					}
 				}
 				if(key.match(/password$/)){
 					doc[key] = bcryptEncode(doc[key]);
@@ -65,8 +78,15 @@ new function(){
 				var tmp = doc[key];
 				if(typeof tmp == "object"){
 					for(var key2 in tmp){
+						if(tmp[key2] == null){
+							delete tmp[key2];
+							continue;
+						}
 						if(key2.match(/_id/)){
-							tmp[key2] = ObjectId(tmp[key2]);
+							if(tmp[key2])
+								tmp[key2] = ObjectId(tmp[key2]);
+							else
+								tmp[key2] = ""
 						}
 					}
 				}

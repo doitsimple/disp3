@@ -1,6 +1,7 @@
 ^^
 deps.bootstrap3 = 1;
 var model = argv.model;
+if(!parent.config) parent.config= {};
 $$
 ^^=~appendSchema:1, config: parent$$
 ^^
@@ -20,7 +21,7 @@ var layout = {
 				"sortButton": 1
 			}]
 		},
-		"body": {tableBodyTemplate: {fields: parent.fields, model: model}},
+		"body": {tableBodyTemplate: {fields: parent.fields, model: model}, config: parent.config},
 		"toolbarRow": []
 	},
 	"topleft": {selectorInputView: {model: model+".perPage", options: model+".perPages", class: {formItem: 1}, small: 1}},
@@ -42,9 +43,19 @@ if(parent.toolbarRow)
  layout.main.toolbarRow = $.concat(layout.main.toolbarRow, parent.toolbarRow);
 if(parent.toolbarCol)
  layout.main.header.toolbarCol = $.concat(layout.main.header.toolbarCol, parent.toolbarCol);
-if(parent.add){
-	toolbar.layout.push({
-		"button": {click: model+"openModal({form: fields})"}, "layout": {"icon": "plus"}
+if(parent.config.insert){
+	layout.toolbar = $.concat(layout.toolbar, {
+		"button": {click: model+".showAddRow()"}, "layout": {"icon": "plus"}
+	})
+}
+if(parent.config.update){
+  layout.main.toolbarRow = $.concat(layout.main.toolbarRow, {
+		"button": {click: model+".showEditRow(row)"}, "layout": "修改"
+	})
+}
+if(parent.config.delete){
+  layout.main.toolbarRow = $.concat(layout.main.toolbarRow, {
+		"button": {click: model+".openModal({form: fields})"}, "layout": "删除"
 	})
 }
 $$

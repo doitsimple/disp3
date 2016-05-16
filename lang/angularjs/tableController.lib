@@ -80,8 +80,30 @@ tableController = function tableController($scope, config) {
 			$scope.$apply();
 		});
 	};
+	self.parser = function(json){
+		var rtn = {};
+		for(var key in json){
+      if(key.match('pass')) continue;
+			if(key.match(/time$/)){
+				rtn[key] = new Date(parseInt(json[key]));
+			}else{
+				rtn[key] = json[key];
+			}
+    }
+		return rtn;
+	}
+	self.formatter = function(json){
+		var rtn = {};
+		for(var key in json){
+			if(key.match(/time$/))
+				rtn[key] = new Date(json[key]).getTime();
+			else
+				rtn[key] = json[key];
+    }
+		return rtn;
+	}
 	self.upsert = function(){
-		var row = self.new;
+		var row = self.formatter(self.new);
 		var _id = row._id;
 		var token = $.cookie("token");
 		if(!_id){
@@ -99,7 +121,7 @@ tableController = function tableController($scope, config) {
 					console.log(result);
 					return;
 				}
-				self.hiderow();
+				self.hideEditRow();
 				self.refresh();
 				$scope.$apply();
 			});
@@ -127,11 +149,43 @@ tableController = function tableController($scope, config) {
 					console.log(result);
 					return;
 				}
-				self.hiderow();
+				self.hideEditRow();
 				self.refresh();
 				$scope.$apply();
 			});
 		}
+	}
+	self.buffer = "no buffer";
+	self.uploadFile = function(key){
+		var token = $.cookie("token");
+		requestx.postx(config.api+"/upload/"+key, {
+			bearer: token,
+			multipart: 1
+		}, {
+			buffer: self.buffer
+		}, function(err, result) {
+			var data = result.data;
+			if(!data){
+				alert("error");
+				console.log(result);
+				return;
+			}
+			console.log(result);
+			self.new[key] = result.data;
+			$scope.$apply();
+		});
+	}
+	self.hideEditRow = function(){
+		self.editRowShow = 0;
+	}
+	self.new = {};
+	self.showEditRow = function(row){
+		self.editRowShow = 1;
+		self.new = self.parser(row);
+	}
+	self.showAddRow = function(row){
+		self.editRowShow = 1;
+		self.new = {};
 	}
 	self.showdelete = function(id){
 		self.fields.showrow_id = true;

@@ -20,6 +20,8 @@ for(var fname in fields){
 	 delete fields[fname];
 	 continue;
  }
+ if(fname == "_id")
+ 	f.index = 1;
  colnum ++;
 }
 parent.config.fieldLength = colnum;

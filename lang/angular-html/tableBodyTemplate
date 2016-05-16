@@ -1,13 +1,31 @@
-<tr ng-repeat="row in ^^=argv.model$$.data">
+^^var colnum = 0;
+var model = argv.model;
+if(!parent.config) parent.config = {};
+$$
+^^if(parent.config.insert || parent.config.update){$$
+<tr ng-show="^^=argv.model$$.editRowShow" style="background: #f0ad4e;">
 ^^for(var fname in argv.fields){var col = argv.fields[fname];$$
+<td>
+	^^=~fieldInputTemplate: col, model: model, val: model+".new."+fname, key: fname$$
+</td>
+^^}$$
+<td>
+  	<a class="btn btn-sm btn-primary" ng-click="^^=argv.model$$.upsert()">保存</a>
+  	<a class="btn btn-sm btn-default" ng-click="^^=argv.model$$.hideEditRow()">取消</a>
+</td>
+</tr>
+^^}$$
+<tr ng-repeat="row in ^^=model$$.data">
+^^for(var fname in argv.fields){var col = argv.fields[fname];colnum++;$$
  <td>
- 	^^=~fieldTemplate: col, val: "row."+fname, model: argv.model$$
+ 	^^=~fieldTemplate: col, val: "row."+fname, model: argv.model, key: fname$$
  </td>	
 ^^}$$
-^^if(parent.toolbarRow && parent.toolbarRow.length){$$
+^^if(parent.toolbarRow && parent.toolbarRow.length){colnum ++;$$
  <td>
 	^^=~parent.toolbarRow$$
  </td>
 ^^}$$
-
 </tr>
+<tr style="background:#d9edf7;" ng-show="!^^=model$$.data"><td align="center" colspan="^^=colnum$$">加载中......</td></tr>
+<tr style="background:#d9edf7;" ng-show="^^=model$$.data &&  !^^=model$$.data.length"><td align="center" colspan="^^=colnum$$">没有数据</td></tr>
