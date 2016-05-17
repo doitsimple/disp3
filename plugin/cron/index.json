@@ -13,9 +13,9 @@
 		"lang": "bash",
 		"tmpl": "cron.sh"
 	},
-	"cron.conf": {
+	"cron.conf.origin": {
 		"lang": "cron-config",
-		"tmpl": "cron.conf"
+		"tmpl": "cron.conf.origin"
 	},
 	"cron_lib.js": {
 		"name": "cronlib",

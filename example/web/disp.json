@@ -6,6 +6,8 @@
 			
 		}
 	},
+	"clients": {
+	},
 	"config": {
 		"http": {
 			"port": 8080
