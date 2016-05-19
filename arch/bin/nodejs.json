@@ -1,8 +1,9 @@
 {
-	"main.js": {
+	"^^=global.bin$$": {
 		"lib": "lib",
 		"lang": "nodejs",
-		"content": "content"
+		"content": "content",
+		"exec": "node"
 	},
 	"lib.js": {
 		"lang": "nodejs",

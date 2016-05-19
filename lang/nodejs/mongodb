@@ -16,7 +16,11 @@ hostStr =  "mongodb://" + authStr + host + ":" + port + "/" + parent.db ;
 $$
 new function(){
 	var self = this;
+	^^if(parent.schemas){$$
 	var colDef = ^^=$.stringify(parent.schemas)$$;
+	^^}else{$$
+	var colDef = {};
+	^^}$$
 	var colArray = Object.keys(colDef);
 	var colCache = {};
 	var colDataCache = {};

@@ -188,28 +188,37 @@ Disp.prototype.genFilePre = function(orifilename, partConfig, config){
 	if(orifilename.match(/\^\^.*\$\$/)){
 		var env = self.getEnv(partConfig);
 		var tfilename;
-		if(typeof env != "object"){
-			tfilename = tmpl.render(orifilename, {argv: env});
-			var newPartConfig = libObject.copy1(partConfig);
+		var newPartConfig;
+		if(!orifilename.match(/argv/)){
+			tfilename = tmpl.render(orifilename, {global: env});
+			newPartConfig = libObject.copy1(partConfig);
 			if(partConfig.name)
-				newPartConfig.name = tmpl.render(partConfig.name, {argv: env});
+				newPartConfig.name = tmpl.render(partConfig.name, {global: env});
 			self.genFile(newPartConfig, tfilename, config);
 		}else{
-			for(var key in env){
-				var localenv = {
-					argv: key, 
-					env: env[key],
-					global: self.global
-				}
-				tfilename = tmpl.render(orifilename, localenv);
-				var newPartConfig = libObject.copy1(partConfig);
+			if(typeof env != "object"){
+				tfilename = tmpl.render(orifilename, {argv: env});
+				newPartConfig = libObject.copy1(partConfig);
 				if(partConfig.name)
-					newPartConfig.name = tmpl.render(partConfig.name, localenv);
-				else
-					newPartConfig.name = key;
-				newPartConfig.env = env[key];
-				env[key].argv = key;
+					newPartConfig.name = tmpl.render(partConfig.name, {argv: env});
 				self.genFile(newPartConfig, tfilename, config);
+			}else{
+				for(var key in env){
+					var localenv = {
+						argv: key, 
+						env: env[key],
+						global: self.global
+					}
+					tfilename = tmpl.render(orifilename, localenv);
+					newPartConfig = libObject.copy1(partConfig);
+					if(partConfig.name)
+						newPartConfig.name = tmpl.render(partConfig.name, localenv);
+					else
+						newPartConfig.name = key;
+					newPartConfig.env = libObject.copy1(env[key]);
+					newPartConfig.env.argv = key;
+					self.genFile(newPartConfig, tfilename, config);
+				}
 			}
 		}
 	}else{
@@ -280,7 +289,7 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 	log.i(filename);
 	/*todo sync*/
 	/**/
-	var env = libObject.copy1(self.getEnv(partConfig));
+	var env = self.getEnv(partConfig);
 	var lang = partConfig.lang;
   var str = "";
 	var deps = {};
@@ -380,8 +389,14 @@ Disp.prototype.genFile = function(partConfig, filename, config){
   if(fs.existsSync(tfilename))
     fs.unlinkSync(tfilename);
 	self.fileCount ++;
-//  fs.writeFileSync(tfilename, str, {mode: 0444});
-  fs.writeFileSync(tfilename, str, {mode: 0777});
+	var mode;
+	if(partConfig.exec){
+		mode = 0555;
+		str = "#!/usr/bin/env "+ partConfig.exec + "\n" + str;
+	}else{
+		mode = 0444;
+	}
+  fs.writeFileSync(tfilename, str, {mode: mode});
 	self.eval({finish: 1}, lang, gdeps);
 }
 
