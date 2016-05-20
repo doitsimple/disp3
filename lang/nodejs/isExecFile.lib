@@ -1,0 +1,5 @@
+^^deps.fs = 1$$
+function isExecFile(file){
+  var stat = fs.statSync(file);
+  return (stat.mode & parseInt('0001', 8));
+}

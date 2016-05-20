@@ -1,0 +1,26 @@
+^^deps.fs = 1;
+deps.path = 1;
+deps.isExecFile = 1;
+$$
+function cpSync(srcFile, destFile){
+  if(path.resolve(srcFile) == path.resolve(destFile))
+    return;
+  var BUF_LENGTH = 64*1024;
+  var buff = new Buffer(BUF_LENGTH);
+  var fdr = fs.openSync(srcFile, 'r');
+  var fdw;
+  if(isExec(srcFile))
+    fdw = fs.openSync(destFile, 'w', "775");
+  else
+    fdw = fs.openSync(destFile, 'w');
+
+  var bytesRead = 1;
+  var pos = 0;
+  while(bytesRead > 0){
+    bytesRead = fs.readSync(fdr, buff, 0, BUF_LENGTH, pos);
+    fs.writeSync(fdw,buff,0,bytesRead);
+    pos += bytesRead;
+  }
+  fs.closeSync(fdr);
+  fs.closeSync(fdw);
+}

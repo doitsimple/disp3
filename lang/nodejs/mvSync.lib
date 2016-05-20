@@ -1,0 +1,7 @@
+^^deps.fs = 1;
+deps.cpSync = 1;
+$$
+function mvSync(srcFile, destFile){
+  cpSync(srcFile, destFile);
+  fs.unlinkSync(srcFile);
+}

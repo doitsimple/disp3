@@ -1,0 +1,45 @@
+app.directive('jsonEdit', function($compile) {
+	return {
+  	require: 'ngModel',
+		restrict: 'A',
+    replace: true,
+		scope: {
+			v: '=ngModel'
+		},
+		priority: 10,
+    link: function(scope, elm, attrs, ngModelCtrl) {
+/*
+    	ngModelCtrl.$formatters.unshift(function (modelValue) {
+				console.log(modelValue);
+    		return modelValue;
+    	});
+    	ngModelCtrl.$parsers.unshift(function(viewValue) {
+    		return JSON.stringify(viewValue);
+    	});*/
+      ngModelCtrl.$render = function() {
+				var v = scope.v;
+				var html ='';
+				var prefix = attrs.prefix?attrs.prefix:"root";
+				var i=0;
+				for(var key in v){
+				  var tmp = v[key];
+					var id = prefix + "-" + i;
+					if(typeof tmp == "object"){
+						html+='<li class="branch"><label for="'+id+'" title="' + key + '">'+key+'</label>';
+						html+='<input type="checkbox" id="'+id+'"/>';
+						html+='<ol json-edit ng-model="v[\''+key+'\']" prefix="'+id+'"></ol>';
+						html+='</li>'
+					}else{
+						html+='<li class="leaf"><label for="'+id+'" title="' + key + '">'+key+'</label>';
+						html+='<input type="text" id="'+id+'" ng-model="v[\'' + key + '\']"/>';
+						html+='</li>'
+					}
+					i++;
+				}
+        var e =$compile(html)(scope);
+				elm.empty();
+				elm.append(e);
+      };
+  	}
+  };
+});
