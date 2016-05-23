@@ -1,19 +1,27 @@
-<form>
+<form class="form-inline">
 ^^var model = argv.model$$
 ^^=~appendSchema:1, config: parent$$
-<a class="btn btn-danger" ng-show="^^=model$$.status == 1" ng-click="^^=model$$.save()">保存</a>
-<a class="btn btn-danger" ng-show="^^=model$$.status == 2">保存中...</a>
 ^^
 var idprefix = $.hat();
 for(var key in parent.fields){
 var id = idprefix+key;
 var field = parent.fields[key];
 $$
-<div class="form-group form-inline">
-<label for="^^=id$$">^^=key$$</label>
+<div class="form-group form-inline" style="border: 1px solid;padding:3px;margin:2px;border-radius:4px;">
+<label for="^^=id$$">^^=field.text || ""$$&nbsp;^^=key$$</label>
 <div class="form-control" id="^^=id$$" style="height: auto;border-color: #eee">
 ^^=~fieldInputTemplate: field, model: model, val: model+".data."+key$$
 </div>
+<div class="form-control" id="^^=id$$" style="height: auto;border-color: #eee">
+类型：^^=field.type ||"string"$$
+</div>
+^^if(field.default){$$
+<div class="form-control" id="^^=id$$" style="height: auto;border-color: #eee">
+默认值：^^=field.default$$
 </div>
 ^^}$$
+</div>
+^^}$$
+<a class="btn btn-danger" ng-show="^^=model$$.status == 1" ng-click="^^=model$$.save()">保存</a>
+<a class="btn btn-danger" ng-show="^^=model$$.status == 2">保存中...</a>
 </form>

@@ -79,22 +79,8 @@
 							"style": {"heightpx": "800", "widthpx": "600"}
 						},
 						"layout": [
-							{
-								"jsonEditView": {
-									"model": "y"
-								}
-							},
-							{
-								"jsonView": {
-									"hidden":1,
-									"model": "y"
-								}
-							},
-							{
-								"div": {
-									"id": "nav",
-									"style": {"height": 1, "width": 0.4, "color": "white"}
-								}
+							"dirNavbar": {
+								
 							}
 						]
 					}

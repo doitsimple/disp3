@@ -26,77 +26,79 @@ new function(){
 	var colDataCache = {};
 	var conn;
 	var formatFuncs = {};
+	self._format = function(doc, key, fields){
+		
+		
+		if(doc.hasOwnProperty(key) && doc[key] == null){
+		  delete doc[key];
+			return;
+		}
+		if(doc.hasOwnProperty(key)){
+			if(key.match(/_id$/)){
+				try{
+					doc[key] = ObjectId(doc[key]);
+				}catch(e){
+					doc[key] = "";
+				}
+				return;
+			}
+			if(key.match(/^\\$/)){
+				var tmp = doc[key];
+				if(typeof tmp == "object"){
+					for(var key2 in tmp){
+						self._format(tmp, key2, fields);
+					}
+					return;
+				}
+			}
+			var f = fields[key];
+			if(!f) return;
+			if(f.type == "int"){
+				doc[key] = parseInt(doc[key]);
+				return;
+			}
+			if(f.type == "float"){
+				doc[key] = parseFloat(doc[key]);
+				return;
+			}
+			if(f.type == "datetime"){
+				doc[key] = new Date(parseInt(doc[key])).getTime();
+				return;
+			}
+			if(f.type == "string"){
+				doc[key] = "" + doc[key];
+				return;
+			}
+			if(f.type == "password"){
+
+				doc[key] = bcryptEncode(doc[key]);
+				return;
+			}
+		}
+	}
+	self._formatInsert = function(doc, key, fields){
+		var f = fields[key];	
+		if(f.hasOwnProperty("default") && !doc.hasOwnProperty(key)){
+			if(f.default == "now")
+				doc[key] = new Date().getTime();
+			else
+				doc[key] = f.default;
+		}
+	}
 	self.makeFormat = function(config, flag){
 		if(flag == "insert"){
 			return function(doc){
-				if(!config) return;
+				if(!config || !doc) return;
 				for(var key in config.fields){
-					var f = config.fields[key];
-					if(f.hasOwnProperty("default") && !doc.hasOwnProperty(key)){
-						if(f.default == "now")
-							doc[key] = new Date().getTime();
-						else
-							doc[key] = f.default;
-					}
-					if(doc.hasOwnProperty(key) && doc[key] == null){
-					  delete doc[key];
-					  continue;
-					}
-					if(doc.hasOwnProperty(key)){
-							
-						if(f.type == "int"){
-							doc[key] = parseInt(doc[key]);
-						}
-						if(f.type == "float"){
-							doc[key] = parseFloat(doc[key]);
-						}
-						if(f.type == "datetime"){
-							doc[key] = new Date(parseInt(doc[key])).getTime();
-						}
-						if(f.type == "string"){
-							doc[key] = "" + doc[key];
-						}
-					}
-
+					self._formatInsert(doc, key, config.fields);
+					self._format(doc, key, config.fields);
 				}
 			}
 		}
 		return function(doc){
-			if(!doc) return;
-			if(doc._id) doc._id = ObjectId(doc._id);	
+			if(!doc || !config) return;
 			for(var key in doc){
-				if(doc[key] == null){
-				  delete doc[key];
-				  continue;
-				}
-				if(key.match(/_id$/)){
-					if(doc[key]){
-						doc[key] = ObjectId(doc[key]);
-					}else{
-						doc[key] = "";
-					}
-				}
-				if(key.match(/password$/)){
-					doc[key] = bcryptEncode(doc[key]);
-				}
-				var tmp = doc[key];
-				if(typeof tmp == "object"){
-					for(var key2 in tmp){
-						if(tmp[key2] == null){
-							delete tmp[key2];
-							continue;
-						}
-						if(key2.match(/_id/)){
-							if(tmp[key2])
-								tmp[key2] = ObjectId(tmp[key2]);
-							else
-								tmp[key2] = ""
-						}
-						if(key2.match(/password$/)){
-							tmp[key2] = bcryptEncode(tmp[key2]);
-						}
-					}
-				}
+				self._format(doc, key, config.fields);
 			}
 		}
 	}
@@ -209,7 +211,6 @@ new function(){
 	},
 	self.insert = function(name, doc, fn){
 		self.format(name, doc, "insert");
-		self.format(name, doc);
 		self.getCol(name).insertOne(doc, function(err, result){
 			var id = doc._id;
 			delete doc._id;
@@ -219,10 +220,10 @@ new function(){
 	}
 	self.inserts = function(name, docs, fn){
 		self.format(name, docs, "insert");
-		self.format(name, docs);
  		self.getCol(name).insertMany(docs, fn);
 	}
 	self.updatex = function(name, op, fn){
+
 		self.format(name, op);
 		var where = op.$match;
 		self.format(name, where);

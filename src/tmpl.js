@@ -125,7 +125,7 @@ function render(config, data){
 						wout = wout.substr(1);
 			}
 			wout = wout
-				.replace(/\\([\$\^])/g, "$1")
+				.replace(/\\([\$\^])/g, "$1") //\$ \^ -> $ ^
 				.replace(/\\/g, "\\\\")
 				.replace(/([\[\]\{\}'])/g, "\\$1")
 				.replace(/\n/g, "\\n");

@@ -53,6 +53,7 @@ formController = function formController($scope, config) {
 				return;
 			}
 			self.status = 1;
+			alert("保存成功");
 			$scope.$apply();
 		});
 	};
