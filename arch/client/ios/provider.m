@@ -66,14 +66,7 @@ $$
 {
     if (self = [super init]) {
         //创建数据库，打开数据库，创建表单
-        NSString * databasePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/^^=argv$$.db"];
-        NSLog(@"%@" , NSHomeDirectory());
-        _database = [FMDatabase databaseWithPath:databasePath];
-        BOOL ret = [_database open];
-        if (ret == NO) {
-            NSLog(@"数据库创建失败");
-            exit(-1);
-        }
+        _database = [[FMDBManager getInstance] database];
         
         //创建表单
         NSString * sql = @"CREATE TABLE IF NOT EXISTS ^^=argv$$(^^=getTypePairs()$$);";
