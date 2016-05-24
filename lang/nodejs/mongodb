@@ -28,7 +28,6 @@ new function(){
 	var formatFuncs = {};
 	self._format = function(doc, key, fields){
 		
-		
 		if(doc.hasOwnProperty(key) && doc[key] == null){
 		  delete doc[key];
 			return;
@@ -45,32 +44,42 @@ new function(){
 			if(key.match(/^\\$/)){
 				var tmp = doc[key];
 				if(typeof tmp == "object"){
-					for(var key2 in tmp){
-						self._format(tmp, key2, fields);
+					if(isArray(tmp)){
+					}else{
+						for(var key2 in tmp){
+							self._format(tmp, key2, fields);
+						}
+						return;
 					}
-					return;
 				}
 			}
 			var f = fields[key];
 			if(!f) return;
 			if(f.type == "int"){
-				doc[key] = parseInt(doc[key]);
+				if(typeof doc[key] != "object"){
+					doc[key] = parseInt(doc[key]);
+				}
 				return;
 			}
 			if(f.type == "float"){
-				doc[key] = parseFloat(doc[key]);
+				if(typeof doc[key] != "object"){
+					doc[key] = parseFloat(doc[key]);
+				}
 				return;
 			}
 			if(f.type == "datetime"){
-				doc[key] = new Date(parseInt(doc[key])).getTime();
+				if(typeof doc[key] != "object"){
+					doc[key] = new Date(parseInt(doc[key])).getTime();
+				}
 				return;
 			}
 			if(f.type == "string"){
-				doc[key] = "" + doc[key];
+				if(typeof doc[key] != "object"){
+					doc[key] = "" + doc[key];
+				}
 				return;
 			}
 			if(f.type == "password"){
-
 				doc[key] = bcryptEncode(doc[key]);
 				return;
 			}

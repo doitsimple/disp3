@@ -582,15 +582,6 @@ Disp.prototype.eval = function(json, lang, deps, pseudoFlag){
 		ignoreOnce = 1;
 	}
 	if(!searchlang) searchlang = lang;
-/*
-	if(type === "string"){
-		var tmp = {};
-		tmp[json] = 1;
-		json = tmp;
-	}else if(type == "number"){
-		return json;
-	}else if(type == "object"){
-*/
 	if(type !== "object"){
 		return json; // return raw if not expr
 	}else{

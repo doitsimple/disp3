@@ -3,28 +3,30 @@ deps.express = 1;
 var rname = "router_"+parent.name.replace(/[:\/]/g,"");
 $$
 var ^^=rname$$ = new express.Router();
-^^if(argv.before){$$
+ ^^if(argv.before){$$
 ^^=~extend: argv.before, caller: rname$$
-^^}$$
+ ^^}$$
 ^^=~Lroute: argv.routers, caller: rname$$
-^^if(argv.after){$$
+ ^^if(argv.after){$$
 ^^=~extend: argv.after, caller: rname$$
-^^}$$
+ ^^}$$
 ^^=parent.caller$$.use("^^=parent.name$$", ^^=rname$$)
+
 ^^}else if(argv.get || argv.post || argv.put || argv.delete){$$
 ^^=parent.caller$$.route("^^=parent.name$$")
-^^if(argv.get){$$
+ ^^if(argv.get){$$
 	.get(^^=~evalArray: argv.get, sep: ", "$$)
-^^}$$
-^^if(argv.post){$$
+ ^^}$$
+ ^^if(argv.post){$$
 	.post(^^=~evalArray: argv.post, sep: ", "$$)
-^^}$$
-^^if(argv.put){$$
+ ^^}$$
+ ^^if(argv.put){$$
 	.put(^^=~evalArray: argv.put, sep: ", "$$)
-^^}$$
-^^if(argv.delete){$$
+ ^^}$$
+ ^^if(argv.delete){$$
 	.delete(^^=~evalArray: argv.delete, sep: ", "$$)
-^^}$$
+ ^^}$$
+
 ^^}else{$$
 ^^=parent.caller$$.use("^^=parent.name$$", ^^=~extend: argv, caller: parent.caller$$)
 ^^}$$

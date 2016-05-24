@@ -1,4 +1,4 @@
-^^
+^^/* pass local pkg deps to global */
 if(!global.deps) global.deps = {};
 for(var key in deps){
 	if(deps[key].pkg){

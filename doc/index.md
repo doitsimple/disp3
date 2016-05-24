@@ -12,9 +12,13 @@ string
 var val function
 sync nesting makeCallback makeArray makeAsyncFunc
 dbop reqop
+asyncCall
 *nodejs
 
 *expressjs
 createServer
 staticSite
-newRouter
+route
+
+*html
+node
