@@ -1,0 +1,18 @@
+{
+	"scripts": {
+		"sub": {
+			"^^=argv$$.js": {
+				"lib": "scriptlib",
+				"lang": "nodejs",
+				"envkey": "scripts",
+				"tmpl": "script.js"
+			}
+		}
+	},
+	"script_lib.js": {
+		"name": "scriptlib",
+		"lang": "nodejs",
+		"export": "cronlib"
+	}
+
+}

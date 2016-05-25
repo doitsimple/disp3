@@ -19,11 +19,11 @@ $$
 	^^if(argv.index){$$
 	<input class="form-control" ng-model="^^=val$$" disabled>
 	^^}else{$$
-	<input class="form-control" ng-model="^^=val$$" style="min-width: 75px">
+	<input class="form-control" ng-model="^^=val$$" style="min-width: 80px">
 	^^}$$
 
 ^^}else if(type == "text"){$$
-	<textarea class="form-control" ng-model="^^=val$$" style="width:300px;height:100px;"></textarea>
+	<textarea class="form-control" ng-model="^^=val$$" style="width:350px;height:150px;"></textarea>
 
 ^^}else if(type == "password"){$$
 	<input class="form-control" ng-model="^^=val$$" ng-show="showencrypt" style="min-width: 75px">
