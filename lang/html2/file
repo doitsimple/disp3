@@ -1,0 +1,36 @@
+^^
+function addReq(type, flag){
+ for(var i in parent.deps){
+  var config = parent.deps[i];
+	if(config.type != type) continue;
+  if(flag && !config[flag]) continue;
+$$
+^^=~require: config$$^^
+ }
+}
+if(!argv.htmlAttr)
+	argv.htmlAttr = {};
+$$
+<!DOCTYPE html>
+<html^^=~makeAttr: argv.htmlAttr.attrs$$>
+<head>
+<title>^^=argv.title || ""$$</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+^^=~require: {file: "js/respond.min.js", type: "js"}$$
+^^=~require: {file: "js/html5shiv.min.js", type: "js"}$$
+^^addReq("js", "ltie9")$$
+<![endif]-->
+^^addReq("css")$$
+^^addReq("js", "head")$$
+</head>
+<body>
+^^=parent.main$$
+^^addReq("js")$$
+</body>
+</html>
+^^addReq("fonts")$$

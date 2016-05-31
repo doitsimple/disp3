@@ -1,0 +1,12 @@
+{
+	"type": "object",
+	"properties": {
+		"content": {
+			"title": "代码内容",
+			"type": "array",
+			"items": {
+				"$ref": "/dic/expr.json"
+			}
+		}
+	}
+}

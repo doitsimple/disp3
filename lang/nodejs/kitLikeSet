@@ -7,8 +7,20 @@ var keypair = ^^=~argv.keypair$$;
 libDb.^^=db$$.select("^^=schema$$", keypair, function(err, result){
 	if(err) {^^=~parent.error$$; return}
 	if(!result){
-		libDb.^^=db$$.insert("^^=schema$$", keypair, ^^=~makeCallback: parent$$);
+		libDb.^^=db$$.insert("^^=schema$$", keypair, function(err){
+			if(err) {^^=~parent.error$$; return}
+			libDb.^^=db$$.updatex("users", {
+				$match: {_id: keypair.cfp_user_id},
+				$inc: {likeuc: 1}
+			}, ^^=~makeCallback: parent$$);
+		});
 	}else{
-		libDb.^^=db$$.update("^^=schema$$", keypair, {like_flag: result.like_flag?0:1}, ^^=~makeCallback: parent$$);
+		libDb.^^=db$$.update("^^=schema$$", keypair, {like_flag: result.like_flag?0:1}, function(err){ 			
+			if(err) {^^=~parent.error$$; return}
+			libDb.^^=db$$.updatex("users", {
+				$match: {_id: keypair.cfp_user_id},
+				$inc: {likeuc: result.like_flag?-1:1}
+			}, ^^=~makeCallback: parent$$);
+		});
 	}
 })

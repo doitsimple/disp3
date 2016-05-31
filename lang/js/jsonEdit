@@ -1,0 +1,9 @@
+JSONEditor.defaults.options.theme = 'bootstrap3';
+JSONEditor.defaults.options.iconlib = "bootstrap3"
+var editor = new JSONEditor(document.getElementById('^^=argv.id$$'),{
+	ajax: true,
+  schema: ^^=$.stringify(argv.schema)$$,
+	disable_properties: true,
+	disable_edit_json: true,
+	disable_collapse: true
+});

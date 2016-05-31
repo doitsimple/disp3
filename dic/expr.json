@@ -1,0 +1,14 @@
+{
+	"type": "object",
+	"title": "语句",
+	"oneOf": [
+		{
+			"title": "逻辑",
+			"$ref": "/dic/logic.json"
+		},
+		{
+			"title": "运算",
+			"$ref": "/dic/arithmetic.json"
+		}
+	]
+}

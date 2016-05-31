@@ -87,6 +87,11 @@ Disp.prototype.extendGlobal = function(){
 	}
 	if(!self.ignoreDispJson){
 		self.readDispJson("disp.json");
+		if(self.exDispJsonFile){			
+			if(!self.exDispJsonFile.match(/\.json$/))
+				self.exDispJsonFile = self.exDispJsonFile + ".json";
+			self.readDispJson(self.exDispJsonFile);
+		}
 		if(fs.existsSync(self.projectDir + "/disp")){
 			libFile.forEachFile(self.projectDir + "/disp", function(f){
 				if(!f.match(/\.json$/)) return;

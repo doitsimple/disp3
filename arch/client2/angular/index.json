@@ -1,0 +1,23 @@
+{
+	"main.js": {
+		"lang": "angularjs2",
+		"tmpl": "main.js"
+	},
+	"partial/^^=argv$$.html": {
+		"lang": "partial-angularhtml2",
+		"tmpl": "partial.html",
+		"envkey": "nodes"
+	},
+	"index.html": {
+		"lang": "angularhtml2",
+		"tmpl": "index-body.html"
+	},
+	"lib.js": {
+		"lang": "angularjs2",
+		"tmpl": "lib.js"
+	},
+	"main.css": {
+		"lang": "css",
+		"tmpl": "main.css"
+	}
+}

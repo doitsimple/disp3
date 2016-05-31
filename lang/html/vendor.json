@@ -83,5 +83,16 @@
 		"deps": {
 			"angular": 1
 		}
+	},
+	"jsonEdit": {
+		"files": [
+			{
+				"type": "js",
+				"file": "js/jsoneditor.js"
+			}
+		],
+		"deps": {
+			"bootstrap3": 1
+		}
 	}
 }

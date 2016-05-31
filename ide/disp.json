@@ -13,6 +13,12 @@
 				"/vendor": {
 					"staticSite": {"string": "../vendor"}
 				},
+				"/arch": {
+					"staticSite": {"string": "../../arch"}
+				},
+				"/dic": {
+					"staticSite": {"string": "../../dic"}
+				},
 				"/api": {
 					"routers": {
 						"/get": {
@@ -79,8 +85,23 @@
 							"style": {"heightpx": "800", "widthpx": "600"}
 						},
 						"layout": [
-							"dirNavbar": {
-								
+							{
+								"jsonEdit": {
+									"schema": {
+										"type": "object",
+										"title": "项目",
+										"oneOf": [
+											{
+												"title": "命令行",
+												"$ref": "/arch/bin/format.json"
+											},
+											{
+												"title": "客户端",
+												"$ref": "/arch/client/format.json"
+											}
+										]
+									}
+								}
 							}
 						]
 					}
