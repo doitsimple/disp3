@@ -88,18 +88,20 @@
 							{
 								"jsonEdit": {
 									"schema": {
-										"type": "object",
-										"title": "项目",
-										"oneOf": [
-											{
-												"title": "命令行",
-												"$ref": "/arch/bin/format.json"
-											},
-											{
-												"title": "客户端",
-												"$ref": "/arch/client/format.json"
-											}
-										]
+										"val": {
+											"type": "object",
+											"title": "项目",
+											"oneOf": [
+												{
+													"title": "命令行",
+													"$ref": "/arch/bin/format.json"
+												},
+												{
+													"title": "客户端",
+													"$ref": "/arch/client/format.json"
+												}
+											]
+										}
 									}
 								}
 							}

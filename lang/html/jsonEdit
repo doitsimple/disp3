@@ -1,6 +1,10 @@
 ^^
 if(!argv.id) argv.id = $.hat();
 deps.jsonEdit = 1;
-$.extend(global, {jsLib: {jsonEdit: argv}});
+var content = [{jsonEdit: argv}];
+if(parent.deps){
+$.extend(parent, {deps: {content: content}});
+}else{
+}
 $$
-<div^^=~makeAttr:argv$$></div>
+<form^^=~makeAttr:argv$$></form>

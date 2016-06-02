@@ -46,6 +46,7 @@ Disp.prototype.readDispJson = function(jsonFile, config){
 		log.i("ignore " + self.projectDir + "/" + jsonFile);
 		return;
 	}
+
 	tmpl.extendMethods("eval", function(json){
 		return self.eval(json, self.global.arch);
 	});
@@ -338,15 +339,16 @@ Disp.prototype.genFile = function(partConfig, filename, config){
 	}
 
 	if(partConfig.tmpl || partConfig.src){
-		tmpl.extendMethods("eval", function(json){
-			return self.eval(json, lang, deps);
-		});
+		var evalFunc = function(json2, lang2, pseudoFlag){
+			if(lang2) return self.eval(json2, lang2, deps, pseudoFlag);
+			return self.eval(json2, lang, deps, pseudoFlag);
+		}
+		env.extend = {eval: evalFunc};
 		var srcfile;
 		if(partConfig.tmpl)
 			srcfile = config.src + "/" + partConfig.tmpl;
 		else if(partConfig.src)
 			srcfile = self.projectDir + "/" + partConfig.src;
-
 		env.deps = deps;
 		str = tmpl.render({
 			file: srcfile
@@ -657,7 +659,7 @@ Disp.prototype.eval = function(json, lang, deps, pseudoFlag){
 	}
 	var data = {
 		name: name,
-		argv: libObject.copy(json[name]),
+		argv: json[name],
 		deps: deps,
 		lang: lang,
 		parent: json,

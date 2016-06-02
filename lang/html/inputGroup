@@ -22,5 +22,5 @@ $.append(label, {
 $$
 <div^^=~makeAttr: argv, before:{class: {"form-group":1}}$$>
   <label^^=~makeAttr: label$$>^^=~parent.label$$</label>
-  <input^^=~makeAttr: input$$">
+  <input^^=~makeAttr: input$$>
 </div>

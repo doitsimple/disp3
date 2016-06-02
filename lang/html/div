@@ -4,4 +4,8 @@ if(typeof argv == "string")
 var name = argv.name;
 delete argv.name;
 $$
+^^if(!argv.controller){$$
 <^^=tag$$^^=~makeAttr:argv$$>^^=~parent.layout$$</^^=tag$$>
+^^}else {$$
+<^^=tag$$^^=~makeAttr:argv$$>^^=~extend: parent.layout, controller: argv.controller$$</^^=tag$$>
+^^}$$
