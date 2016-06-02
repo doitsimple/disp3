@@ -214,6 +214,19 @@ new function(){
 //TODO
 				}
 			}else{
+				if(name == "users"){
+					for(var i in result){
+						var row = result[i];
+						var _id = row._id.toString();
+						var r = parseInt(_id[_id.length-1], 16);
+						if(row.meetuc)
+							row.meetuc = parseInt(2*row.meetuc+r/3);
+						if(row.talkuc)
+							row.talkuc = parseInt(7*row.talkuc+r/2);
+						if(row.likeuc)
+							row.likeuc = parseInt(8*row.likeuc+r/1.5);						
+					}
+				}
 				fn(null, result);
 			}
 		});
