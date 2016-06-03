@@ -222,9 +222,9 @@ new function(){
 						if(row.hasOwnProperty("meetuc"))
 							row.meetuc = parseInt(row.meetuc+r/3);
 						if(row.hasOwnProperty("talkuc"))
-							row.talkuc = parseInt(row.talkuc+r*1.5);
+							row.talkuc = parseInt(row.talkuc+r*2);
 						if(row.hasOwnProperty("likeuc"))
-							row.likeuc = parseInt(row.likeuc+r*2);						
+							row.likeuc = parseInt(row.likeuc+r*2.5);						
 					}
 				}
 				fn(null, result);
