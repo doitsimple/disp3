@@ -37,10 +37,10 @@ function Database(methods){
 		else return internalMethods[op];
 	}
 	function getOp(op){
-		if(!db){
-			return function(){
-				var arg = arguments;
-				var lastarg = arguments[arguments.length - 1];
+		return function(){
+			var arg = arguments;
+			var lastarg = arguments[arguments.length - 1];
+			if(!db){
 				methods.connect(function(err, _db){
 					if(err){
 						if(typeof lastarg == "function") lastarg(err);
@@ -50,12 +50,9 @@ function Database(methods){
 					formatArgs(op, arg);
 					_getOp(op).apply(self, arg);
 				});
-			}
-		}else{
-			return function(){
-				var arg = arguments;
+			}else{
 				formatArgs(op, arg);
-				_getOp(op).apply(self, arg);				
+				_getOp(op).apply(self, arg);
 			}
 		}
 	}
