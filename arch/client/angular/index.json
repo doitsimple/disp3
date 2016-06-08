@@ -8,7 +8,7 @@
 		"tmpl": "partial.html",
 		"envkey": "subs"
 	},
-	"index.html": {
+	"^^=global.index$$.html": {
 		"lang": "angular-html",
 		"tmpl": "index-body.html"
 	},

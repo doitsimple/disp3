@@ -5,3 +5,10 @@ for(var key in global.css){
 $$
 ^^=~toeval$$
 ^^}$$
+^^
+for(var key in global.css2){
+ var toeval = {};
+ toeval[key] = global.css2[key];
+$$
+^^=~toeval$$
+^^}$$
