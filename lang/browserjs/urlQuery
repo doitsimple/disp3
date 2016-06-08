@@ -1,0 +1,1 @@
+location.search.match(/^^=argv$$=([^&]+)/)[1]
