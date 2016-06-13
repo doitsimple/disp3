@@ -181,6 +181,21 @@ new function(){
 	self.aggr = function(name, arr, fn){
 		self.getCol(name).aggregate(arr, fn);
 	}
+	self.getJoin = function(joinop, fn){
+		if(joinop.cache){
+			var joinConfig = joinop;
+			eachSync(result, function(row, cb){
+				self.getCache(joinConfig.schema, row[joinConfig.idField], function(err, result2){
+					if(err) return cb(err);
+					project(result2, joinConfig.project, row);
+					cb();
+				});
+			}, function(err){
+				if(err) return fn(err);
+				fn(null, result);
+			});
+		}
+	}
 	self.selectx = function(name, op, fn){
 		var aggrarr = [];
 		self.format(name, op.$match);
@@ -196,23 +211,18 @@ new function(){
 		self.aggr(name, aggrarr, function(err, result){
 			if(err) return fn(err);
 			if(op.$join){
-				if(op.$join.cache){
-					var joinConfig = op.$join;
-					eachSync(result, function(row, cb){
-						self.getCache(joinConfig.schema, row[joinConfig.idField], function(err, result2){
-							if(err) return cb(err);
-							project(result2, joinConfig.project, row);
-							cb();
+				self.getJoin(op.$join, function(err){
+					if(err) return fn(err);
+					if(op.$join2){
+						self.getJoin(op.$join2, function(err){
+							if(err) return fn(err);
+							return fn(null, result);
 						});
-					}, function(err){
-						if(err) return fn(err);
-						fn(null, result);
-					});
-				}else if(op.$join.cacheAll){					
-//TODO
-				}else{
-//TODO
-				}
+					}else{
+						return fn(null, result);
+					}
+				});
+				return;
 			}else{
 				if(name == "users"){
 					for(var i in result){
