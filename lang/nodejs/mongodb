@@ -181,7 +181,7 @@ new function(){
 	self.aggr = function(name, arr, fn){
 		self.getCol(name).aggregate(arr, fn);
 	}
-	self.getJoin = function(joinop, fn){
+	self.getJoin = function(joinop,result,fn){
 		if(joinop.cache){
 			var joinConfig = joinop;
 			eachSync(result, function(row, cb){
@@ -211,10 +211,10 @@ new function(){
 		self.aggr(name, aggrarr, function(err, result){
 			if(err) return fn(err);
 			if(op.$join){
-				self.getJoin(op.$join, function(err){
+				self.getJoin(op.$join,result,function(err){
 					if(err) return fn(err);
 					if(op.$join2){
-						self.getJoin(op.$join2, function(err){
+						self.getJoin(op.$join2,result,function(err){
 							if(err) return fn(err);
 							return fn(null, result);
 						});
